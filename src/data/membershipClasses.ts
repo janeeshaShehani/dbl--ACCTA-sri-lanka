@@ -1,0 +1,136 @@
+export type MembershipClass = {
+  id: string;
+  category: string;
+  letters: string;
+  eligibility: string;
+  applicationFee: {
+    lkr: string;
+    usd: string;
+  };
+  annualSubscription: {
+    lkr: string;
+    usd: string;
+  };
+};
+
+export const membershipClasses: MembershipClass[] = [
+  {
+    id: "associate",
+    category: "Associate (Standard)",
+    letters: "ACTA",
+    eligibility:
+      "ACCTA exams or recognised equivalent + 3 years' relevant experience",
+    applicationFee: {
+      lkr: "Rs. 3,000",
+      usd: "USD 25",
+    },
+    annualSubscription: {
+      lkr: "Rs. 3,000",
+      usd: "USD 25",
+    },
+  },
+  {
+    id: "fellow",
+    category: "Fellow (Standard)",
+    letters: "FCTA",
+    eligibility:
+      "Associate for 5 years + senior experience + CPD; or qualifications accepted for Fellowship",
+    applicationFee: {
+      lkr: "Rs. 5,000",
+      usd: "USD 30",
+    },
+    annualSubscription: {
+      lkr: "Rs. 5,000",
+      usd: "USD 30",
+    },
+  },
+  {
+    id: "associate-academic",
+    category: "Associate Academic",
+    letters: "AACTA",
+    eligibility:
+      "Degree in a related field + 3 years' teaching or research in taxation",
+    applicationFee: {
+      lkr: "Rs. 3,000",
+      usd: "USD 25",
+    },
+    annualSubscription: {
+      lkr: "Rs. 3,000",
+      usd: "USD 25",
+    },
+  },
+  {
+    id: "fellow-academic",
+    category: "Fellow Academic",
+    letters: "FACTA",
+    eligibility:
+      "Associate Academic for 5 years + significant academic contribution, or equivalent qualifications",
+    applicationFee: {
+      lkr: "Rs. 5,000",
+      usd: "USD 30",
+    },
+    annualSubscription: {
+      lkr: "Rs. 5,000",
+      usd: "USD 30",
+    },
+  },
+  {
+    id: "affiliate",
+    category: "Affiliate",
+    letters: "AfCTA",
+    eligibility:
+      "Interested or engaged in taxation, not yet eligible for Associate",
+    applicationFee: {
+      lkr: "Rs. 2,000",
+      usd: "USD 15",
+    },
+    annualSubscription: {
+      lkr: "Rs. 2,000",
+      usd: "USD 15",
+    },
+  },
+  {
+    id: "corporate",
+    category: "Corporate Member",
+    letters: "—",
+    eligibility:
+      "Firm or entity in taxation services, represented by a nominated ACCTA member",
+    applicationFee: {
+      lkr: "Rs. 10,000",
+      usd: "USD 100",
+    },
+    annualSubscription: {
+      lkr: "Rs. 10,000",
+      usd: "USD 100",
+    },
+  },
+  {
+    id: "honorary",
+    category: "Honorary",
+    letters: "FCTA (Hons) / FACTA (Hons)",
+    eligibility: "By Council invitation only",
+    applicationFee: {
+      lkr: "Waived",
+      usd: "",
+    },
+    annualSubscription: {
+      lkr: "Waived",
+      usd: "",
+    },
+  },
+];
+
+export const practisingLicence = {
+  id: "practising-licence",
+  category: "Practising licence (add-on)",
+  letters: "Certified Chartered Tax Advisor",
+  eligibility: "Standard members meeting the practising conditions",
+  applicationFee: {
+    lkr: "Rs. 5,000",
+    usd: "",
+  },
+  annualSubscription: {
+    lkr: "Rs. 15,000",
+    usd: "",
+  },
+};
