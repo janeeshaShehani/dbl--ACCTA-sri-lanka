@@ -22,9 +22,9 @@ export default function PractisingLicence() {
             PRACTISING LICENCE
           </p>
 
-          <h2 className="mt-3 font-serif text-3xl font-bold text-accta-navy">
+          <h1 className="mt-3 font-serif text-3xl font-bold text-accta-navy">
             Practising as a Certified Chartered Tax Advisor
-          </h2>
+          </h1>
 
           <p className="mt-4 max-w-3xl text-sm leading-6 text-accta-muted">
             The designation &quot;Certified Chartered Tax Advisor&quot; is
@@ -87,15 +87,14 @@ export default function PractisingLicence() {
           </div>
 
           <p className="mt-5 text-xs leading-5 text-accta-muted">
-            Apply and renew online through the member portal. Upload your PI
-            insurance and IRD registration certificates with the form.
-            Applications go to the Membership and Professional Conduct
-            Committee.
+            Fees shown are provisional and await confirmation. Online applications
+            and renewals are not available yet. Please contact ACCTA for guidance.
           </p>
 
           <button
             type="button"
-            className="mt-5 w-full rounded-sm bg-accta-navy px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+            disabled
+            className="mt-5 w-full cursor-not-allowed rounded-sm bg-accta-navy/70 px-4 py-3 text-sm font-semibold text-white"
           >
             Apply online for a practising licence
           </button>

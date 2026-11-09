@@ -9,9 +9,8 @@ export default function ContactContent() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Placeholder until the backend/contact email service is connected
+    // Preserve the message and report availability honestly until Resend is connected.
     setSubmitted(true);
-    event.currentTarget.reset();
   };
 
   return (
@@ -148,23 +147,26 @@ export default function ContactContent() {
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-accta-muted">
-              Complete the form below and our team will respond to your enquiry.
+              Online enquiries are not available yet. Please use the contact details on this page for assistance.
             </p>
 
             {submitted && (
-              <div className="mt-5 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-                Thank you for contacting us. Your enquiry has been received.
+              <div role="status" className="mt-5 rounded-md border border-accta-border bg-accta-surface p-4 text-sm text-accta-muted">
+                Your message has not been sent. Online enquiries are not available yet; your entered details remain in the form.
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               {/* Full Name */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-accta-ink">
+                <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-accta-ink">
                   Full name
                 </label>
 
                 <input
+                  id="contact-name"
+                  name="name"
+                  autoComplete="name"
                   type="text"
                   required
                   placeholder="Enter your full name"
@@ -174,11 +176,14 @@ export default function ContactContent() {
 
               {/* Email */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-accta-ink">
+                <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-accta-ink">
                   Email address
                 </label>
 
                 <input
+                  id="contact-email"
+                  name="email"
+                  autoComplete="email"
                   type="email"
                   required
                   placeholder="you@example.com"
@@ -188,11 +193,17 @@ export default function ContactContent() {
 
               {/* Enquiry Type */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-accta-ink">
+                <label htmlFor="contact-phone" className="mb-2 block text-sm font-medium text-accta-ink">Phone number (optional)</label>
+                <input id="contact-phone" name="phone" type="tel" autoComplete="tel" className="w-full rounded border border-accta-border px-4 py-3 text-sm" />
+              </div>
+              <div>
+                <label htmlFor="contact-topic" className="mb-2 block text-sm font-medium text-accta-ink">
                   Enquiry type
                 </label>
 
                 <select
+                  id="contact-topic"
+                  name="topic"
                   required
                   defaultValue=""
                   className="w-full rounded border border-accta-border px-4 py-3 text-sm outline-none transition focus:border-accta-maroon"
@@ -210,11 +221,13 @@ export default function ContactContent() {
 
               {/* Message */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-accta-ink">
+                <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-accta-ink">
                   Message
                 </label>
 
                 <textarea
+                  id="contact-message"
+                  name="message"
                   required
                   rows={5}
                   placeholder="Tell us how we can help..."
@@ -224,7 +237,8 @@ export default function ContactContent() {
 
               <button
                 type="submit"
-                className="w-full rounded bg-accta-maroon px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                disabled
+                className="w-full cursor-not-allowed rounded bg-accta-maroon/70 px-6 py-3 text-sm font-semibold text-white"
               >
                 Send enquiry
               </button>

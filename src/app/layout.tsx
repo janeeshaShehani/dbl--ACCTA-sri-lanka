@@ -16,9 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-white focus:p-3 focus:text-accta-navy">Skip to content</a>
         <Header />
 
-        <main className="min-h-screen pt-[150px]">{children}</main>
+        <main id="main-content" tabIndex={-1} className="min-h-screen">{children}</main>
 
         <Footer />
       </body>

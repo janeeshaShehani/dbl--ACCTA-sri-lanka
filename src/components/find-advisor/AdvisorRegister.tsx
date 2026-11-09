@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { Member } from "@/data/members";
 
 type MemberRegisterProps = {
@@ -16,8 +17,7 @@ export default function MemberRegister({
   const handleVerify = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Placeholder for future certificate verification
-    alert("Certificate verification will be available soon.");
+    // Online verification remains disabled until authoritative certificate records are connected.
   };
 
   return (
@@ -28,6 +28,7 @@ export default function MemberRegister({
           <p className="text-xs font-semibold uppercase tracking-wider text-accta-maroon">
             Register of Members
           </p>
+          <p className="mt-3 rounded border border-accta-border bg-white p-4 text-sm leading-6 text-accta-muted">Demonstration records only. These entries do not confirm actual membership, good standing or licence validity. Contact ACCTA for verification.</p>
 
           <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -127,17 +128,17 @@ export default function MemberRegister({
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-accta-muted">
-              Verify an ACCTA membership certificate using the membership and
-              certificate numbers.
+              Online certificate verification is not available yet. Contact ACCTA to verify a membership or certificate.
             </p>
 
             <form onSubmit={handleVerify} className="mt-5 space-y-4">
               <div>
-                <label className="mb-2 block text-xs font-semibold text-accta-ink">
+                <label htmlFor="verify-membership" className="mb-2 block text-xs font-semibold text-accta-ink">
                   Membership number
                 </label>
 
                 <input
+                  id="verify-membership"
                   type="text"
                   value={membershipNumber}
                   onChange={(e) => setMembershipNumber(e.target.value)}
@@ -147,11 +148,12 @@ export default function MemberRegister({
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-semibold text-accta-ink">
+                <label htmlFor="verify-certificate" className="mb-2 block text-xs font-semibold text-accta-ink">
                   Certificate number
                 </label>
 
                 <input
+                  id="verify-certificate"
                   type="text"
                   value={certificateNumber}
                   onChange={(e) => setCertificateNumber(e.target.value)}
@@ -162,7 +164,8 @@ export default function MemberRegister({
 
               <button
                 type="submit"
-                className="w-full rounded bg-accta-navy px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                disabled
+                className="w-full cursor-not-allowed rounded bg-accta-navy/70 px-4 py-3 text-sm font-semibold text-white"
               >
                 Verify certificate
               </button>
@@ -184,15 +187,14 @@ export default function MemberRegister({
               member, you can submit a complaint for review.
             </p>
 
-            <button className="mt-5 w-full rounded border border-accta-maroon px-4 py-3 text-sm font-semibold text-accta-maroon transition hover:bg-accta-maroon hover:text-white">
+            <Link href="/complaint" className="mt-5 block w-full rounded border border-accta-maroon px-4 py-3 text-center text-sm font-semibold text-accta-maroon transition hover:bg-accta-maroon hover:text-white">
               How to make a complaint
-            </button>
+            </Link>
           </div>
 
           <div className="rounded-md border-l-4 border-accta-navy bg-white p-4 text-xs leading-5 text-accta-muted">
-            Only members listed in the public register should be represented as
-            current ACCTA members. Always verify the member&apos;s status before
-            engaging an advisor.
+            Public listings depend on consent. An absent listing does not by itself
+            establish a person&apos;s membership status. Contact ACCTA before relying on a record.
           </div>
         </aside>
       </div>

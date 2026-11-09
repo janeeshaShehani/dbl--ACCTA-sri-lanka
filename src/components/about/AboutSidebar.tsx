@@ -14,14 +14,14 @@ export default function AboutSidebar() {
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
       block: "start",
     });
   };
 
   return (
     <aside className="hidden w-56 shrink-0 lg:block">
-      <div className="sticky top-6 rounded-md border border-accta-border bg-white p-3">
+      <div className="sticky top-60 rounded-md border border-accta-border bg-white p-3">
         <nav className="flex flex-col gap-1">
           {sidebarLinks.map((link) => (
             <button

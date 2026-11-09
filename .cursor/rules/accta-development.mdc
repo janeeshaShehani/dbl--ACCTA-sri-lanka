@@ -1,0 +1,19 @@
+---
+description: Apply the ACCTA document-folder development rules to all project work
+alwaysApply: true
+---
+
+# ACCTA development rules
+
+Read the root AGENTS.md and `../ACCTA Web Documents/ACCTA Web Development Rules.txt` before project work. Consult the content brief, design PDF, and handwritten feedback in the same folder for the relevant task.
+
+- Explain key logic with concise English comments.
+- Edit only the task's required lines and components. Preserve unrelated formatting and behaviour.
+- Match the supplied design and existing styles and architecture.
+- Develop and test mobile, tablet, and desktop together.
+- Preserve existing working features and integrations.
+- Keep components modular, centralise shared data, and avoid duplicate logic.
+
+For the current seminar, login is a frontend-only UI. Clearly identify services that are not available yet. Never show a successful submission when nothing was sent, or present sample register data as verified membership.
+
+Read the relevant installed Next.js guide before writing code, as required by AGENTS.md. Treat the dated remaining-work checklist as a baseline, not proof of the latest implementation state.

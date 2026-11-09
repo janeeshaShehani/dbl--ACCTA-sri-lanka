@@ -22,7 +22,7 @@ export default function AboutHero() {
         </h1>
 
         <p className="mt-4 max-w-3xl text-base leading-7 text-white/85 md:text-[16px]">
-          A professional body established to promote excellence, integrity and professionalism in the practice of tax advisory services.",
+          A professional body established to promote excellence, integrity and professionalism in the practice of tax advisory services.
   
         </p>
       </div>

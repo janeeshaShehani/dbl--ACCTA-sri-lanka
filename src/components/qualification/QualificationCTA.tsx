@@ -10,17 +10,18 @@ export default function QualificationCTA() {
           </h2>
 
           <p className="mt-2 text-sm text-white/80">
-            Register online, pay your student fee and book your first exam.
+            Student registration, payments and exam booking are not available yet. Contact ACCTA for qualification information.
           </p>
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="#"
-            className="rounded bg-white px-5 py-3 text-sm font-semibold text-accta-maroon transition hover:bg-accta-surface"
+          <button
+            type="button"
+            disabled
+            className="cursor-not-allowed rounded bg-white/80 px-5 py-3 text-sm font-semibold text-accta-maroon"
           >
             Register as a student
-          </Link>
+          </button>
 
           <Link
             href="/contact"

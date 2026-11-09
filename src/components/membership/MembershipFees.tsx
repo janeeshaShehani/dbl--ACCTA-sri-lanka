@@ -9,7 +9,7 @@ export default function MembershipFees() {
   const [feeType, setFeeType] = useState<FeeType>("lkr");
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+    <section id="fees" className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">

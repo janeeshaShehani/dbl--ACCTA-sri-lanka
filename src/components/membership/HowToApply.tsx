@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const applicationSteps = [
   {
     number: "1",
@@ -58,19 +60,19 @@ export default function HowToApply() {
 
         {/* Application buttons */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
+          <Link
+            href="/membership/apply/individual"
             className="w-fit rounded-sm bg-accta-maroon px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
           >
             Start individual application (M-01)
-          </button>
+          </Link>
 
-          <button
-            type="button"
+          <Link
+            href="/membership/apply/corporate"
             className="w-fit rounded-sm border border-white px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-accta-navy"
           >
             Start corporate application (M-02)
-          </button>
+          </Link>
         </div>
       </div>
     </section>
