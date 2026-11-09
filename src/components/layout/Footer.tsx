@@ -3,13 +3,13 @@ import Link from "next/link";
 
 const aboutLinks = [
   { name: "Vision & mission", href: "/about" },
-  { name: "Governing Council", href: "/about/governing-council" },
-  { name: "Committees", href: "/about/committees" },
+  { name: "Governing Council", href: "/about#governance" },
+  { name: "Committees", href: "/about#committees" },
 ];
 
 const memberLinks = [
   { name: "Membership categories", href: "/membership" },
-  { name: "Fees", href: "/membership/fees" },
+  { name: "Fees", href: "/membership#fees" },
   { name: "Practising licence", href: "/practising-licence" },
   { name: "CPD requirements", href: "/cpd-events" },
   { name: "Code of Ethics", href: "/code-of-ethics" },
@@ -103,6 +103,9 @@ export default function Footer() {
 
             <Link href="/sitemap" className="transition hover:text-white">
               Sitemap
+            </Link>
+            <Link href="/cookie-notice" className="transition hover:text-white">
+              Cookie notice
             </Link>
           </div>
         </div>

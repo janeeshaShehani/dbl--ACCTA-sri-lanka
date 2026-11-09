@@ -39,6 +39,27 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Keep linked sections clear of the shared sticky header on every screen size. */
+[id] {
+  scroll-margin-top: 15rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-maroon);
+  outline-offset: 3px;
+}
+
+nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
   background: var(--background);

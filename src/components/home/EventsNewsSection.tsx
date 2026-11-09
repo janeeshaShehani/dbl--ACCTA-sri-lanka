@@ -22,19 +22,20 @@ export default function EventsNews() {
               </Link>
             </div>
 
+            <p className="mt-4 text-xs leading-5 text-accta-muted">Preview listings — details are awaiting confirmation. Registration is not yet available.</p>
             <div className="mt-6 space-y-4">
-              {upcomingEvents.map((event) => (
+              {upcomingEvents.slice(0, 3).map((event) => (
                 <article
                   key={event.id}
-                  className="flex items-center gap-4 rounded-md border border-accta-border bg-white p-5"
+                  className="flex flex-wrap items-center gap-4 rounded-md border border-accta-border bg-white p-5"
                 >
                   {/* Date */}
                   <div className="flex min-w-16 flex-col items-center border-r border-accta-border pr-4">
                     <span className="font-heading text-2xl font-bold text-accta-navy">
-                      {event.day}
+                      {event.date.split(" ")[0]}
                     </span>
                     <span className="text-xs font-bold text-accta-maroon">
-                      {event.month}
+                      {event.date.split(" ")[1]}
                     </span>
                   </div>
 
@@ -55,14 +56,14 @@ export default function EventsNews() {
                     </h3>
 
                     <p className="mt-1 text-xs text-accta-muted">
-                      {event.details}
+                      {event.time} · {event.venue}
                     </p>
                   </div>
 
                   {/* Register Button */}
                   <Link
                     href={`/cpd-events/${event.id}`}
-                    className="hidden rounded border border-accta-navy px-4 py-2 text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white sm:block"
+                    className="inline-flex min-h-11 items-center rounded border border-accta-navy px-4 py-2 text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white"
                   >
                     Register
                   </Link>

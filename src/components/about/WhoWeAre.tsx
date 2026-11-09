@@ -1,5 +1,3 @@
-import { aboutData } from "@/data/about";
-
 export default function WhoWeAre() {
 
     const values= [

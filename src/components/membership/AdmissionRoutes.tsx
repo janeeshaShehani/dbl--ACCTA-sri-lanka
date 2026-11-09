@@ -30,7 +30,7 @@ const admissionRoutes = [
 
 export default function AdmissionRoutes() {
   return (
-    <section className="bg-accta-surface">
+    <section id="admission-routes" className="bg-accta-surface">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           {/* Left content */}

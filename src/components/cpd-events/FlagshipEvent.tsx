@@ -17,7 +17,7 @@ export default function FlagshipEvent() {
             </p>
           </div>
 
-          <button className="rounded bg-white px-5 py-3 text-sm font-semibold text-accta-navy transition hover:bg-accta-light-blue">
+          <button type="button" disabled title="Registration is not available yet" className="cursor-not-allowed rounded bg-white/80 px-5 py-3 text-sm font-semibold text-accta-navy">
             Register interest
           </button>
         </div>

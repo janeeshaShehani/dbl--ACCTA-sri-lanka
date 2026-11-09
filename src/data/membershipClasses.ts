@@ -111,11 +111,11 @@ export const membershipClasses: MembershipClass[] = [
     eligibility: "By Council invitation only",
     applicationFee: {
       lkr: "Waived",
-      usd: "",
+      usd: "Waived",
     },
     annualSubscription: {
       lkr: "Waived",
-      usd: "",
+      usd: "Waived",
     },
   },
 ];

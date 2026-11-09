@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { name: "About", href: "/about" },
@@ -18,29 +19,37 @@ const navLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 z-50 w-full">
+    <header className="sticky top-0 z-50 w-full" onKeyDown={(event) => {
+      // Close the mobile navigation with Escape and restore keyboard focus.
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        menuButton.current?.focus();
+      }
+    }}>
       {/* Top Utility Bar */}
       <div className="bg-accta-navy text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-sm">
           {/* Contact Information */}
           <div className="hidden items-center gap-6 md:flex">
-            <span>Hotline : +94 77 714 8839</span>
-            <span>info@acctasl.com</span>
+            <a href="tel:+94777148839">Hotline : +94 77 714 8839</a>
+            <a href="mailto:info@acctasl.com">info@acctasl.com</a>
           </div>
 
           {/* Right Side Links */}
           <div className="ml-auto flex items-center gap-3">
             {/* Language Switcher */}
             <div className="flex items-center gap-1">
-              <button className="rounded bg-white px-2 py-1 text-xs font-semibold text-accta-navy">
+              <button type="button" aria-label="English — current language" aria-pressed="true" className="min-h-11 min-w-11 rounded bg-white px-2 py-1 text-xs font-semibold text-accta-navy">
                 EN
               </button>
-              <button className="rounded border border-white/40 px-2 py-1 text-xs">
+              <button type="button" disabled title="Sinhala translation is not available yet" aria-label="Sinhala — not available yet" className="min-h-11 min-w-11 cursor-not-allowed rounded border border-white/40 px-2 py-1 text-xs text-white/70">
                 සිං
               </button>
-              <button className="rounded border border-white/40 px-2 py-1 text-xs">
+              <button type="button" disabled title="Tamil translation is not available yet" aria-label="Tamil — not available yet" className="min-h-11 min-w-11 cursor-not-allowed rounded border border-white/40 px-2 py-1 text-xs text-white/70">
                 தமிழ்
               </button>
             </div>
@@ -55,7 +64,7 @@ export default function Header() {
 
             <Link
               href="/login"
-              className="rounded bg-accta-maroon px-4 py-2 font-semibold transition hover:opacity-90"
+              className="inline-flex min-h-11 items-center rounded bg-accta-maroon px-3 py-2 text-xs font-semibold transition hover:opacity-90 sm:text-sm"
             >
               Member login
             </Link>
@@ -69,13 +78,13 @@ export default function Header() {
           {/* Logo and Mobile Menu Button */}
           <div className="flex items-center justify-between py-3">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" onClick={() => setIsOpen(false)} className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Image
                 src="/images/logo.png"
                 alt="ACCTA Sri Lanka Logo"
                 width={90}
                 height={90}
-                className="h-[60px] w-auto object-contain"
+                className="h-[50px] w-auto shrink-0 object-contain sm:h-[60px]"
                 priority
               />
 
@@ -103,7 +112,11 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="rounded p-2 text-accta-navy lg:hidden"
+              type="button"
+              ref={menuButton}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              className="shrink-0 rounded p-2 text-accta-navy min-[900px]:hidden"
               aria-label="Toggle navigation menu"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -111,12 +124,13 @@ export default function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center justify-between pb-2 lg:flex">
-            <nav className="flex items-center gap-7">
+          <div className="hidden items-center justify-between gap-3 pb-2 min-[900px]:flex">
+            <nav aria-label="Main navigation" className="flex flex-wrap items-center gap-x-4 gap-y-2 xl:gap-x-7">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
+                  aria-current={pathname === link.href ? "page" : undefined}
                   className="text-sm font-semibold text-accta-ink transition hover:text-accta-maroon"
                 >
                   {link.name}
@@ -126,7 +140,7 @@ export default function Header() {
 
             <Link
               href="/membership/apply"
-              className="rounded bg-accta-maroon px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              className="shrink-0 rounded bg-accta-maroon px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
               Become a member
             </Link>
@@ -134,12 +148,13 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           {isOpen && (
-            <div className="border-t border-accta-border py-4 lg:hidden">
-              <nav className="flex flex-col gap-1">
+            <div id="mobile-navigation" className="max-h-[65dvh] overflow-y-auto border-t border-accta-border py-4 min-[900px]:hidden">
+              <nav aria-label="Mobile navigation" className="flex flex-col gap-1">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     href={link.href}
+                    aria-current={pathname === link.href ? "page" : undefined}
                     onClick={() => setIsOpen(false)}
                     className="rounded px-3 py-3 font-medium text-accta-ink hover:bg-accta-surface"
                   >
@@ -147,8 +162,12 @@ export default function Header() {
                   </Link>
                 ))}
 
+                <Link href="/payment" onClick={() => setIsOpen(false)} className="rounded px-3 py-3 font-medium text-accta-ink hover:bg-accta-surface sm:hidden">Pay online</Link>
+                <Link href="/verify-member" onClick={() => setIsOpen(false)} className="rounded px-3 py-3 font-medium text-accta-ink hover:bg-accta-surface sm:hidden">Verify a member</Link>
+
                 <Link
                   href="/membership/apply"
+                  onClick={() => setIsOpen(false)}
                   className="mt-2 rounded bg-accta-maroon px-4 py-3 text-center font-semibold text-white"
                 >
                   Become a member
