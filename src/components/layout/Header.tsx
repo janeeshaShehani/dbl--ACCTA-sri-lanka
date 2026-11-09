@@ -167,8 +167,7 @@ export default function Header() {
 
                 <Link
                   href="/membership/apply"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-2 rounded bg-accta-maroon px-4 py-3 text-center font-semibold text-white"
+                  className="rounded bg-accta-maroon px-5 py-3 text-sm font-semibold text-white"
                 >
                   Become a member
                 </Link>

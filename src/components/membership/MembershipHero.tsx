@@ -1,6 +1,17 @@
-import Link from "next/link";
+"use client";
 
 export default function MembershipHero() {
+  const handleApplyOnline = () => {
+    const section = document.getElementById("how-to-apply");
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <section className="bg-accta-navy text-white">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
@@ -21,12 +32,13 @@ export default function MembershipHero() {
             </p>
           </div>
 
-          <Link
-            href="#how-to-apply"
+          <button
+            type="button"
+            onClick={handleApplyOnline}
             className="inline-flex w-fit items-center justify-center rounded-sm bg-accta-maroon px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
           >
             Apply online
-          </Link>
+          </button>
         </div>
       </div>
     </section>

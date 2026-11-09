@@ -9,7 +9,8 @@ const applicationSteps = [
   {
     number: "2",
     title: "Apply online",
-    description: "Complete the online form and upload certified documents and attachments.",
+    description:
+      "Complete the online form and upload certified documents and attachments.",
   },
   {
     number: "3",
@@ -29,7 +30,7 @@ export default function HowToApply() {
   return (
     <section id="how-to-apply" className="bg-accta-navy scroll-mt-8">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <p className="text-xs font-bold tracking-[0.18em] text-accta-light-blue">
+        <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           HOW TO APPLY
         </p>
 
@@ -61,14 +62,14 @@ export default function HowToApply() {
         {/* Application buttons */}
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/membership/apply/individual"
+            href="/apply-membership/individual"
             className="w-fit rounded-sm bg-accta-maroon px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
           >
             Start individual application (M-01)
           </Link>
 
           <Link
-            href="/membership/apply/corporate"
+            href="/apply-membership/corporate"
             className="w-fit rounded-sm border border-white px-5 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-accta-navy"
           >
             Start corporate application (M-02)
