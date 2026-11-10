@@ -80,6 +80,7 @@ export type CorporateApplication = {
   staffCount: string;
 
   // Corporate Contact Details
+  // Keep these fields if you plan to add contact inputs.
   officePhone: string;
   officialEmail: string;
 
@@ -95,7 +96,7 @@ export type CorporateApplication = {
   clientProfile: string;
   firmProfile: string;
 
-  // Step 5 - Representatives
+  // Step 5 - Company Representatives
   nominatedRepresentative: string;
   nominatedEmail: string;
   nominatedPhone: string;
@@ -106,7 +107,7 @@ export type CorporateApplication = {
   // Step 6 - Fit & Proper
   fitAndProperDetails: string;
 
-  // Step 7 - Documents
+  // Step 7 - Supporting Documents
   documents: Record<string, File | null>;
 
   // Step 8 - Declaration

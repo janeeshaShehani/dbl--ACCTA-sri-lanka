@@ -107,8 +107,7 @@ export default function CorporateApplicationPage() {
           formData.registeredName.trim() !== "" &&
           formData.legalForm.trim() !== "" &&
           formData.registrationNumber.trim() !== "" &&
-          formData.registeredAddress.trim() !== "" &&
-          formData.officialEmail.trim() !== ""
+          formData.registeredAddress.trim() !== ""
         );
 
       // Step 3 - Directors & Shareholders
@@ -123,8 +122,7 @@ export default function CorporateApplicationPage() {
         );
 
       // Step 5 - Representatives
-      // Phone numbers are not required because they are not listed
-      // in the M-02 requirements you provided.
+      // Phone numbers are not currently required.
       case 5:
         return (
           formData.nominatedRepresentative.trim() !== "" &&
@@ -136,10 +134,13 @@ export default function CorporateApplicationPage() {
         return formData.fitAndProperDetails.trim() !== "";
 
       // Step 7 - Supporting Documents
-      // This currently checks that at least one document is selected.
+      // Requires all documents currently shown in CorporateDocumentsStep.
       case 7:
-        return Object.values(formData.documents).some(
-          (file) => file instanceof File
+        return (
+          formData.documents.registration instanceof File &&
+          formData.documents.tin instanceof File &&
+          formData.documents.directors instanceof File &&
+          formData.documents.profile instanceof File
         );
 
       // Step 8 - Declaration
@@ -215,7 +216,7 @@ export default function CorporateApplicationPage() {
       alert("Corporate application submitted successfully!");
 
       // Reset the form after successful submission
-      setFormData(initialFormData);
+      setFormData({ ...initialFormData });
       setCurrentStep(1);
     } catch (error) {
       console.error("Submission error:", error);

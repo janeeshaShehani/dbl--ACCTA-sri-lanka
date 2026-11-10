@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import type { CorporateApplication } from "@/types/application";
 
 type Props = {
@@ -16,17 +17,30 @@ const documents = [
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
+const ALLOWED_FILE_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+];
+
 export default function CorporateDocumentsStep({
   data,
   updateData,
 }: Props) {
   const handleFileChange = (
     documentId: string,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
+
+    // Check file type
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      alert("Please upload a PDF, JPG, or PNG file.");
+      event.target.value = "";
+      return;
+    }
 
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
@@ -35,7 +49,7 @@ export default function CorporateDocumentsStep({
       return;
     }
 
-    // Save the actual File object
+    // Save the File object in form data
     updateData({
       documents: {
         ...data.documents,
@@ -72,9 +86,17 @@ export default function CorporateDocumentsStep({
               key={document.id}
               className="flex flex-col gap-3 rounded-md border border-accta-border p-5 sm:flex-row sm:items-center sm:justify-between"
             >
-              <p className="text-sm font-medium text-accta-ink">
-                {document.label}
-              </p>
+              <div>
+                <p className="text-sm font-medium text-accta-ink">
+                  {document.label}
+                </p>
+
+                {selectedFile && (
+                  <p className="mt-1 text-xs text-green-600">
+                    File selected successfully
+                  </p>
+                )}
+              </div>
 
               <div className="flex flex-wrap items-center gap-3">
                 <label

@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+import {
+  sendAdminNotification,
+  sendApplicantConfirmation,
+} from "@/lib/email";
+
 const dataDirectory = path.join(process.cwd(), "src", "data");
 
 const dataFilePath = path.join(
   dataDirectory,
   "apply-membership-applications.json"
 );
+
+type ApplicationType = "individual" | "corporate";
 
 type ApplicationsData = {
   individualApplications: unknown[];
@@ -56,12 +63,13 @@ export async function GET() {
   }
 }
 
-// POST - Save a new application
+// POST - Save a new application and send emails
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { type, application } = body;
 
+    // Validate application type
     if (type !== "individual" && type !== "corporate") {
       return NextResponse.json(
         { error: "Invalid application type." },
@@ -69,31 +77,112 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const applicationType: ApplicationType = type;
+
+    // Read existing applications
     const applications = getApplications();
 
+    // Create new application record
     const newApplication = {
       id: crypto.randomUUID(),
       submittedAt: new Date().toISOString(),
       ...application,
     };
 
-    if (type === "individual") {
+    // Save according to application type
+    if (applicationType === "individual") {
       applications.individualApplications.push(newApplication);
     } else {
       applications.corporateApplications.push(newApplication);
     }
 
+    // Save to JSON file
     fs.writeFileSync(
       dataFilePath,
       JSON.stringify(applications, null, 2),
       "utf-8"
     );
 
+    // Get applicant name and email
+    const applicantName =
+      applicationType === "individual"
+        ? application.fullName
+        : application.registeredName;
+
+    const applicantEmail =
+      applicationType === "individual"
+        ? application.personalEmail
+        : application.officialEmail;
+
+    // Email status tracking
+    let applicantEmailSent = false;
+    let adminEmailSent = false;
+    let emailErrorMessage: string | null = null;
+
+    // Send emails
+    if (applicantName && applicantEmail) {
+      try {
+        console.log("-----------------------------------");
+        console.log("APPLICATION EMAIL PROCESS STARTED");
+        console.log("Applicant name:", applicantName);
+        console.log("Applicant email:", applicantEmail);
+        console.log("Application type:", applicationType);
+
+        // Send confirmation email to applicant
+        console.log("Sending confirmation email to applicant...");
+
+        const applicantResult = await sendApplicantConfirmation({
+          name: applicantName,
+          email: applicantEmail,
+          applicationType,
+        });
+
+        console.log("Applicant email result:", applicantResult);
+        applicantEmailSent = true;
+
+        // Send notification email to administrator
+        console.log("Sending notification email to administrator...");
+
+        const adminResult = await sendAdminNotification({
+          name: applicantName,
+          email: applicantEmail,
+          applicationType,
+        });
+
+        console.log("Admin email result:", adminResult);
+        adminEmailSent = true;
+
+        console.log("EMAIL PROCESS COMPLETED SUCCESSFULLY");
+        console.log("-----------------------------------");
+      } catch (emailError) {
+        console.error("-----------------------------------");
+        console.error("EMAIL SENDING ERROR:");
+        console.error(emailError);
+        console.error("-----------------------------------");
+
+        emailErrorMessage =
+          emailError instanceof Error
+            ? emailError.message
+            : "Unknown email error";
+      }
+    } else {
+      console.warn(
+        "Application saved, but applicant name or email was not available."
+      );
+
+      emailErrorMessage = "Applicant name or email was not available.";
+    }
+
     return NextResponse.json(
       {
         success: true,
         message: "Application saved successfully.",
         application: newApplication,
+        emailStatus: {
+          applicantEmailSent,
+          adminEmailSent,
+          error: emailErrorMessage,
+        },
       },
       { status: 201 }
     );
