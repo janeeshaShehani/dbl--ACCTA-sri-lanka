@@ -1,0 +1,50 @@
+{
+  "individualApplications": [],
+  "corporateApplications": [
+    {
+      "id": "70853d22-75d3-478b-9b47-66ac4cbfa950",
+      "submittedAt": "2026-11-10T02:06:58.364Z",
+      "membershipCategory": "corporate",
+      "residency": "sri-lanka",
+      "country": "",
+      "registeredName": "bbb",
+      "tradingName": "bbb",
+      "legalForm": "private",
+      "registrationNumber": "79",
+      "registrationDate": "2026-11-05",
+      "registrationCountry": "600",
+      "tinNumber": "788",
+      "vatNumber": "999",
+      "registeredAddress": "bbb",
+      "tradingAddress": "bbb",
+      "website": "bbb.com",
+      "staffCount": "88",
+      "officePhone": "+94711144854",
+      "officialEmail": "shehanijaneesha506@gmail.com",
+      "directors": "bbb",
+      "shareholders": "bbb",
+      "parentFirm": "bbb",
+      "services": "bbb",
+      "yearsInTaxation": "bbb",
+      "registrations": "bbb",
+      "clientProfile": "",
+      "firmProfile": "",
+      "nominatedRepresentative": "bbb",
+      "nominatedEmail": "shehanijaneesha506@gmail.com",
+      "nominatedPhone": "",
+      "alternateRepresentative": "",
+      "alternateEmail": "shehanijaneesha506@gmail.com",
+      "alternatePhone": "",
+      "fitAndProperDetails": "bbb",
+      "documents": {
+        "registration": "dr.damith.jpeg",
+        "tin": "Tax Advisory Office Hero Banner (1).png",
+        "directors": "Nail Bloom Studio Beauty Banner.png"
+      },
+      "signatoryOne": "bbb",
+      "signatoryTwo": "bbb",
+      "resolutionDate": "2026-11-20",
+      "declarationAccepted": true
+    }
+  ]
+}

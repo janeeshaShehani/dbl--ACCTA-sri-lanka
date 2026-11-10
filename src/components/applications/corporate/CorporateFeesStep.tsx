@@ -7,47 +7,81 @@ type Props = {
 export default function CorporateFeesStep({ data }: Props) {
   return (
     <div>
+      {/* Section heading */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
-          FINAL STEP
+          SECTION I
         </p>
 
         <h2 className="mt-2 font-serif text-2xl font-bold text-accta-navy">
-          Application review and fees
+          Fees and application review
         </h2>
+
+        <p className="mt-2 text-sm text-accta-muted">
+          Review your application details before submitting.
+        </p>
       </div>
 
-      <div className="mt-6 rounded-md border border-accta-border bg-accta-surface p-5">
-        <h3 className="font-semibold text-accta-navy">
+      {/* Application summary */}
+      <div className="mt-6 rounded-md border border-accta-border p-5">
+        <h3 className="font-serif text-lg font-bold text-accta-navy">
           Application summary
         </h3>
 
-        <div className="mt-4 space-y-2 text-sm text-accta-muted">
-          <p>
-            <span className="font-medium text-accta-ink">Organisation:</span>{" "}
-            {data.registeredName || "Not provided"}
-          </p>
+        <div className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+          <div>
+            <p className="text-accta-muted">Organisation</p>
+            <p className="mt-1 font-semibold text-accta-ink">
+              {data.registeredName || "Not provided"}
+            </p>
+          </div>
 
-          <p>
-            <span className="font-medium text-accta-ink">
-              Membership category:
-            </span>{" "}
-            {data.membershipCategory || "Not selected"}
-          </p>
+          <div>
+            <p className="text-accta-muted">Membership category</p>
+            <p className="mt-1 font-semibold text-accta-ink">
+              {data.membershipCategory || "Not selected"}
+            </p>
+          </div>
 
-          <p>
-            <span className="font-medium text-accta-ink">Representative:</span>{" "}
-            {data.nominatedRepresentative || "Not provided"}
-          </p>
+          <div>
+            <p className="text-accta-muted">Official email</p>
+            <p className="mt-1 font-semibold text-accta-ink">
+              {data.officialEmail || "Not provided"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-accta-muted">Nominated representative</p>
+            <p className="mt-1 font-semibold text-accta-ink">
+              {data.nominatedRepresentative || "Not provided"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="mt-6 rounded-md border border-accta-border p-5">
-        <h3 className="font-semibold text-accta-navy">Application fees</h3>
+      {/* Fees information */}
+      <div className="mt-6 rounded-md bg-accta-surface p-5">
+        <h3 className="font-serif text-lg font-bold text-accta-navy">
+          Membership fees
+        </h3>
 
-        <p className="mt-2 text-sm text-accta-muted">
+        <p className="mt-3 text-sm leading-6 text-accta-muted">
           The applicable membership and application fees will be confirmed
-          based on the selected membership category and organisation details.
+          during the review process based on your membership category and
+          residency.
+        </p>
+
+        <p className="mt-3 text-sm font-medium text-accta-ink">
+          Payment instructions will be provided after your application has
+          been reviewed.
+        </p>
+      </div>
+
+      {/* Submission notice */}
+      <div className="mt-6 rounded-md border-l-4 border-accta-maroon bg-accta-surface p-4">
+        <p className="text-sm leading-6 text-accta-ink">
+          By proceeding, you confirm that all information and documents
+          provided in this application are accurate and complete.
         </p>
       </div>
     </div>

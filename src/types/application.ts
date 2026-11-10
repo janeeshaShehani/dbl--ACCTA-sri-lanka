@@ -99,7 +99,6 @@ export type CorporateApplication = {
   nominatedRepresentative: string;
   nominatedEmail: string;
   nominatedPhone: string;
-
   alternateRepresentative: string;
   alternateEmail: string;
   alternatePhone: string;
@@ -114,4 +113,5 @@ export type CorporateApplication = {
   signatoryOne: string;
   signatoryTwo: string;
   resolutionDate: string;
+  declarationAccepted: boolean;
 };

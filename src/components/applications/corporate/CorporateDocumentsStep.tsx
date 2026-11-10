@@ -14,7 +14,7 @@ const documents = [
   { id: "profile", label: "Company profile" },
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export default function CorporateDocumentsStep({
   data,
@@ -28,12 +28,14 @@ export default function CorporateDocumentsStep({
 
     if (!file) return;
 
+    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       alert("File must be smaller than 10 MB.");
       event.target.value = "";
       return;
     }
 
+    // Save the actual File object
     updateData({
       documents: {
         ...data.documents,
@@ -55,7 +57,8 @@ export default function CorporateDocumentsStep({
         </h2>
 
         <p className="mt-2 text-sm text-accta-muted">
-          Upload PDF or JPG files. Maximum file size is 10 MB per document.
+          Upload PDF, JPG, or PNG files. Maximum file size is 10 MB per
+          document.
         </p>
       </div>
 
@@ -73,7 +76,7 @@ export default function CorporateDocumentsStep({
                 {document.label}
               </p>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <label
                   htmlFor={document.id}
                   className="cursor-pointer rounded-md bg-accta-maroon px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
@@ -84,7 +87,7 @@ export default function CorporateDocumentsStep({
                 <input
                   id={document.id}
                   type="file"
-                  accept=".pdf,.jpg,.jpeg"
+                  accept=".pdf,.jpg,.jpeg,.png"
                   className="hidden"
                   onChange={(event) =>
                     handleFileChange(document.id, event)
