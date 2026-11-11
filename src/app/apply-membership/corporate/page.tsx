@@ -20,8 +20,9 @@ import type { CorporateApplication } from "@/types/application";
 const TOTAL_STEPS = 9;
 
 const initialFormData: CorporateApplication = {
-  // Step 1 - Category & Residency
+  // Step 1 - Membership Applied For
   membershipCategory: "",
+  otherLegalEntity: "",
   residency: "sri-lanka",
   country: "",
 
@@ -55,7 +56,7 @@ const initialFormData: CorporateApplication = {
   clientProfile: "",
   firmProfile: "",
 
-  // Step 5 - Representatives
+  // Step 5 - Company Representatives
   nominatedRepresentative: "",
   nominatedEmail: "",
   nominatedPhone: "",
@@ -64,9 +65,10 @@ const initialFormData: CorporateApplication = {
   alternatePhone: "",
 
   // Step 6 - Fit & Proper
+  fitAndProperAnswers: {},
   fitAndProperDetails: "",
 
-  // Step 7 - Documents
+  // Step 7 - Supporting Documents
   documents: {},
 
   // Step 8 - Declaration
@@ -74,6 +76,12 @@ const initialFormData: CorporateApplication = {
   signatoryTwo: "",
   resolutionDate: "",
   declarationAccepted: false,
+
+  // Step 9 - Fees & Payment
+  totalAmountPaid: "",
+  paymentMethod: "",
+  paymentReference: "",
+  paymentDate: "",
 };
 
 export default function CorporateApplicationPage() {
@@ -90,13 +98,14 @@ export default function CorporateApplicationPage() {
     }));
   };
 
-  // Validate each step before continuing
   const validateCurrentStep = () => {
     switch (currentStep) {
       // Step 1 - Membership Category & Residency
       case 1:
         return (
           formData.membershipCategory.trim() !== "" &&
+          (formData.membershipCategory !== "other" ||
+            formData.otherLegalEntity.trim() !== "") &&
           (formData.residency === "sri-lanka" ||
             formData.country.trim() !== "")
         );
@@ -122,7 +131,6 @@ export default function CorporateApplicationPage() {
         );
 
       // Step 5 - Representatives
-      // Phone numbers are not currently required.
       case 5:
         return (
           formData.nominatedRepresentative.trim() !== "" &&
@@ -130,17 +138,31 @@ export default function CorporateApplicationPage() {
         );
 
       // Step 6 - Fit & Proper
-      case 6:
-        return formData.fitAndProperDetails.trim() !== "";
+      case 6: {
+        const answers = Object.values(formData.fitAndProperAnswers);
+
+        return (
+          answers.length > 0 &&
+          answers.every(
+            (answer) => answer === "yes" || answer === "no"
+          ) &&
+          formData.fitAndProperDetails.trim() !== ""
+        );
+      }
 
       // Step 7 - Supporting Documents
-      // Requires all documents currently shown in CorporateDocumentsStep.
       case 7:
         return (
-          formData.documents.registration instanceof File &&
-          formData.documents.tin instanceof File &&
+          formData.documents.incorporation instanceof File &&
           formData.documents.directors instanceof File &&
-          formData.documents.profile instanceof File
+          formData.documents.boardResolution instanceof File &&
+          formData.documents.companyProfile instanceof File &&
+          formData.documents.taxationEvidence instanceof File &&
+          formData.documents.irdRegistration instanceof File &&
+          formData.documents.representativeMembership instanceof File &&
+          formData.documents.identityDocuments instanceof File &&
+          formData.documents.auditedStatements instanceof File &&
+          formData.documents.paymentProof instanceof File
         );
 
       // Step 8 - Declaration
@@ -152,14 +174,21 @@ export default function CorporateApplicationPage() {
           formData.declarationAccepted
         );
 
-      // Step 9 - Fees & Submission
+      // Step 9 - Fees & Payment
+      case 9:
+        return (
+          formData.totalAmountPaid.trim() !== "" &&
+          formData.paymentMethod.trim() !== "" &&
+          formData.paymentReference.trim() !== "" &&
+          formData.paymentDate !== ""
+        );
+
       default:
         return true;
     }
   };
 
   const handleNext = async () => {
-    // Validate before moving to the next step
     if (!validateCurrentStep()) {
       alert("Please complete all required fields before continuing.");
       return;
@@ -171,24 +200,69 @@ export default function CorporateApplicationPage() {
       return;
     }
 
-    // Submit the application on Step 9
     try {
       setIsSubmitting(true);
 
-      // JSON cannot store File objects directly.
-      // Save selected document names for now.
-      const documentNames = Object.fromEntries(
-        Object.entries(formData.documents).map(([key, file]) => [
-          key,
-          file?.name || null,
-        ])
+      // Create one unique ID for this application.
+      // The same ID will be used for the application and its documents.
+      const applicationId = crypto.randomUUID();
+
+      // --------------------------------------------
+      // STEP 1: Upload corporate documents
+      // --------------------------------------------
+      const uploadFormData = new FormData();
+
+      uploadFormData.append("applicationId", applicationId);
+
+      Object.values(formData.documents).forEach((file) => {
+        if (file instanceof File) {
+          uploadFormData.append("files", file);
+        }
+      });
+
+      const uploadResponse = await fetch(
+        "/api/upload-corporate-documents",
+        {
+          method: "POST",
+          body: uploadFormData,
+        }
       );
 
+      const uploadResult = await uploadResponse.json();
+
+      if (!uploadResponse.ok) {
+        throw new Error(
+          uploadResult.error ||
+            "Unable to upload corporate application documents."
+        );
+      }
+
+      // --------------------------------------------
+      // STEP 2: Match document IDs with uploaded paths
+      // --------------------------------------------
+      const uploadedDocumentPaths = Object.fromEntries(
+        Object.entries(formData.documents).map(
+          ([documentId, file], index) => [
+            documentId,
+            file instanceof File
+              ? uploadResult.files[index] || null
+              : null,
+          ]
+        )
+      );
+
+      // --------------------------------------------
+      // STEP 3: Prepare application data
+      // --------------------------------------------
       const applicationData = {
         ...formData,
-        documents: documentNames,
+        id: applicationId,
+        documents: uploadedDocumentPaths,
       };
 
+      // --------------------------------------------
+      // STEP 4: Save the application
+      // --------------------------------------------
       const response = await fetch(
         "/api/apply-membership-applications",
         {
@@ -207,11 +281,16 @@ export default function CorporateApplicationPage() {
 
       if (!response.ok) {
         throw new Error(
-          result.error || "Unable to submit the corporate application."
+          result.error ||
+            "Unable to submit the corporate application."
         );
       }
 
       console.log("Corporate application submitted:", result);
+      console.log(
+        "Corporate documents uploaded:",
+        uploadResult.files
+      );
 
       alert("Corporate application submitted successfully!");
 
@@ -247,7 +326,6 @@ export default function CorporateApplicationPage() {
           />
 
           <div className="mt-8">
-            {/* Step 1 - Corporate Membership */}
             {currentStep === 1 && (
               <CorporateMembershipStep
                 data={formData}
@@ -255,7 +333,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 2 - Entity Details */}
             {currentStep === 2 && (
               <EntityDetailsStep
                 data={formData}
@@ -263,7 +340,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 3 - Directors & Shareholders */}
             {currentStep === 3 && (
               <DirectorsStep
                 data={formData}
@@ -271,7 +347,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 4 - Services & Experience */}
             {currentStep === 4 && (
               <ServicesStep
                 data={formData}
@@ -279,7 +354,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 5 - Representatives */}
             {currentStep === 5 && (
               <RepresentativesStep
                 data={formData}
@@ -287,7 +361,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 6 - Fit & Proper */}
             {currentStep === 6 && (
               <CorporateFitProperStep
                 data={formData}
@@ -295,7 +368,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 7 - Supporting Documents */}
             {currentStep === 7 && (
               <CorporateDocumentsStep
                 data={formData}
@@ -303,7 +375,6 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 8 - Declaration */}
             {currentStep === 8 && (
               <CorporateDeclarationStep
                 data={formData}
@@ -311,9 +382,11 @@ export default function CorporateApplicationPage() {
               />
             )}
 
-            {/* Step 9 - Fees and Submission */}
             {currentStep === 9 && (
-              <CorporateFeesStep data={formData} />
+              <CorporateFeesStep
+                data={formData}
+                updateData={updateData}
+              />
             )}
           </div>
 
@@ -326,7 +399,7 @@ export default function CorporateApplicationPage() {
 
           {isSubmitting && (
             <p className="mt-4 text-center text-sm text-accta-muted">
-              Submitting your application...
+              Submitting your application and uploading documents...
             </p>
           )}
         </div>

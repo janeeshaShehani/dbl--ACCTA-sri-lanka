@@ -15,27 +15,27 @@ export default function Governance() {
     },
     {
       role: "Senior Vice President",
-      name: "Saman Shantha",
+      name: "Mr. Saman Shantha",
       image: "/images/council/mr.saman.jpeg",
     },
     {
       role: "Senior Vice President",
-      name: "[Initials] Manchanayake",
-      image: null,
+      name: "Mrs. Wasanthi Manchanayake",
+      image: "/images/council/mrs.wasanthi.jpeg",
     },
     {
       role: "Assistant Vice President",
-      name: "Thilak Dharmarathne",
+      name: "Mr. Thilak Dharmarathne",
       image: null,
     },
     {
       role: "Secretary",
-      name: "Sunil Wanigabadu",
-      image: null,
+      name: "Mr. Sunil Wanigabadu",
+      image: "/images/council/mr.SunilWanigabadu.jpeg",
     },
     {
       role: "Permanent Corporate Member Representative",
-      name: "Prof. G K Wijayananda, Taxperts Lanka (Pvt) Ltd",
+      name: "Prof. G K Wijayananda",
       image: "/images/council/mr.wijayananda.jpeg",
     },
   ]

@@ -68,7 +68,7 @@ export default function Hero() {
 
             {/* Designation Text */}
             <div className="px-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]">
+              <p className="text-xs font-bold uppercase tracking-[0.2em]">
                 Certified
               </p>
 

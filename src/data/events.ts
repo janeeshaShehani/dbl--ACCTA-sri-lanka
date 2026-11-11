@@ -15,6 +15,9 @@ export type Event = {
   memberFee: string;
   nonMemberFee: string;
   image: string | null;
+
+  // Optional external registration website
+  registrationLink?: string;
 };
 
 export const upcomingEvents: Event[] = [
@@ -22,13 +25,16 @@ export const upcomingEvents: Event[] = [
     id: 1,
     type: "Seminar",
     points: "4 CPD points",
-    title: "Tax Updates and Professional Practice",
-    date: "15 Nov 2026",
-    time: "9:00 AM",
+    title: "Budget Seminar 2027",
+    date: "13 Nov 2026",
+    time: "6:00 PM",
     venue: "Colombo",
-    memberFee: "Rs. 2,500",
-    nonMemberFee: "Rs. 3,500",
+    memberFee: "Free of Charge",
+    nonMemberFee: "Free of Charge",
     image: "/images/events/tax-update.jpg",
+
+    registrationLink:
+      "https://enc.eu.com/meeting/national-budget-2027/",
   },
   {
     id: 2,
@@ -41,6 +47,8 @@ export const upcomingEvents: Event[] = [
     memberFee: "Rs. 1,500",
     nonMemberFee: "Rs. 2,000",
     image: "/images/events/understanding-recent.jpg",
+
+    // No registration link yet
   },
   {
     id: 3,
@@ -53,5 +61,7 @@ export const upcomingEvents: Event[] = [
     memberFee: "Rs. 3,000",
     nonMemberFee: "Rs. 4,000",
     image: "/images/events/practical-tax.jpeg",
+
+    // No registration link yet
   },
 ];

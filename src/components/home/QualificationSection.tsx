@@ -12,18 +12,18 @@ export default function QualificationSection() {
           </p>
 
           <h2 className="mt-3 font-heading text-3xl font-bold leading-tight text-accta-navy ">
-            Three levels. On-demand, computer-based exams.
+            Four levels. On-demand, computer-based exams.
           </h2>
 
           <p className="mt-4 text-sm leading-6 text-accta-muted md:text-base">
             Built on a taxation competency framework and designed to be
-            compatible with SLQF Level 6 / NVQ Level 7. Sit exams at any time
+            compatible with SLQF Level 6. Sit exams at any time
             of the year.
           </p>
         </div>
 
         {/* Qualification Levels */}
-        <div className="mt-10 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-3">
+        <div className="mt-10 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-4">
           {qualificationLevels.map((qualification, index) => (
             <div
               key={qualification.number}
@@ -45,9 +45,6 @@ export default function QualificationSection() {
                 {qualification.title}
               </h3>
 
-              <p className="mt-4 text-sm text-accta-muted">
-                {qualification.duration}
-              </p>
             </div>
           ))}
         </div>

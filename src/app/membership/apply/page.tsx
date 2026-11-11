@@ -12,7 +12,7 @@ export default function ApplyPage() {
     <div className="mx-auto max-w-5xl">
       <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">JOIN ACCTA</p>
       <h1 className="mt-3 font-heading text-4xl font-bold text-accta-navy">Apply for membership</h1>
-      <p className="mt-5 max-w-3xl leading-7 text-accta-muted">Choose the application that matches your membership. Online applications are being prepared and are not accepting submissions yet.</p>
+      <p className="mt-5 max-w-3xl leading-7 text-accta-muted">Choose the application that matches your membership. </p>
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         <article className="rounded-md border border-accta-border border-t-2 border-t-accta-navy bg-white p-6 sm:p-8">
           <p className="text-xs font-bold tracking-wider text-accta-maroon">FORM M-01</p>

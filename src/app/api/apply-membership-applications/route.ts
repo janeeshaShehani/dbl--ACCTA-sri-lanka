@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -6,6 +7,8 @@ import {
   sendAdminNotification,
   sendApplicantConfirmation,
 } from "@/lib/email";
+
+export const runtime = "nodejs";
 
 const dataDirectory = path.join(process.cwd(), "src", "data");
 
@@ -28,12 +31,12 @@ const createInitialData = (): ApplicationsData => ({
 
 // Read applications safely
 function getApplications(): ApplicationsData {
-  // Create data folder if it doesn't exist
+  // Create the data folder if it doesn't exist
   if (!fs.existsSync(dataDirectory)) {
     fs.mkdirSync(dataDirectory, { recursive: true });
   }
 
-  // Create JSON file if it doesn't exist
+  // Create the JSON file if it doesn't exist
   if (!fs.existsSync(dataFilePath)) {
     fs.writeFileSync(
       dataFilePath,
@@ -66,13 +69,23 @@ export async function GET() {
 // POST - Save a new application and send emails
 export async function POST(request: NextRequest) {
   try {
+    // This route receives JSON
     const body = await request.json();
+
     const { type, application } = body;
 
     // Validate application type
     if (type !== "individual" && type !== "corporate") {
       return NextResponse.json(
         { error: "Invalid application type." },
+        { status: 400 }
+      );
+    }
+
+    // Validate application data
+    if (!application || typeof application !== "object") {
+      return NextResponse.json(
+        { error: "Application data is required." },
         { status: 400 }
       );
     }
@@ -84,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     // Create new application record
     const newApplication = {
-      id: crypto.randomUUID(),
+      id: application.id || crypto.randomUUID(),
       submittedAt: new Date().toISOString(),
       ...application,
     };
@@ -96,12 +109,17 @@ export async function POST(request: NextRequest) {
       applications.corporateApplications.push(newApplication);
     }
 
-    // Save to JSON file
+    // Save application data to JSON file
     fs.writeFileSync(
       dataFilePath,
       JSON.stringify(applications, null, 2),
       "utf-8"
     );
+
+    console.log("====================================");
+    console.log("Application saved successfully.");
+    console.log("Application ID:", newApplication.id);
+    console.log("====================================");
 
     // Get applicant name and email
     const applicantName =
@@ -114,7 +132,7 @@ export async function POST(request: NextRequest) {
         ? application.personalEmail
         : application.officialEmail;
 
-    // Email status tracking
+    // Track email status
     let applicantEmailSent = false;
     let adminEmailSent = false;
     let emailErrorMessage: string | null = null;
@@ -122,43 +140,44 @@ export async function POST(request: NextRequest) {
     // Send emails
     if (applicantName && applicantEmail) {
       try {
-        console.log("-----------------------------------");
+        console.log("------------------------------------");
         console.log("APPLICATION EMAIL PROCESS STARTED");
         console.log("Applicant name:", applicantName);
         console.log("Applicant email:", applicantEmail);
         console.log("Application type:", applicationType);
 
-        // Send confirmation email to applicant
+        // Send confirmation email to the applicant
         console.log("Sending confirmation email to applicant...");
 
-        const applicantResult = await sendApplicantConfirmation({
+        await sendApplicantConfirmation({
           name: applicantName,
           email: applicantEmail,
           applicationType,
         });
 
-        console.log("Applicant email result:", applicantResult);
         applicantEmailSent = true;
 
-        // Send notification email to administrator
+        console.log("Applicant confirmation email sent successfully.");
+
+        // Send notification email to the administrator
         console.log("Sending notification email to administrator...");
 
-        const adminResult = await sendAdminNotification({
+        await sendAdminNotification({
           name: applicantName,
           email: applicantEmail,
           applicationType,
         });
 
-        console.log("Admin email result:", adminResult);
         adminEmailSent = true;
 
-        console.log("EMAIL PROCESS COMPLETED SUCCESSFULLY");
-        console.log("-----------------------------------");
+        console.log("Admin notification email sent successfully.");
+        console.log("EMAIL PROCESS COMPLETED");
+        console.log("------------------------------------");
       } catch (emailError) {
-        console.error("-----------------------------------");
+        console.error("------------------------------------");
         console.error("EMAIL SENDING ERROR:");
         console.error(emailError);
-        console.error("-----------------------------------");
+        console.error("------------------------------------");
 
         emailErrorMessage =
           emailError instanceof Error
@@ -170,7 +189,8 @@ export async function POST(request: NextRequest) {
         "Application saved, but applicant name or email was not available."
       );
 
-      emailErrorMessage = "Applicant name or email was not available.";
+      emailErrorMessage =
+        "Applicant name or email was not available.";
     }
 
     return NextResponse.json(

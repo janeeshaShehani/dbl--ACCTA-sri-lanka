@@ -91,10 +91,10 @@ export default function Header() {
               {/* Organization Name */}
               <div className="flex flex-col">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-heading text-l font-bold text-accta-navy">
+                  <span className="font-heading text-l font-bold text-accta-maroon">
                     ACCTA
                   </span>
-                  <span className="font-heading text-l font-bold text-accta-maroon">
+                  <span className="font-heading text-l font-bold text-accta-navy">
                     Sri Lanka
                   </span>
                 </div>

@@ -9,13 +9,61 @@ type Props = {
 };
 
 const documents = [
-  { id: "registration", label: "Certificate of registration" },
-  { id: "tin", label: "TIN or tax registration document" },
-  { id: "directors", label: "Directors or management details" },
-  { id: "profile", label: "Company profile" },
+  {
+    id: "incorporation",
+    label:
+      "Certificate of incorporation / business registration (certified copy)",
+  },
+  {
+    id: "directors",
+    label:
+      "Form 1 / Form 20 or equivalent showing current directors, or partnership deed",
+  },
+  {
+    id: "boardResolution",
+    label:
+      "Board resolution or partners' authorisation approving this application and the nominee",
+  },
+  {
+    id: "companyProfile",
+    label: "Company / firm profile and organisation chart",
+  },
+  {
+    id: "taxationEvidence",
+    label:
+      "Evidence of years in taxation services (e.g. engagement letters, IRD agent registration, audited accounts)",
+  },
+  {
+    id: "irdRegistration",
+    label:
+      "IRD tax agent / authorised representative registration certificates",
+  },
+  {
+    id: "professionalInsurance",
+    label:
+      "Professional indemnity insurance certificate (if applying for practicing as a firm)",
+    optional: true,
+  },
+  {
+    id: "representativeMembership",
+    label:
+      "ACCTA membership certificate of the nominated representative, or Form M-01",
+  },
+  {
+    id: "identityDocuments",
+    label: "NIC / passport copies of directors or partners",
+  },
+  {
+    id: "auditedStatements",
+    label: "Latest audited financial statements",
+  },
+  {
+    id: "paymentProof",
+    label: "Proof of payment",
+  },
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const ALLOWED_FILE_TYPES = [
   "application/pdf",
@@ -35,21 +83,18 @@ export default function CorporateDocumentsStep({
 
     if (!file) return;
 
-    // Check file type
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       alert("Please upload a PDF, JPG, or PNG file.");
       event.target.value = "";
       return;
     }
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       alert("File must be smaller than 10 MB.");
       event.target.value = "";
       return;
     }
 
-    // Save the File object in form data
     updateData({
       documents: {
         ...data.documents,
@@ -60,23 +105,22 @@ export default function CorporateDocumentsStep({
 
   return (
     <div>
-      {/* Section heading */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION G
         </p>
 
         <h2 className="mt-2 font-serif text-2xl font-bold text-accta-navy">
-          Supporting documents
+          Documents checklist
         </h2>
 
         <p className="mt-2 text-sm text-accta-muted">
-          Upload PDF, JPG, or PNG files. Maximum file size is 10 MB per
-          document.
+          Upload the supporting documents required for your corporate
+          membership application. PDF, JPG, and PNG files are accepted.
+          Maximum file size is 10 MB per document.
         </p>
       </div>
 
-      {/* Upload fields */}
       <div className="mt-6 space-y-4">
         {documents.map((document) => {
           const selectedFile = data.documents[document.id];
@@ -86,14 +130,20 @@ export default function CorporateDocumentsStep({
               key={document.id}
               className="flex flex-col gap-3 rounded-md border border-accta-border p-5 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div>
+              <div className="flex-1">
                 <p className="text-sm font-medium text-accta-ink">
                   {document.label}
+
+                  {document.optional && (
+                    <span className="ml-2 text-xs font-normal text-accta-muted">
+                      (If applicable)
+                    </span>
+                  )}
                 </p>
 
                 {selectedFile && (
                   <p className="mt-1 text-xs text-green-600">
-                    File selected successfully
+                    File selected: {selectedFile.name}
                   </p>
                 )}
               </div>
@@ -117,7 +167,7 @@ export default function CorporateDocumentsStep({
                 />
 
                 <span className="max-w-[180px] truncate text-sm text-accta-muted">
-                  {selectedFile?.name || "No file chosen"}
+                  {selectedFile ? "Uploaded" : "No file chosen"}
                 </span>
               </div>
             </div>

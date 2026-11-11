@@ -2,8 +2,8 @@ export const newsItems = [
   {
     id: 1,
     category: "Notice",
-    title: "Annual General Meeting Notice",
-    date: "10 November 2026",
+    title: "Budget Seminar 2027",
+    date: "13 November 2026",
   },
   {
     id: 2,

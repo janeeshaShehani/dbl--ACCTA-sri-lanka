@@ -12,11 +12,11 @@ const categoryGroups = [
     badge: "For educators",
     ids: ["associate-academic", "fellow-academic"],
     description:
-      "Persons engaged primarily in teaching, research or academic leadership in taxation.",
+      "Persons engaged primarily in teaching and research or academic leadership in taxation.",
   },
   {
     title: "Affiliate Membership",
-    badge: "",
+    badge: "Student",
     ids: ["affiliate"],
     description:
       "For people interested or engaged in taxation-related work who do not yet meet the requirements for Associate membership.",

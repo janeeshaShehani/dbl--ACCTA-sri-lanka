@@ -19,7 +19,7 @@ export const membershipClasses: MembershipClass[] = [
     category: "Associate (Standard)",
     letters: "ACTA",
     eligibility:
-      "ACCTA exams or recognised equivalent + 3 years' relevant experience",
+      "ACCTA exams + 3 years of relevant experience or a recognised equivalent qualification",
     applicationFee: {
       lkr: "Rs. 3,000",
       usd: "USD 25",
@@ -49,7 +49,7 @@ export const membershipClasses: MembershipClass[] = [
     category: "Associate Academic",
     letters: "AACTA",
     eligibility:
-      "Degree in a related field + 3 years' teaching or research in taxation",
+      "Degree in a related field + 3 years of teaching and research experience in taxation",
     applicationFee: {
       lkr: "Rs. 3,000",
       usd: "USD 25",
@@ -77,7 +77,7 @@ export const membershipClasses: MembershipClass[] = [
   {
     id: "affiliate",
     category: "Affiliate",
-    letters: "AfCTA",
+    letters: "AFCTA",
     eligibility:
       "Interested or engaged in taxation, not yet eligible for Associate",
     applicationFee: {

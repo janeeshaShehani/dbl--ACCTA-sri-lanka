@@ -9,9 +9,6 @@ export default function PatronAdvisory() {
           PATRON
         </p>
 
-        <h2 className="mt-5 font-serif text-2xl font-bold text-accta-navy">
-          [Patron name]
-        </h2>
 
         <p className="mt-4 text-sm leading-7 text-accta-muted">
           A distinguished individual who lends moral authority and high-level
@@ -25,9 +22,6 @@ export default function PatronAdvisory() {
           ADVISORY BOARD
         </p>
 
-        <h2 className="mt-5 font-serif text-2xl font-bold text-accta-navy">
-          Up to five eminent persons
-        </h2>
 
         <p className="mt-4 text-sm leading-7 text-accta-muted">
           Appointed by the Council for up to two years to advise on strategy.

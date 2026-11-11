@@ -18,7 +18,7 @@ export default function QualificationHero() {
 
         <div className="mt-6 flex flex-wrap gap-2">
           {[
-            "Designed for SLQF Level 6 / NVQ Level 7",
+            "Designed for SLQF Level 6",
             "On-demand computer based exams",
             "Study at your own pace",
           ].map((item) => (

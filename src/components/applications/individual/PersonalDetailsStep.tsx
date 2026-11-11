@@ -11,6 +11,7 @@ export default function PersonalDetailsStep({
 }: PersonalDetailsStepProps) {
   return (
     <div>
+      {/* Section Header */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION B
@@ -73,12 +74,12 @@ export default function PersonalDetailsStep({
             type="text"
             value={data.initialsName}
             onChange={(e) => updateData({ initialsName: e.target.value })}
-            placeholder="Example: J. Smith"
+            placeholder="Example: J. A. Smith"
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           />
 
           <p className="mt-1 text-xs text-accta-muted">
-            This name may be used on your membership certificate.
+            This name may be used on membership records and certificates.
           </p>
         </div>
 
@@ -86,13 +87,16 @@ export default function PersonalDetailsStep({
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Preferred name
+            <span className="ml-1 font-normal text-accta-muted">
+              (optional)
+            </span>
           </label>
 
           <input
             type="text"
             value={data.preferredName}
             onChange={(e) => updateData({ preferredName: e.target.value })}
-            placeholder="Enter preferred name"
+            placeholder="Enter your preferred name"
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           />
         </div>
@@ -109,10 +113,6 @@ export default function PersonalDetailsStep({
             onChange={(e) => updateData({ dateOfBirth: e.target.value })}
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           />
-
-          <p className="mt-1 text-xs text-accta-muted">
-            Applicants must be 18 years or older.
-          </p>
         </div>
 
         {/* Gender */}
@@ -148,10 +148,10 @@ export default function PersonalDetailsStep({
           />
         </div>
 
-        {/* NIC / Passport */}
+        {/* Identification Number */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
-            NIC or Passport number
+            NIC or passport number
           </label>
 
           <input
@@ -160,15 +160,15 @@ export default function PersonalDetailsStep({
             onChange={(e) =>
               updateData({ identificationNumber: e.target.value })
             }
-            placeholder="Enter NIC or passport number"
+            placeholder="Enter your NIC or passport number"
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           />
         </div>
 
         {/* Preferred Language */}
-        <div>
+        <div className="md:col-span-2">
           <label className="text-sm font-semibold text-accta-ink">
-            Preferred language
+            Preferred language for communication
           </label>
 
           <select

@@ -28,8 +28,7 @@ export default function MemberRegister({
           <p className="text-xs font-semibold uppercase tracking-wider text-accta-maroon">
             Register of Members
           </p>
-          <p className="mt-3 rounded border border-accta-border bg-white p-4 text-sm leading-6 text-accta-muted">Demonstration records only. These entries do not confirm actual membership, good standing or licence validity. Contact ACCTA for verification.</p>
-
+          
           <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="font-serif text-3xl font-bold text-accta-navy">

@@ -1,55 +1,31 @@
+import { membershipClasses } from "@/data/membershipClasses";
 import type { IndividualApplication } from "@/types/application";
 
 type FeesStepProps = {
   data: IndividualApplication;
 };
 
-type FeeDetails = {
-  local: string;
-  international: string;
-};
-
-const membershipFees: Record<string, FeeDetails> = {
-  ACTA: {
-    local: "Rs. 15,000",
-    international: "USD 75",
-  },
-  FCTA: {
-    local: "Rs. 25,000",
-    international: "USD 125",
-  },
-  AACTA: {
-    local: "Rs. 12,000",
-    international: "USD 60",
-  },
-  FACTA: {
-    local: "Rs. 20,000",
-    international: "USD 100",
-  },
-  AfCTA: {
-    local: "Rs. 8,000",
-    international: "USD 40",
-  },
-};
-
-const categoryNames: Record<string, string> = {
-  ACTA: "Associate",
-  FCTA: "Fellow",
-  AACTA: "Associate Academic",
-  FACTA: "Fellow Academic",
-  AfCTA: "Affiliate",
-};
-
 export default function FeesStep({ data }: FeesStepProps) {
-  const fee = membershipFees[data.membershipCategory];
+  // Find the selected membership from the central membership data
+  const selectedMembership = membershipClasses.find(
+    (membership) => membership.letters === data.membershipCategory
+  );
 
-  const feeAmount =
-    data.residency === "international"
-      ? fee?.international
-      : fee?.local;
+  // Select the correct currency based on residency
+  const currency =
+    data.residency === "international" ? "usd" : "lkr";
+
+  const applicationFee = selectedMembership
+    ? selectedMembership.applicationFee[currency]
+    : "";
+
+  const annualSubscription = selectedMembership
+    ? selectedMembership.annualSubscription[currency]
+    : "";
 
   return (
     <div>
+      {/* Header */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION J
@@ -73,11 +49,11 @@ export default function FeesStep({ data }: FeesStepProps) {
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <ReviewItem
             label="Membership category"
-            value={`${categoryNames[data.membershipCategory] || "Not selected"} ${
-              data.membershipCategory
-                ? `(${data.membershipCategory})`
-                : ""
-            }`}
+            value={
+              selectedMembership
+                ? `${selectedMembership.category} (${selectedMembership.letters})`
+                : "Not selected"
+            }
           />
 
           <ReviewItem
@@ -104,31 +80,60 @@ export default function FeesStep({ data }: FeesStepProps) {
             label="Residency"
             value={
               data.residency === "international"
-                ? `International${data.country ? ` – ${data.country}` : ""}`
+                ? `International${
+                    data.country ? ` – ${data.country}` : ""
+                  }`
                 : "Sri Lanka"
             }
           />
         </div>
       </div>
 
-      {/* Fee */}
-      <div className="mt-8 rounded-lg border border-accta-border bg-accta-surface p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-accta-muted">
-              Application fee
-            </p>
-
-            <h3 className="mt-1 text-lg font-bold text-accta-navy">
-              {categoryNames[data.membershipCategory] || "Membership"}
+      {/* Fees */}
+      {selectedMembership ? (
+        <div className="mt-8 rounded-lg border border-accta-border bg-accta-surface p-6">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-bold text-accta-navy">
+              {selectedMembership.category}
             </h3>
+
+            <p className="text-sm text-accta-muted">
+              The applicable fees are based on your selected membership category
+              and residency.
+            </p>
           </div>
 
-          <p className="text-2xl font-bold text-accta-maroon">
-            {feeAmount || "Fee to be confirmed"}
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {/* Application Fee */}
+            <div className="rounded-md bg-white p-5">
+              <p className="text-xs font-bold uppercase tracking-wide text-accta-muted">
+                Application fee
+              </p>
+
+              <p className="mt-2 text-2xl font-bold text-accta-maroon">
+                {applicationFee || "Fee to be confirmed"}
+              </p>
+            </div>
+
+            {/* Annual Subscription */}
+            <div className="rounded-md bg-white p-5">
+              <p className="text-xs font-bold uppercase tracking-wide text-accta-muted">
+                Annual subscription
+              </p>
+
+              <p className="mt-2 text-2xl font-bold text-accta-navy">
+                {annualSubscription || "Fee to be confirmed"}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-8 rounded-lg border border-accta-border bg-accta-surface p-6">
+          <p className="text-sm text-accta-muted">
+            Please select a membership category to view the applicable fees.
           </p>
         </div>
-      </div>
+      )}
 
       {/* Payment Information */}
       <div className="mt-6 rounded-md border-l-4 border-accta-gold bg-accta-surface px-5 py-4">

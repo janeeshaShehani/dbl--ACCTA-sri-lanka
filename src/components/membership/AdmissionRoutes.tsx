@@ -44,8 +44,9 @@ export default function AdmissionRoutes() {
             </h2>
 
             <p className="mt-4 max-w-md text-sm leading-6 text-accta-muted">
-              Select one route when you apply. The Council may call you for an
-              interview or ask for further evidence.
+              Select one route when you apply. 
+              The Council may invite you for an interview / viva, 
+              or request further evidence.
             </p>
           </div>
 

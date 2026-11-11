@@ -65,6 +65,16 @@ const initialFormData: IndividualApplication = {
   statement: "",
 
   // Step 6 - Fit and Proper
+  fitAndProperAnswers: {
+    disciplinaryAction: "",
+    criminalOffence: "",
+    professionalInvestigation: "",
+    bankruptcy: "",
+    professionalBodyRemoval: "",
+    falseInformation: "",
+    otherMatter: "",
+  },
+
   fitAndProperDetails: "",
 
   // Step 7 - Referees
@@ -79,6 +89,15 @@ const initialFormData: IndividualApplication = {
   documents: {},
 
   // Step 9 - Declaration
+  declarationInformationAccepted: false,
+  declarationAgeAccepted: false,
+  declarationRulesAccepted: false,
+  declarationDesignationAccepted: false,
+  declarationRenewalAccepted: false,
+  declarationChangesAccepted: false,
+  declarationContributionAccepted: false,
+  declarationConsentAccepted: false,
+
   declarationName: "",
   declarationDate: "",
   declarationPlace: "",
@@ -105,7 +124,13 @@ export default function IndividualApplicationPage() {
 
     if (savedData) {
       try {
-        setFormData(JSON.parse(savedData));
+        const parsedData = JSON.parse(savedData);
+
+        setFormData({
+          ...initialFormData,
+          ...parsedData,
+          documents: {},
+        });
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -120,15 +145,30 @@ export default function IndividualApplicationPage() {
     }
   }, []);
 
-  // Save the application as a draft
+  // Save application as a draft
   const handleSaveDraft = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-    localStorage.setItem(STEP_STORAGE_KEY, String(currentStep));
+    try {
+      const { documents, ...dataWithoutDocuments } = formData;
 
-    alert("Your application has been saved successfully.");
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...dataWithoutDocuments,
+          documents: {},
+        })
+      );
+
+      localStorage.setItem(STEP_STORAGE_KEY, String(currentStep));
+
+      alert(
+        "Your application has been saved successfully. Please note that uploaded files will need to be selected again when you resume."
+      );
+    } catch {
+      alert("Unable to save your application. Please try again.");
+    }
   };
 
-  // Validate required fields before moving to the next step
+  // Validate each step
   const validateCurrentStep = () => {
     switch (currentStep) {
       case 1:
@@ -158,8 +198,19 @@ export default function IndividualApplicationPage() {
       case 5:
         return formData.employmentDetails.trim() !== "";
 
-      case 6:
-        return formData.fitAndProperDetails.trim() !== "";
+      case 6: {
+        const answers = Object.values(formData.fitAndProperAnswers);
+
+        if (answers.length < 7 || answers.includes("")) {
+          return false;
+        }
+
+        const hasYesAnswer = answers.includes("yes");
+
+        return hasYesAnswer
+          ? formData.fitAndProperDetails.trim() !== ""
+          : true;
+      }
 
       case 7:
         return (
@@ -169,12 +220,19 @@ export default function IndividualApplicationPage() {
           formData.refereeTwoEmail.trim() !== ""
         );
 
-      // Add document validation here later if all documents are required
       case 8:
         return true;
 
       case 9:
         return (
+          formData.declarationInformationAccepted &&
+          formData.declarationAgeAccepted &&
+          formData.declarationRulesAccepted &&
+          formData.declarationDesignationAccepted &&
+          formData.declarationRenewalAccepted &&
+          formData.declarationChangesAccepted &&
+          formData.declarationContributionAccepted &&
+          formData.declarationConsentAccepted &&
           formData.declarationName.trim() !== "" &&
           formData.declarationDate !== "" &&
           formData.declarationPlace.trim() !== ""
@@ -186,13 +244,13 @@ export default function IndividualApplicationPage() {
   };
 
   const handleNext = async () => {
-    // Validate before moving to the next step
+    // Validate current step
     if (!validateCurrentStep()) {
       alert("Please complete all required fields before continuing.");
       return;
     }
 
-    // Move to the next step
+    // Move between steps
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep((previous) => previous + 1);
       return;
@@ -202,12 +260,15 @@ export default function IndividualApplicationPage() {
     try {
       setIsSubmitting(true);
 
-      // JSON cannot store File objects directly.
-      // Save selected document names for now.
+      /*
+       * STEP 1:
+       * Create a version of the application without File objects.
+       * Only file names are saved in the application JSON.
+       */
       const documentNames = Object.fromEntries(
-        Object.entries(formData.documents).map(([key, file]) => [
+        Object.entries(formData.documents).map(([key, files]) => [
           key,
-          file?.name || null,
+          files.map((file: File) => file.name),
         ])
       );
 
@@ -216,9 +277,13 @@ export default function IndividualApplicationPage() {
         documents: documentNames,
       };
 
-      console.log("Sending application to API:", applicationData);
+      console.log("Saving application:", applicationData);
 
-      const response = await fetch(
+      /*
+       * STEP 2:
+       * Save the application data first.
+       */
+      const applicationResponse = await fetch(
         "/api/apply-membership-applications",
         {
           method: "POST",
@@ -232,19 +297,82 @@ export default function IndividualApplicationPage() {
         }
       );
 
-      const result = await response.json();
+      const applicationResult = await applicationResponse.json();
 
-      console.log("API response:", result);
-
-      if (!response.ok) {
+      if (!applicationResponse.ok) {
         throw new Error(
-          result.error || "Unable to submit the application."
+          applicationResult.error || "Unable to save application."
         );
       }
 
-      console.log("Individual application submitted:", result);
+      const applicationId = applicationResult.application?.id;
 
-      // Remove saved draft after successful submission
+      if (!applicationId) {
+        throw new Error(
+          "Application was saved, but no application ID was returned."
+        );
+      }
+
+      console.log("Application saved successfully.");
+      console.log("Application ID:", applicationId);
+
+      /*
+       * STEP 3:
+       * Check whether the user selected any documents.
+       */
+      const hasDocuments = Object.values(formData.documents).some(
+        (files) => files.length > 0
+      );
+
+      /*
+       * STEP 4:
+       * Upload actual File objects using FormData.
+       */
+      if (hasDocuments) {
+        const uploadFormData = new FormData();
+
+        uploadFormData.append("applicationId", applicationId);
+
+        Object.entries(formData.documents).forEach(
+          ([documentType, files]) => {
+            files.forEach((file: File) => {
+              uploadFormData.append("files", file);
+              uploadFormData.append(
+                "documentTypes",
+                documentType
+              );
+            });
+          }
+        );
+
+        console.log("Uploading documents...");
+
+        const uploadResponse = await fetch(
+          "/api/upload-documents",
+          {
+            method: "POST",
+            body: uploadFormData,
+          }
+        );
+
+        const uploadResult = await uploadResponse.json();
+
+        if (!uploadResponse.ok) {
+          throw new Error(
+            uploadResult.error || "Unable to upload documents."
+          );
+        }
+
+        console.log(
+          "Documents uploaded successfully:",
+          uploadResult
+        );
+      }
+
+      /*
+       * STEP 5:
+       * Remove saved draft and reset the form.
+       */
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STEP_STORAGE_KEY);
 
@@ -252,7 +380,6 @@ export default function IndividualApplicationPage() {
         "Your application has been submitted successfully. A confirmation email will be sent to you."
       );
 
-      // Reset the form
       setFormData(initialFormData);
       setCurrentStep(1);
     } catch (error) {
@@ -284,7 +411,6 @@ export default function IndividualApplicationPage() {
           />
 
           <div className="mt-8">
-            {/* Step 1 - Membership Applied For */}
             {currentStep === 1 && (
               <MembershipStep
                 data={formData}
@@ -292,7 +418,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 2 - Personal Details */}
             {currentStep === 2 && (
               <PersonalDetailsStep
                 data={formData}
@@ -300,7 +425,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 3 - Contact Details */}
             {currentStep === 3 && (
               <ContactDetailsStep
                 data={formData}
@@ -308,7 +432,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 4 - Qualifications */}
             {currentStep === 4 && (
               <QualificationsStep
                 data={formData}
@@ -316,7 +439,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 5 - Employment and Experience */}
             {currentStep === 5 && (
               <ExperienceStep
                 data={formData}
@@ -324,7 +446,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 6 - Fit and Proper */}
             {currentStep === 6 && (
               <FitProperStep
                 data={formData}
@@ -332,7 +453,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 7 - Referees */}
             {currentStep === 7 && (
               <RefereesStep
                 data={formData}
@@ -340,7 +460,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 8 - Documents */}
             {currentStep === 8 && (
               <DocumentsStep
                 data={formData}
@@ -348,7 +467,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 9 - Declaration */}
             {currentStep === 9 && (
               <DeclarationStep
                 data={formData}
@@ -356,7 +474,6 @@ export default function IndividualApplicationPage() {
               />
             )}
 
-            {/* Step 10 - Fees */}
             {currentStep === 10 && (
               <FeesStep data={formData} />
             )}

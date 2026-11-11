@@ -61,12 +61,24 @@ export default function EventsNews() {
                   </div>
 
                   {/* Register Button */}
-                  <Link
-                    href={`/cpd-events/${event.id}`}
-                    className="inline-flex min-h-11 items-center rounded border border-accta-navy px-4 py-2 text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white"
-                  >
-                    Register
-                  </Link>
+                  {event.registrationLink ? (
+                    <a
+                      href={event.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-11 items-center rounded border border-accta-navy px-4 py-2 text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white"
+                    >
+                      Register
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex min-h-11 cursor-not-allowed items-center rounded border border-accta-border bg-accta-surface px-4 py-2 text-sm font-semibold text-accta-muted opacity-60"
+                    >
+                      Register
+                    </button>
+                  )}
                 </article>
               ))}
             </div>

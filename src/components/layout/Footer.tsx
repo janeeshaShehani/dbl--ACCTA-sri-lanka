@@ -51,7 +51,7 @@ export default function Footer() {
 
             <div className="mt-4 space-y-3 text-sm leading-6 text-white/70">
               <p>
-                Association of Certified Chartered Tax
+                Association of Certified Chartered Tax Pvt Ltd
                 <br />
                 Advisors
               </p>

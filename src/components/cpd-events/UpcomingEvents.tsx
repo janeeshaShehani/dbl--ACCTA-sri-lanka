@@ -103,7 +103,7 @@ export default function UpcomingEvents() {
                   </p>
 
                   <p className="mt-2 text-sm text-accta-muted">
-                    Members {event.memberFee} · Non-members{" "}
+                    Members : {event.memberFee} · Non-members : {" "}
                     {event.nonMemberFee}
                   </p>
 

@@ -16,7 +16,7 @@ const applicationSteps = [
     number: "3",
     title: "Review and approval",
     description:
-      "The MPC Committee reviews; the Council decides. An interview may be required.",
+      "The MPC Committee reviews; the Council decides. An interview or a viva may be required.",
   },
   {
     number: "4",
@@ -30,7 +30,7 @@ export default function HowToApply() {
   return (
     <section id="how-to-apply" className="bg-accta-navy scroll-mt-8">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
+        <p className="text-xs font-bold tracking-[0.18em] text-white">
           HOW TO APPLY
         </p>
 
@@ -44,7 +44,7 @@ export default function HowToApply() {
               key={step.number}
               className="border-t border-white/40 pt-4"
             >
-              <span className="font-serif text-2xl font-bold text-accta-maroon">
+              <span className="font-serif text-2xl font-bold text-white">
                 {step.number}
               </span>
 

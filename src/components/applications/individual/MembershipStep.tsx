@@ -1,3 +1,4 @@
+import { membershipClasses } from "@/data/membershipClasses";
 import type { IndividualApplication } from "@/types/application";
 
 type MembershipStepProps = {
@@ -9,12 +10,27 @@ export default function MembershipStep({
   data,
   updateData,
 }: MembershipStepProps) {
+  const selectedMembership = membershipClasses.find(
+    (membership) => membership.letters === data.membershipCategory
+  );
+
   const isStandardCategory =
     data.membershipCategory === "ACTA" ||
     data.membershipCategory === "FCTA";
 
+  const selectedFee =
+    data.residency === "sri-lanka"
+      ? selectedMembership?.applicationFee.lkr
+      : selectedMembership?.applicationFee.usd;
+
+  const selectedSubscription =
+    data.residency === "sri-lanka"
+      ? selectedMembership?.annualSubscription.lkr
+      : selectedMembership?.annualSubscription.usd;
+
   return (
     <div>
+      {/* Section Header */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION A
@@ -25,8 +41,8 @@ export default function MembershipStep({
         </h2>
 
         <p className="mt-2 text-sm text-accta-muted">
-          Select the membership category and route that best matches your
-          qualifications and experience.
+          Select the membership category that best matches your qualifications
+          and experience.
         </p>
       </div>
 
@@ -45,11 +61,21 @@ export default function MembershipStep({
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           >
             <option value="">Select a category</option>
-            <option value="ACTA">Associate (ACTA)</option>
-            <option value="FCTA">Fellow (FCTA)</option>
-            <option value="AACTA">Associate Academic (AACTA)</option>
-            <option value="FACTA">Fellow Academic (FACTA)</option>
-            <option value="AfCTA">Affiliate (AfCTA)</option>
+
+            {membershipClasses
+              .filter(
+                (membership) =>
+                  membership.id !== "corporate" &&
+                  membership.id !== "honorary"
+              )
+              .map((membership) => (
+                <option
+                  key={membership.id}
+                  value={membership.letters}
+                >
+                  {membership.category} ({membership.letters})
+                </option>
+              ))}
           </select>
         </div>
 
@@ -75,7 +101,7 @@ export default function MembershipStep({
           </select>
         </div>
 
-        {/* Country - shown only for international applicants */}
+        {/* Country */}
         {data.residency === "international" && (
           <div className="md:col-span-2">
             <label className="text-sm font-semibold text-accta-ink">
@@ -95,6 +121,41 @@ export default function MembershipStep({
         )}
       </div>
 
+      {/* Selected Membership Information */}
+      {selectedMembership && (
+        <div className="mt-6 rounded-md border border-accta-border bg-accta-surface p-5">
+          <h3 className="font-semibold text-accta-navy">
+            {selectedMembership.category}
+          </h3>
+
+          <p className="mt-2 text-sm text-accta-muted">
+            {selectedMembership.eligibility}
+          </p>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-md bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-accta-muted">
+                Application Fee
+              </p>
+
+              <p className="mt-1 text-lg font-bold text-accta-navy">
+                {selectedFee || "Not applicable"}
+              </p>
+            </div>
+
+            <div className="rounded-md bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-accta-muted">
+                Annual Subscription
+              </p>
+
+              <p className="mt-1 text-lg font-bold text-accta-navy">
+                {selectedSubscription || "Not applicable"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Admission Route */}
       <div className="mt-6">
         <label className="text-sm font-semibold text-accta-ink">
@@ -109,12 +170,15 @@ export default function MembershipStep({
           className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
         >
           <option value="">Select a route</option>
-          <option value="exam">ACCTA examination route</option>
+
+          <option value="exam">
+            ACCTA examination route
+          </option>
+
           <option value="qualification">
             Recognised qualification route
           </option>
 
-          {/* Mature entry is available only for Standard categories */}
           {isStandardCategory && (
             <option value="mature-entry">
               Mature entry route

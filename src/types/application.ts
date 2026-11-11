@@ -40,6 +40,7 @@ export type IndividualApplication = {
   statement: string;
 
   // Step 6 - Fit and Proper
+  fitAndProperAnswers: Record<string, "yes" | "no" | "">;
   fitAndProperDetails: string;
 
   // Step 7 - Referees
@@ -51,17 +52,27 @@ export type IndividualApplication = {
   refereeTwoPhone: string;
 
   // Step 8 - Documents
-  documents: Record<string, File | null>;
+  documents: Record<string, File[]>;
 
   // Step 9 - Declaration
+  declarationInformationAccepted: boolean;
+  declarationAgeAccepted: boolean;
+  declarationRulesAccepted: boolean;
+  declarationDesignationAccepted: boolean;
+  declarationRenewalAccepted: boolean;
+  declarationChangesAccepted: boolean;
+  declarationContributionAccepted: boolean;
+  declarationConsentAccepted: boolean;
+
   declarationName: string;
   declarationDate: string;
   declarationPlace: string;
 };
 
 export type CorporateApplication = {
-  // Step 1 - Category & Residency
+  // Step 1 - Membership Applied For
   membershipCategory: string;
+  otherLegalEntity: string;
   residency: "sri-lanka" | "international";
   country: string;
 
@@ -80,7 +91,6 @@ export type CorporateApplication = {
   staffCount: string;
 
   // Corporate Contact Details
-  // Keep these fields if you plan to add contact inputs.
   officePhone: string;
   officialEmail: string;
 
@@ -105,6 +115,7 @@ export type CorporateApplication = {
   alternatePhone: string;
 
   // Step 6 - Fit & Proper
+  fitAndProperAnswers: Record<string, "yes" | "no" | "">;
   fitAndProperDetails: string;
 
   // Step 7 - Supporting Documents
@@ -115,4 +126,10 @@ export type CorporateApplication = {
   signatoryTwo: string;
   resolutionDate: string;
   declarationAccepted: boolean;
+
+  // Step 9 - Fees & Payment
+  totalAmountPaid: string;
+  paymentMethod: string;
+  paymentReference: string;
+  paymentDate: string;
 };
