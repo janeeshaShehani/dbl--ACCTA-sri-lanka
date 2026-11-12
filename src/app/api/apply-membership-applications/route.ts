@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
@@ -19,9 +18,20 @@ const dataFilePath = path.join(
 
 type ApplicationType = "individual" | "corporate";
 
+type ApplicationRecord = {
+  id?: string;
+  registrationNumber?: string;
+  membershipCategory?: string;
+  fullName?: string;
+  personalEmail?: string;
+  registeredName?: string;
+  officialEmail?: string;
+  [key: string]: unknown;
+};
+
 type ApplicationsData = {
-  individualApplications: unknown[];
-  corporateApplications: unknown[];
+  individualApplications: ApplicationRecord[];
+  corporateApplications: ApplicationRecord[];
 };
 
 const createInitialData = (): ApplicationsData => ({
@@ -29,14 +39,79 @@ const createInitialData = (): ApplicationsData => ({
   corporateApplications: [],
 });
 
-// Read applications safely
+/* Membership category prefixes */
+const categoryPrefixes: Record<string, string> = {
+  "associate (standard) (acta)": "ASA",
+  "fellow (standard) (fcta)": "FSA",
+  "associate academic (aacta)": "AAA",
+  "fellow academic (facta)": "FAA",
+  "affiliate (afcta)": "AFA",
+  "corporate member": "CMA",
+};
+
+/* Normalize category text */
+function normalizeCategory(category: string): string {
+  return category.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+/* Get the registration prefix */
+function getCategoryPrefix(category: string): string | null {
+  const normalizedCategory = normalizeCategory(category);
+
+  /* Exact category match */
+  if (categoryPrefixes[normalizedCategory]) {
+    return categoryPrefixes[normalizedCategory];
+  }
+
+  /*
+   * Extra fallback checks.
+   * These help if the form value has small wording differences.
+   */
+  if (
+    normalizedCategory.includes("fellow academic") ||
+    normalizedCategory.includes("facta")
+  ) {
+    return "FAA";
+  }
+
+  if (
+    normalizedCategory.includes("associate academic") ||
+    normalizedCategory.includes("aacta")
+  ) {
+    return "AAA";
+  }
+
+  if (
+    normalizedCategory.includes("fellow") &&
+    normalizedCategory.includes("standard")
+  ) {
+    return "FSA";
+  }
+
+  if (
+    normalizedCategory.includes("associate") &&
+    normalizedCategory.includes("standard")
+  ) {
+    return "ASA";
+  }
+
+  if (normalizedCategory.includes("affiliate")) {
+    return "AFA";
+  }
+
+  if (normalizedCategory.includes("corporate")) {
+    return "CMA";
+  }
+
+  return null;
+}
+
+/* Read applications safely */
 function getApplications(): ApplicationsData {
-  // Create the data folder if it doesn't exist
   if (!fs.existsSync(dataDirectory)) {
     fs.mkdirSync(dataDirectory, { recursive: true });
   }
 
-  // Create the JSON file if it doesn't exist
   if (!fs.existsSync(dataFilePath)) {
     fs.writeFileSync(
       dataFilePath,
@@ -46,11 +121,86 @@ function getApplications(): ApplicationsData {
   }
 
   const fileData = fs.readFileSync(dataFilePath, "utf-8");
+  const parsedData = JSON.parse(fileData);
 
-  return JSON.parse(fileData);
+  return {
+    individualApplications: Array.isArray(parsedData.individualApplications)
+      ? parsedData.individualApplications
+      : [],
+    corporateApplications: Array.isArray(parsedData.corporateApplications)
+      ? parsedData.corporateApplications
+      : [],
+  };
 }
 
-// GET - Get all saved applications
+/* Generate the next registration number */
+function generateRegistrationNumber(
+  category: string,
+  applications: ApplicationsData
+): string | null {
+  const prefix = getCategoryPrefix(category);
+
+  if (!prefix) {
+    console.error(
+      "Invalid membership category received:",
+      category
+    );
+    return null;
+  }
+
+  const now = new Date();
+
+  /* Example: 2026 becomes 26 */
+  const year = String(now.getFullYear()).slice(-2);
+
+  /* Example: November becomes 11 */
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+
+  const matchingPrefix = `${prefix}${year}${month}`;
+
+  const allApplications = [
+    ...applications.individualApplications,
+    ...applications.corporateApplications,
+  ];
+
+  let highestSequence = 0;
+
+  for (const existingApplication of allApplications) {
+    const registrationNumber =
+      existingApplication.registrationNumber;
+
+    if (
+      typeof registrationNumber === "string" &&
+      registrationNumber.startsWith(matchingPrefix)
+    ) {
+      const sequencePart = registrationNumber.slice(
+        matchingPrefix.length
+      );
+
+      const sequence = Number(sequencePart);
+
+      if (
+        !Number.isNaN(sequence) &&
+        Number.isInteger(sequence) &&
+        sequence > highestSequence
+      ) {
+        highestSequence = sequence;
+      }
+    }
+  }
+
+  const nextSequence = highestSequence + 1;
+
+  /* Six-digit sequence: 000001 */
+  const formattedSequence = String(nextSequence).padStart(
+    6,
+    "0"
+  );
+
+  return `${matchingPrefix}${formattedSequence}`;
+}
+
+/* GET - Get all saved applications */
 export async function GET() {
   try {
     const applications = getApplications();
@@ -66,15 +216,14 @@ export async function GET() {
   }
 }
 
-// POST - Save a new application and send emails
+/* POST - Save a new application and send emails */
 export async function POST(request: NextRequest) {
   try {
-    // This route receives JSON
     const body = await request.json();
 
     const { type, application } = body;
 
-    // Validate application type
+    /* Validate application type */
     if (type !== "individual" && type !== "corporate") {
       return NextResponse.json(
         { error: "Invalid application type." },
@@ -82,8 +231,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate application data
-    if (!application || typeof application !== "object") {
+    /* Validate application data */
+    if (
+      !application ||
+      typeof application !== "object" ||
+      Array.isArray(application)
+    ) {
       return NextResponse.json(
         { error: "Application data is required." },
         { status: 400 }
@@ -91,25 +244,70 @@ export async function POST(request: NextRequest) {
     }
 
     const applicationType: ApplicationType = type;
+    const applicationData = application as ApplicationRecord;
 
-    // Read existing applications
+    /* Read existing applications */
     const applications = getApplications();
 
-    // Create new application record
-    const newApplication = {
-      id: application.id || crypto.randomUUID(),
+    /*
+     * Get membership category.
+     * Corporate applications automatically use Corporate Member.
+     */
+    const membershipCategory =
+      applicationType === "corporate"
+        ? "Corporate Member"
+        : applicationData.membershipCategory;
+
+    if (
+      typeof membershipCategory !== "string" ||
+      !membershipCategory.trim()
+    ) {
+      return NextResponse.json(
+        { error: "Membership category is required." },
+        { status: 400 }
+      );
+    }
+
+    const cleanedMembershipCategory =
+      membershipCategory.trim().replace(/\s+/g, " ");
+
+    /* Generate registration number */
+    const registrationNumber = generateRegistrationNumber(
+      cleanedMembershipCategory,
+      applications
+    );
+
+    if (!registrationNumber) {
+      return NextResponse.json(
+        {
+          error:
+            `Unable to generate a registration number for membership category: ${cleanedMembershipCategory}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    /* Create new application record */
+    const newApplication: ApplicationRecord = {
+      ...applicationData,
+      id:
+        typeof applicationData.id === "string" &&
+        applicationData.id
+          ? applicationData.id
+          : crypto.randomUUID(),
       submittedAt: new Date().toISOString(),
-      ...application,
+      membershipCategory: cleanedMembershipCategory,
+      registrationNumber,
     };
 
-    // Save according to application type
+    /* Save according to application type */
     if (applicationType === "individual") {
       applications.individualApplications.push(newApplication);
     } else {
       applications.corporateApplications.push(newApplication);
     }
 
-    // Save application data to JSON file
+    /* Save application data and registration number to JSON */
     fs.writeFileSync(
       dataFilePath,
       JSON.stringify(applications, null, 2),
@@ -119,65 +317,76 @@ export async function POST(request: NextRequest) {
     console.log("====================================");
     console.log("Application saved successfully.");
     console.log("Application ID:", newApplication.id);
+    console.log(
+      "Membership Category:",
+      cleanedMembershipCategory
+    );
+    console.log(
+      "Registration Number:",
+      registrationNumber
+    );
     console.log("====================================");
 
-    // Get applicant name and email
+    /* Get applicant name and email */
     const applicantName =
       applicationType === "individual"
-        ? application.fullName
-        : application.registeredName;
+        ? applicationData.fullName
+        : applicationData.registeredName;
 
     const applicantEmail =
       applicationType === "individual"
-        ? application.personalEmail
-        : application.officialEmail;
+        ? applicationData.personalEmail
+        : applicationData.officialEmail;
 
-    // Track email status
+    /* Track email status */
     let applicantEmailSent = false;
     let adminEmailSent = false;
     let emailErrorMessage: string | null = null;
 
-    // Send emails
-    if (applicantName && applicantEmail) {
+    /* Send emails */
+    if (
+      typeof applicantName === "string" &&
+      applicantName.trim() &&
+      typeof applicantEmail === "string" &&
+      applicantEmail.trim()
+    ) {
       try {
         console.log("------------------------------------");
         console.log("APPLICATION EMAIL PROCESS STARTED");
         console.log("Applicant name:", applicantName);
         console.log("Applicant email:", applicantEmail);
         console.log("Application type:", applicationType);
+        console.log(
+          "Registration number:",
+          registrationNumber
+        );
 
-        // Send confirmation email to the applicant
-        console.log("Sending confirmation email to applicant...");
-
+        /* Send confirmation email to applicant */
         await sendApplicantConfirmation({
-          name: applicantName,
-          email: applicantEmail,
+          name: applicantName.trim(),
+          email: applicantEmail.trim(),
           applicationType,
+          registrationNumber,
+          membershipCategory: cleanedMembershipCategory,
         });
 
         applicantEmailSent = true;
 
-        console.log("Applicant confirmation email sent successfully.");
-
-        // Send notification email to the administrator
-        console.log("Sending notification email to administrator...");
-
+        /* Send notification email to administrator */
         await sendAdminNotification({
-          name: applicantName,
-          email: applicantEmail,
+          name: applicantName.trim(),
+          email: applicantEmail.trim(),
           applicationType,
+          registrationNumber,
+          membershipCategory: cleanedMembershipCategory,
         });
 
         adminEmailSent = true;
 
-        console.log("Admin notification email sent successfully.");
         console.log("EMAIL PROCESS COMPLETED");
         console.log("------------------------------------");
       } catch (emailError) {
-        console.error("------------------------------------");
-        console.error("EMAIL SENDING ERROR:");
-        console.error(emailError);
-        console.error("------------------------------------");
+        console.error("EMAIL SENDING ERROR:", emailError);
 
         emailErrorMessage =
           emailError instanceof Error
@@ -198,6 +407,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message: "Application saved successfully.",
         application: newApplication,
+        registrationNumber,
         emailStatus: {
           applicantEmailSent,
           adminEmailSent,

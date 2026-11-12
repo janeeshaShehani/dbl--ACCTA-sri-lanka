@@ -10,13 +10,13 @@ export default function Governance() {
     },
     {
       role: "Senior Vice President",
-      name: "Prof. (Dr) Sanath Ajantha Divakara",
-      image: "/images/council/prof.sanath.jpeg",
+      name: "Mr. Saman Shantha",
+      image: "/images/council/mr.saman.jpeg",
     },
     {
       role: "Senior Vice President",
-      name: "Mr. Saman Shantha",
-      image: "/images/council/mr.saman.jpeg",
+      name: "Mr. K. Sivanesan",
+      image: "/images/council/Mr. K. Sivanesan.png",
     },
     {
       role: "Senior Vice President",
@@ -26,18 +26,25 @@ export default function Governance() {
     {
       role: "Assistant Vice President",
       name: "Mr. Thilak Dharmarathne",
-      image: null,
+      image: "/images/council/mr.thilak dharmarathne.png",
     },
     {
       role: "Secretary",
       name: "Mr. Sunil Wanigabadu",
       image: "/images/council/mr.SunilWanigabadu.jpeg",
     },
+     {
+      role: "Permanent Corporate Member Representative",
+      name: "Prof. (Dr) Sanath Ajantha Divakara",
+      image: "/images/council/prof.sanath.jpeg",
+    },
     {
       role: "Permanent Corporate Member Representative",
       name: "Prof. G K Wijayananda",
       image: "/images/council/mr.wijayananda.jpeg",
     },
+    
+
   ]
 
   const councilComposition = [

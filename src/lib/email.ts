@@ -13,12 +13,16 @@ type ApplicantConfirmationData = {
   email: string;
   name: string;
   applicationType: ApplicationType;
+  registrationNumber: string;
+  membershipCategory: string;
 };
 
 type AdminNotificationData = {
   name: string;
   email: string;
   applicationType: ApplicationType;
+  registrationNumber: string;
+  membershipCategory: string;
 };
 
 function getApplicationLabel(applicationType: ApplicationType) {
@@ -28,9 +32,7 @@ function getApplicationLabel(applicationType: ApplicationType) {
 }
 
 /**
- * Shared ACCTA email layout.
- * Email styles are written inline because many email clients
- * do not support external CSS files.
+ * Shared email layout.
  */
 function getEmailTemplate(content: string) {
   return `
@@ -51,13 +53,7 @@ function getEmailTemplate(content: string) {
           color: #14293A;
         "
       >
-        <div
-          style="
-            width: 100%;
-            padding: 32px 12px;
-            box-sizing: border-box;
-          "
-        >
+        <div style="width: 100%; padding: 32px 12px; box-sizing: border-box;">
           <div
             style="
               max-width: 640px;
@@ -68,7 +64,7 @@ function getEmailTemplate(content: string) {
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             "
           >
-            <!-- ACCTA Header -->
+            <!-- Header -->
             <div
               style="
                 background-color: #14293A;
@@ -107,12 +103,8 @@ function getEmailTemplate(content: string) {
               "
             ></div>
 
-            <!-- Email content -->
-            <div
-              style="
-                padding: 36px 32px;
-              "
-            >
+            <!-- Content -->
+            <div style="padding: 36px 32px;">
               ${content}
             </div>
 
@@ -153,15 +145,20 @@ function getEmailTemplate(content: string) {
   `;
 }
 
-// Send confirmation email to the applicant
+/**
+ * Send confirmation email to the applicant.
+ */
 export async function sendApplicantConfirmation({
   email,
   name,
   applicationType,
+  registrationNumber,
+  membershipCategory,
 }: ApplicantConfirmationData) {
   const applicationLabel = getApplicationLabel(applicationType);
 
   console.log("Sending applicant confirmation to:", email);
+  console.log("Registration number:", registrationNumber);
 
   const emailContent = `
     <h2
@@ -188,7 +185,52 @@ export async function sendApplicantConfirmation({
       </strong>.
     </p>
 
-    <!-- Status box -->
+    <!-- Registration number -->
+    <div
+      style="
+        margin: 24px 0;
+        padding: 20px;
+        background-color: #fdf8f0;
+        border-left: 4px solid #B5985A;
+        border-radius: 4px;
+      "
+    >
+      <p
+        style="
+          margin: 0 0 8px;
+          color: #475467;
+          font-size: 13px;
+          font-weight: 600;
+        "
+      >
+        YOUR APPLICATION REGISTRATION NUMBER
+      </p>
+
+      <p
+        style="
+          margin: 0;
+          color: #14293A;
+          font-size: 22px;
+          font-weight: 700;
+          letter-spacing: 1px;
+        "
+      >
+        ${registrationNumber}
+      </p>
+
+      <p
+        style="
+          margin: 10px 0 0;
+          color: #475467;
+          font-size: 13px;
+          line-height: 20px;
+        "
+      >
+        Membership Category: <strong>${membershipCategory}</strong>
+      </p>
+    </div>
+
+    <!-- Status -->
     <div
       style="
         margin: 24px 0;
@@ -217,8 +259,9 @@ export async function sendApplicantConfirmation({
           line-height: 22px;
         "
       >
-        Your application is now under review. Our team will contact you
-        regarding the next steps.
+        Your application is now under review. Please keep your registration
+        number for future reference. Our team will contact you regarding the
+        next steps.
       </p>
     </div>
 
@@ -249,7 +292,7 @@ export async function sendApplicantConfirmation({
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: [email],
-    subject: "ACCTA Membership Application Received",
+    subject: `ACCTA Application Received - ${registrationNumber}`,
     html: getEmailTemplate(emailContent),
   });
 
@@ -266,11 +309,15 @@ export async function sendApplicantConfirmation({
   return data;
 }
 
-// Send notification email to the administrator
+/**
+ * Send notification email to the administrator.
+ */
 export async function sendAdminNotification({
   name,
   email,
   applicationType,
+  registrationNumber,
+  membershipCategory,
 }: AdminNotificationData) {
   if (!ADMIN_EMAIL) {
     throw new Error("ADMIN_EMAIL is not configured.");
@@ -279,6 +326,7 @@ export async function sendAdminNotification({
   const applicationLabel = getApplicationLabel(applicationType);
 
   console.log("Sending admin notification to:", ADMIN_EMAIL);
+  console.log("Registration number:", registrationNumber);
 
   const emailContent = `
     <h2
@@ -306,7 +354,41 @@ export async function sendAdminNotification({
       has been submitted through the ACCTA website.
     </p>
 
-    <!-- Application details box -->
+    <!-- Registration number -->
+    <div
+      style="
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #fdf8f0;
+        border-left: 4px solid #B5985A;
+        border-radius: 4px;
+      "
+    >
+      <p
+        style="
+          margin: 0 0 8px;
+          color: #475467;
+          font-size: 13px;
+          font-weight: 600;
+        "
+      >
+        REGISTRATION NUMBER
+      </p>
+
+      <p
+        style="
+          margin: 0;
+          color: #14293A;
+          font-size: 22px;
+          font-weight: 700;
+          letter-spacing: 1px;
+        "
+      >
+        ${registrationNumber}
+      </p>
+    </div>
+
+    <!-- Application details -->
     <div
       style="
         margin: 20px 0;
@@ -389,6 +471,30 @@ export async function sendAdminNotification({
           <td
             style="
               padding: 14px 18px;
+              border-bottom: 1px solid #e5e7eb;
+              background-color: #f8fafc;
+              color: #475467;
+              font-weight: 600;
+            "
+          >
+            Membership Category
+          </td>
+
+          <td
+            style="
+              padding: 14px 18px;
+              border-bottom: 1px solid #e5e7eb;
+              color: #14293A;
+            "
+          >
+            ${membershipCategory}
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            style="
+              padding: 14px 18px;
               background-color: #f8fafc;
               color: #475467;
               font-weight: 600;
@@ -409,7 +515,7 @@ export async function sendAdminNotification({
       </table>
     </div>
 
-    <!-- Action box -->
+    <!-- Action -->
     <div
       style="
         margin-top: 24px;
@@ -437,7 +543,7 @@ export async function sendAdminNotification({
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: [ADMIN_EMAIL],
-    subject: `New ${applicationLabel}`,
+    subject: `New Application - ${registrationNumber}`,
     html: getEmailTemplate(emailContent),
   });
 

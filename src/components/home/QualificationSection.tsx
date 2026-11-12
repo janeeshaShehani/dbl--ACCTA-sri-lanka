@@ -51,8 +51,8 @@ export default function QualificationSection() {
 
         {/* CATT Entry Route */}
         <p className="mt-7 text-sm leading-6 text-accta-muted">
-          No accounting, business or law background? Start with the Certificate
-          of Associate Tax Technician (CATT), equal to SLQF Level 3 / NVQ Level
+          No accounting, business or law background? Start with the 
+          Certified Tax Associate, equal to SLQF Level 3 / NVQ Level
           4.{" "}
           <Link
             href="/qualification"

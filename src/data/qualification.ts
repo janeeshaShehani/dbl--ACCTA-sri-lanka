@@ -3,24 +3,24 @@ export const qualificationLevels = [
     number: "01",
     level: "Awareness Level",
     title: "Certified Tax Associate",
-    duration: "About 3 months · one 1-hour paper",
+    duration: "Entry Root",
   },
   {
     number: "02",
     level: "Technical Level",
     title: "Certified Tax Accountant",
-    duration: "About 12 months · two 3½-hour papers",
+    duration: "Equal to SLQF Level 4 / NVQ Level 5",
   },
   {
     number: "03",
     level: "Application Level",
     title: "Certified Tax Analyst",
-    duration: "About 6 months · one 3½-hour paper",
+    duration: "Equal to SLQF Level 6",
   },
   {
     number: "04",
     level: "Adviser Level",
     title: "Certified Chartered Tax Adviser",
-    duration: "About 6 months · one 3½-hour paper",
+    duration: "Equal to SLQF Level 9",
   },
 ];

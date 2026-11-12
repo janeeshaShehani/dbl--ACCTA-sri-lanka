@@ -11,22 +11,7 @@ export default function QualificationPathway() {
         From foundation to Graduate Diploma
       </h2>
 
-      <div className="mt-8 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-5">
-        {/* Optional entry route */}
-        <div className="border-b border-accta-border bg-accta-surface p-6 md:border-b-0 md:border-r">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-accta-muted">
-            Entry route · if needed
-          </p>
-
-          <h3 className="mt-3 font-serif text-lg font-bold text-accta-ink">
-            Certificate of Associate Tax Technician (CATT)
-          </h3>
-
-          <p className="mt-3 text-sm leading-6 text-accta-muted">
-            For candidates without an accounting, business or law background.
-            Equal to SLQF Level 3 / NVQ Level 4.
-          </p>
-        </div>
+      <div className="mt-8 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-4">
 
         {/* Qualification levels */}
         {qualificationLevels.map((level) => (
@@ -45,13 +30,18 @@ export default function QualificationPathway() {
             <h3 className="mt-2 font-serif text-lg font-bold text-accta-navy">
               {level.title}
             </h3>
+
+            <h3 className="mt-2  text-xs  text-accta-muted">
+              {level.duration}
+            </h3>
+
           </div>
         ))}
       </div>
 
       <p className="mt-5 text-sm text-accta-muted">
-        Completing all three levels and the required experience leads to
-        Associate membership (ACTA).
+        Completing all levels and gaining three years of 
+        experience leads to Associate Membership (ACTA).
       </p>
     </section>
   );
