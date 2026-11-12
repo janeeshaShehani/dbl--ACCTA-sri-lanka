@@ -2,10 +2,13 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+// Admin recipient for membership application alert emails
+const ADMIN_EMAIL = process.env.MEMBERSHIP_ADMIN_EMAIL;
 
+// "From" address on emails sent to membership applicants
 const FROM_EMAIL =
-  process.env.FROM_EMAIL || "ACCTA Membership <onboarding@resend.dev>";
+  process.env.MEMBERSHIP_FROM_EMAIL ||
+  "ACCTA Membership <membership@acctasl.com>";
 
 type ApplicationType = "individual" | "corporate";
 

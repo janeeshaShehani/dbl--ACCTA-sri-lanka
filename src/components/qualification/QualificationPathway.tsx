@@ -8,16 +8,16 @@ export default function QualificationPathway() {
       </p>
 
       <h2 className="mt-3 font-serif text-3xl font-bold text-accta-navy">
-        From foundation to Graduate Diploma
+        From Foundation to Graduate Diploma
       </h2>
 
-      <div className="mt-8 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-4">
+      <div className="mt-8 grid w-max max-w-full grid-flow-col auto-cols-max overflow-x-auto rounded-md border border-accta-border">
 
         {/* Qualification levels */}
         {qualificationLevels.map((level) => (
           <div
             key={level.number}
-            className="border-b border-accta-border p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0"
+            className="border-r border-accta-border p-6 last:border-r-0"
           >
             <p className="font-serif text-2xl font-bold text-accta-maroon">
               {level.number}
@@ -27,11 +27,11 @@ export default function QualificationPathway() {
               {level.level}
             </p>
 
-            <h3 className="mt-2 font-serif text-lg font-bold text-accta-navy">
+            <h3 className="mt-2 whitespace-nowrap font-serif text-lg font-bold text-accta-navy">
               {level.title}
             </h3>
 
-            <h3 className="mt-2  text-xs  text-accta-muted">
+            <h3 className="mt-2 text-xs text-accta-muted">
               {level.duration}
             </h3>
 
