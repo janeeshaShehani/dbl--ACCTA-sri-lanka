@@ -5,12 +5,60 @@ import { Mail, MapPin, Phone, Clock, Globe } from "lucide-react";
 
 export default function ContactContent() {
   const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState("");
+  
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
-    // Preserve the message and report availability honestly until Resend is connected.
-    setSubmitted(true);
+    // Save the form reference before the async operation
+    const form = event.currentTarget;
+
+    try {
+      setSubmitted(false);
+      setError("");
+
+      const formData = new FormData(form);
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+          topic: formData.get("topic"),
+          message: formData.get("message"),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Unable to send your enquiry."
+        );
+      }
+
+      // Email was sent successfully
+      setSubmitted(true);
+
+      // Use the saved form reference
+      form.reset();
+    } catch (error) {
+      console.error("Contact form error:", error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to send your enquiry. Please try again."
+      );
+    }
   };
 
   return (
@@ -147,19 +195,38 @@ export default function ContactContent() {
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-accta-muted">
-              Online enquiries are not available yet. Please use the contact details on this page for assistance.
+              Send us your enquiry and the ACCTA team will get back to you as
+              soon as possible.
             </p>
 
+            {/* Success Message */}
             {submitted && (
-              <div role="status" className="mt-5 rounded-md border border-accta-border bg-accta-surface p-4 text-sm text-accta-muted">
-                Your message has not been sent. Online enquiries are not available yet; your entered details remain in the form.
+              <div
+                role="status"
+                className="mt-5 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-700"
+              >
+                Thank you! Your enquiry has been sent successfully. The ACCTA
+                team will get back to you as soon as possible.
+              </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div
+                role="alert"
+                className="mt-5 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+              >
+                {errorMessage}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               {/* Full Name */}
               <div>
-                <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-accta-ink">
+                <label
+                  htmlFor="contact-name"
+                  className="mb-2 block text-sm font-medium text-accta-ink"
+                >
                   Full name
                 </label>
 
@@ -176,7 +243,10 @@ export default function ContactContent() {
 
               {/* Email */}
               <div>
-                <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-accta-ink">
+                <label
+                  htmlFor="contact-email"
+                  className="mb-2 block text-sm font-medium text-accta-ink"
+                >
                   Email address
                 </label>
 
@@ -191,13 +261,31 @@ export default function ContactContent() {
                 />
               </div>
 
+              {/* Phone */}
+              <div>
+                <label
+                  htmlFor="contact-phone"
+                  className="mb-2 block text-sm font-medium text-accta-ink"
+                >
+                  Phone number (optional)
+                </label>
+
+                <input
+                  id="contact-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="Enter your phone number"
+                  className="w-full rounded border border-accta-border px-4 py-3 text-sm outline-none transition focus:border-accta-maroon"
+                />
+              </div>
+
               {/* Enquiry Type */}
               <div>
-                <label htmlFor="contact-phone" className="mb-2 block text-sm font-medium text-accta-ink">Phone number (optional)</label>
-                <input id="contact-phone" name="phone" type="tel" autoComplete="tel" className="w-full rounded border border-accta-border px-4 py-3 text-sm" />
-              </div>
-              <div>
-                <label htmlFor="contact-topic" className="mb-2 block text-sm font-medium text-accta-ink">
+                <label
+                  htmlFor="contact-topic"
+                  className="mb-2 block text-sm font-medium text-accta-ink"
+                >
                   Enquiry type
                 </label>
 
@@ -211,17 +299,24 @@ export default function ContactContent() {
                   <option value="" disabled>
                     Select an enquiry type
                   </option>
-                  <option>General enquiry</option>
-                  <option>Membership</option>
-                  <option>Qualification</option>
-                  <option>CPD & Events</option>
-                  <option>Professional conduct</option>
+                  <option value="General enquiry">
+                    General enquiry
+                  </option>
+                  <option value="Membership">Membership</option>
+                  <option value="Qualification">Qualification</option>
+                  <option value="CPD & Events">CPD & Events</option>
+                  <option value="Professional conduct">
+                    Professional conduct
+                  </option>
                 </select>
               </div>
 
               {/* Message */}
               <div>
-                <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-accta-ink">
+                <label
+                  htmlFor="contact-message"
+                  className="mb-2 block text-sm font-medium text-accta-ink"
+                >
                   Message
                 </label>
 
@@ -235,12 +330,15 @@ export default function ContactContent() {
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
-                disabled
-                className="w-full cursor-not-allowed rounded bg-accta-maroon/70 px-6 py-3 text-sm font-semibold text-white"
+                disabled={isSubmitting}
+                className="w-full rounded bg-accta-maroon px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send enquiry
+                {isSubmitting
+                  ? "Sending enquiry..."
+                  : "Send enquiry"}
               </button>
             </form>
           </div>

@@ -11,7 +11,7 @@ export default function QualificationPathway() {
         From foundation to Graduate Diploma
       </h2>
 
-      <div className="mt-8 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-4">
+      <div className="mt-8 grid overflow-hidden rounded-md border border-accta-border md:grid-cols-5">
         {/* Optional entry route */}
         <div className="border-b border-accta-border bg-accta-surface p-6 md:border-b-0 md:border-r">
           <p className="text-[10px] font-bold uppercase tracking-wider text-accta-muted">
@@ -34,7 +34,7 @@ export default function QualificationPathway() {
             key={level.number}
             className="border-b border-accta-border p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0"
           >
-            <p className="font-serif text-2xl font-bold text-accta-border">
+            <p className="font-serif text-2xl font-bold text-accta-maroon">
               {level.number}
             </p>
 
@@ -45,10 +45,6 @@ export default function QualificationPathway() {
             <h3 className="mt-2 font-serif text-lg font-bold text-accta-navy">
               {level.title}
             </h3>
-
-            <p className="mt-3 text-sm leading-6 text-accta-muted">
-              {level.duration}
-            </p>
           </div>
         ))}
       </div>

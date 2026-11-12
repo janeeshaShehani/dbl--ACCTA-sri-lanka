@@ -107,9 +107,24 @@ export default function UpcomingEvents() {
                     {event.nonMemberFee}
                   </p>
 
-                  <Link href={`/cpd-events/${event.id}`} className="mt-5 block w-full rounded border border-accta-navy px-4 py-3 text-center text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white">
-                    Register
-                  </Link>
+                  
+                  {event.registrationLink ? (
+                    <a
+                      href={event.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-5 block w-full rounded border border-accta-navy px-4 py-3 text-center text-sm font-semibold text-accta-navy transition hover:bg-accta-navy hover:text-white"
+                    >
+                      Register
+                    </a>
+                  ) : (
+                    <button
+                      disabled
+                      className="mt-5 block w-full cursor-not-allowed rounded border border-gray-300 bg-gray-100 px-4 py-3 text-center text-sm font-semibold text-gray-400"
+                    >
+                      Registration Coming Soon
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

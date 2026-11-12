@@ -189,126 +189,135 @@ export default function CorporateApplicationPage() {
   };
 
   const handleNext = async () => {
-    if (!validateCurrentStep()) {
-      alert("Please complete all required fields before continuing.");
-      return;
-    }
+  if (!validateCurrentStep()) {
+    alert("Please complete all required fields before continuing.");
+    return;
+  }
 
-    // Move to the next step
-    if (currentStep < TOTAL_STEPS) {
-      setCurrentStep((previous) => previous + 1);
-      return;
-    }
+  // Move to the next step
+  if (currentStep < TOTAL_STEPS) {
+    setCurrentStep((previous) => previous + 1);
+    return;
+  }
 
-    try {
-      setIsSubmitting(true);
+  try {
+    setIsSubmitting(true);
 
-      // Create one unique ID for this application.
-      // The same ID will be used for the application and its documents.
-      const applicationId = crypto.randomUUID();
+    // Create one unique ID for this application.
+    // The same ID will be used for the application and its documents.
+    const applicationId = crypto.randomUUID();
 
-      // --------------------------------------------
-      // STEP 1: Upload corporate documents
-      // --------------------------------------------
-      const uploadFormData = new FormData();
+    // --------------------------------------------
+    // STEP 1: Upload corporate documents
+    // --------------------------------------------
+    const uploadFormData = new FormData();
 
-      uploadFormData.append("applicationId", applicationId);
+    uploadFormData.append("applicationId", applicationId);
 
-      Object.values(formData.documents).forEach((file) => {
+    // Send both the file and its document type
+    Object.entries(formData.documents).forEach(
+      ([documentType, file]) => {
         if (file instanceof File) {
           uploadFormData.append("files", file);
+          uploadFormData.append("documentTypes", documentType);
         }
-      });
-
-      const uploadResponse = await fetch(
-        "/api/upload-corporate-documents",
-        {
-          method: "POST",
-          body: uploadFormData,
-        }
-      );
-
-      const uploadResult = await uploadResponse.json();
-
-      if (!uploadResponse.ok) {
-        throw new Error(
-          uploadResult.error ||
-            "Unable to upload corporate application documents."
-        );
       }
+    );
 
-      // --------------------------------------------
-      // STEP 2: Match document IDs with uploaded paths
-      // --------------------------------------------
-      const uploadedDocumentPaths = Object.fromEntries(
-        Object.entries(formData.documents).map(
-          ([documentId, file], index) => [
-            documentId,
-            file instanceof File
-              ? uploadResult.files[index] || null
-              : null,
-          ]
-        )
-      );
-
-      // --------------------------------------------
-      // STEP 3: Prepare application data
-      // --------------------------------------------
-      const applicationData = {
-        ...formData,
-        id: applicationId,
-        documents: uploadedDocumentPaths,
-      };
-
-      // --------------------------------------------
-      // STEP 4: Save the application
-      // --------------------------------------------
-      const response = await fetch(
-        "/api/apply-membership-applications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "corporate",
-            application: applicationData,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          result.error ||
-            "Unable to submit the corporate application."
-        );
+    const uploadResponse = await fetch(
+      "/api/upload-corporate-documents",
+      {
+        method: "POST",
+        body: uploadFormData,
       }
+    );
 
-      console.log("Corporate application submitted:", result);
-      console.log(
-        "Corporate documents uploaded:",
-        uploadResult.files
+    const uploadResult = await uploadResponse.json();
+
+    if (!uploadResponse.ok) {
+      throw new Error(
+        uploadResult.error ||
+          "Unable to upload corporate application documents."
       );
-
-      alert("Corporate application submitted successfully!");
-
-      // Reset the form after successful submission
-      setFormData({ ...initialFormData });
-      setCurrentStep(1);
-    } catch (error) {
-      console.error("Submission error:", error);
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong while submitting the application."
-      );
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+
+    // --------------------------------------------
+    // STEP 2: Organize uploaded document details
+    // --------------------------------------------
+    const uploadedDocuments = Object.fromEntries(
+      uploadResult.files.map(
+        (file: {
+          documentType: string;
+          name: string;
+          path: string;
+        }) => [
+          file.documentType,
+          {
+            name: file.name,
+            path: file.path,
+          },
+        ]
+      )
+    );
+
+    // --------------------------------------------
+    // STEP 3: Prepare application data
+    // --------------------------------------------
+    const applicationData = {
+      ...formData,
+      id: applicationId,
+      documents: uploadedDocuments,
+    };
+
+    // --------------------------------------------
+    // STEP 4: Save the application
+    // --------------------------------------------
+    const response = await fetch(
+      "/api/apply-membership-applications",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "corporate",
+          application: applicationData,
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+          "Unable to submit the corporate application."
+      );
+    }
+
+    console.log("Corporate application submitted:", result);
+    console.log(
+      "Corporate documents uploaded:",
+      uploadResult.files
+    );
+
+    alert("Corporate application submitted successfully!");
+
+    // Reset the form after successful submission
+    setFormData({ ...initialFormData });
+    setCurrentStep(1);
+  } catch (error) {
+    console.error("Submission error:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while submitting the application."
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleBack = () => {
     if (currentStep > 1) {

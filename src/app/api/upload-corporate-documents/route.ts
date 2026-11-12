@@ -10,31 +10,33 @@ const uploadDirectory = path.join(
   "corporate-applications-documents"
 );
 
+type UploadedFile = {
+  documentType: string;
+  name: string;
+  path: string;
+};
+
 export async function POST(request: NextRequest) {
   try {
-    const contentType = request.headers.get("content-type") || "";
-
-    // Make sure this route receives FormData
-    if (!contentType.includes("multipart/form-data")) {
-      return NextResponse.json(
-        { error: "Request must use multipart/form-data." },
-        { status: 400 }
-      );
-    }
-
+    // Get FormData
     const formData = await request.formData();
 
+    const files = formData.getAll("files");
+    const documentTypes = formData.getAll("documentTypes");
     const applicationId = formData.get("applicationId");
 
-    if (typeof applicationId !== "string" || !applicationId.trim()) {
+    // Validate application ID
+    if (
+      typeof applicationId !== "string" ||
+      applicationId.trim() === ""
+    ) {
       return NextResponse.json(
         { error: "Application ID is required." },
         { status: 400 }
       );
     }
 
-    const files = formData.getAll("files");
-
+    // Validate files
     if (files.length === 0) {
       return NextResponse.json(
         { error: "No documents were provided." },
@@ -42,20 +44,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Make sure every file has a document type
+    if (files.length !== documentTypes.length) {
+      return NextResponse.json(
+        { error: "Document type information is missing." },
+        { status: 400 }
+      );
+    }
+
+    // Make application ID safe for the folder name
+    const safeApplicationId = applicationId.replace(
+      /[^a-zA-Z0-9-_]/g,
+      ""
+    );
+
     // Create a separate folder for each corporate application
     const applicationDirectory = path.join(
       uploadDirectory,
-      applicationId
+      safeApplicationId
     );
 
     if (!fs.existsSync(applicationDirectory)) {
       fs.mkdirSync(applicationDirectory, { recursive: true });
     }
 
-    const uploadedFiles: string[] = [];
+    const uploadedFiles: UploadedFile[] = [];
 
-    for (const item of files) {
-      if (!(item instanceof File) || item.size === 0) {
+    // Save each uploaded file
+    for (let index = 0; index < files.length; index++) {
+      const item = files[index];
+      const documentType = documentTypes[index];
+
+      if (
+        !(item instanceof File) ||
+        item.size === 0 ||
+        typeof documentType !== "string"
+      ) {
         continue;
       }
 
@@ -65,9 +89,10 @@ export async function POST(request: NextRequest) {
       // Create a safe filename
       const safeFileName = item.name.replace(
         /[^a-zA-Z0-9._-]/g,
-        "_"
+        "-"
       );
 
+      // Add a unique timestamp to prevent duplicate names
       const uniqueFileName = `${Date.now()}-${safeFileName}`;
 
       const filePath = path.join(
@@ -75,11 +100,19 @@ export async function POST(request: NextRequest) {
         uniqueFileName
       );
 
+      // Save the file
       fs.writeFileSync(filePath, buffer);
 
-      uploadedFiles.push(
-        `upload-documents/corporate-applications-documents/${applicationId}/${uniqueFileName}`
-      );
+      // Store the relative file path
+      const relativePath =
+        `upload-documents/corporate-applications-documents/` +
+        `${safeApplicationId}/${uniqueFileName}`;
+
+      uploadedFiles.push({
+        documentType,
+        name: item.name,
+        path: relativePath,
+      });
     }
 
     if (uploadedFiles.length === 0) {

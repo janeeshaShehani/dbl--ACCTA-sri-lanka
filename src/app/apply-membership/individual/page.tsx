@@ -260,74 +260,25 @@ export default function IndividualApplicationPage() {
     try {
       setIsSubmitting(true);
 
-      /*
-       * STEP 1:
-       * Create a version of the application without File objects.
-       * Only file names are saved in the application JSON.
-       */
-      const documentNames = Object.fromEntries(
-        Object.entries(formData.documents).map(([key, files]) => [
-          key,
-          files.map((file: File) => file.name),
-        ])
-      );
+      // STEP 1: Create the application ID first.
+      // This ID will be used for both the application and document folder.
+      const applicationId = crypto.randomUUID();
 
-      const applicationData = {
-        ...formData,
-        documents: documentNames,
-      };
-
-      console.log("Saving application:", applicationData);
-
-      /*
-       * STEP 2:
-       * Save the application data first.
-       */
-      const applicationResponse = await fetch(
-        "/api/apply-membership-applications",
+      // This will store the uploaded document information.
+      const uploadedDocuments: Record<
+        string,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "individual",
-            application: applicationData,
-          }),
-        }
-      );
+          name: string;
+          path: string;
+        }[]
+      > = {};
 
-      const applicationResult = await applicationResponse.json();
-
-      if (!applicationResponse.ok) {
-        throw new Error(
-          applicationResult.error || "Unable to save application."
-        );
-      }
-
-      const applicationId = applicationResult.application?.id;
-
-      if (!applicationId) {
-        throw new Error(
-          "Application was saved, but no application ID was returned."
-        );
-      }
-
-      console.log("Application saved successfully.");
-      console.log("Application ID:", applicationId);
-
-      /*
-       * STEP 3:
-       * Check whether the user selected any documents.
-       */
+      // STEP 2: Check whether documents were selected.
       const hasDocuments = Object.values(formData.documents).some(
         (files) => files.length > 0
       );
 
-      /*
-       * STEP 4:
-       * Upload actual File objects using FormData.
-       */
+      // STEP 3: Upload documents first.
       if (hasDocuments) {
         const uploadFormData = new FormData();
 
@@ -337,10 +288,7 @@ export default function IndividualApplicationPage() {
           ([documentType, files]) => {
             files.forEach((file: File) => {
               uploadFormData.append("files", file);
-              uploadFormData.append(
-                "documentTypes",
-                documentType
-              );
+              uploadFormData.append("documentTypes", documentType);
             });
           }
         );
@@ -363,16 +311,69 @@ export default function IndividualApplicationPage() {
           );
         }
 
+        // STEP 4: Organize uploaded documents by document type.
+        uploadResult.files.forEach(
+          (file: {
+            documentType: string;
+            name: string;
+            path: string;
+          }) => {
+            if (!uploadedDocuments[file.documentType]) {
+              uploadedDocuments[file.documentType] = [];
+            }
+
+            uploadedDocuments[file.documentType].push({
+              name: file.name,
+              path: file.path,
+            });
+          }
+        );
+
         console.log(
           "Documents uploaded successfully:",
-          uploadResult
+          uploadedDocuments
         );
       }
 
-      /*
-       * STEP 5:
-       * Remove saved draft and reset the form.
-       */
+      // STEP 5: Create the final application data.
+      // File objects are replaced with the actual uploaded file paths.
+      const applicationData = {
+        ...formData,
+        id: applicationId,
+        documents: uploadedDocuments,
+      };
+
+      console.log("Saving application:", applicationData);
+
+      // STEP 6: Save the application with document paths.
+      const applicationResponse = await fetch(
+        "/api/apply-membership-applications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "individual",
+            application: applicationData,
+          }),
+        }
+      );
+
+      const applicationResult = await applicationResponse.json();
+
+      if (!applicationResponse.ok) {
+        throw new Error(
+          applicationResult.error || "Unable to save application."
+        );
+      }
+
+      console.log(
+        "Application submitted successfully:",
+        applicationResult
+      );
+
+      // STEP 7: Remove saved draft and reset the form.
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STEP_STORAGE_KEY);
 

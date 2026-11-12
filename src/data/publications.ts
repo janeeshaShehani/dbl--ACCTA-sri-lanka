@@ -3,21 +3,25 @@ export const publications = [
     id: 1,
     title: "Journal of Compliance Management",
     description: "Research on tax compliance and administration.",
+    image: "/images/publications/Compliance Management.png",
   },
   {
     id: 2,
     title: "Tax Case Law",
     description: "Digest of Sri Lankan tax case law and appeal decisions.",
+    image: "/images/publications/Tax Case Law.png",
   },
   {
     id: 3,
     title: "Tax Manual",
     description: "Practical reference for Sri Lankan taxes.",
+    image: "/images/publications/Tax Manual.png",
   },
   {
     id: 4,
     title: "Technical Papers",
     description: "Practice notes and technical guidance for members.",
+    image: "/images/publications/Technical Papers.png",
   },
 ];
 
