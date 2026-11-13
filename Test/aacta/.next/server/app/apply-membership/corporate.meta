@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/apply-membership/layout,_N_T_/apply-membership/corporate/layout,_N_T_/apply-membership/corporate/page,_N_T_/apply-membership/corporate"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/apply-membership/corporate/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/0484ad062be7c8334c8ab741b69f3f387b952ed4a22f4b060174b423e71855da/$/apply-membership/corporate",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/apply-membership/corporate/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/apply-membership-applications": {},
+    "/api/contact": {},
+    "/api/upload-corporate-documents": {},
+    "/api/upload-documents": {}
+  }
+}
