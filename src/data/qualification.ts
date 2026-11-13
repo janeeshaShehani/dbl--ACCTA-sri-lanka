@@ -1,15 +1,15 @@
 export const qualificationLevels = [
   {
-    number: "01",
+    number: "01. Entry Route",
     level: "Awareness Level",
     title: "Certified Tax Associate",
-    duration: "Entry Route",
+    duration: "Equal to SLQF Level 3 / NVQ Level 5",
   },
   {
     number: "02",
     level: "Technical Level",
     title: "Certified Tax Accountant",
-    duration: "Equal to SLQF Level 4 / NVQ Level 5",
+    duration: "Equal to SLQF Level 4 / NVQ Level 6",
   },
   {
     number: "03",
@@ -19,7 +19,7 @@ export const qualificationLevels = [
   },
   {
     number: "04",
-    level: "Adviser Level",
+    level: "Advisory Level",
     title: "Certified Chartered Tax Advisor",
     duration: "Equal to SLQF Level 9",
   },

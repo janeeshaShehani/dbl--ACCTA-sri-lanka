@@ -15,13 +15,13 @@ export default function Governance() {
     },
     {
       role: "Senior Vice President",
-      name: "Mr. K. Sivanesan",
-      image: "/images/council/Mr. K. Sivanesan.png",
+      name: "Mrs. Wasanthi Manchanayake",
+      image: "/images/council/mrs.wasanthi.jpeg",
     },
     {
       role: "Senior Vice President",
-      name: "Mrs. Wasanthi Manchanayake",
-      image: "/images/council/mrs.wasanthi.jpeg",
+      name: "Mr. K. Sivanesan",
+      image: "/images/council/Mr. K. Sivanesan.png",
     },
     {
       role: "Assistant Vice President",

@@ -78,7 +78,7 @@ export default function MemberRegister({
 
                         <p>
                           <span className="font-medium text-accta-ink">
-                            Firm:
+                            {member.category === "Corporate" ? "Ref:" : "Firm:"}
                           </span>{" "}
                           {member.firm}
                         </p>

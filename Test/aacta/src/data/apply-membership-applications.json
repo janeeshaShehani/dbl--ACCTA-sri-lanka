@@ -1,0 +1,238 @@
+{
+  "individualApplications": [
+    {
+      "membershipCategory": "FACTA",
+      "admissionRoute": "exam",
+      "residency": "sri-lanka",
+      "country": "",
+      "practisingIntention": false,
+      "professionalInsurance": false,
+      "title": "Mrs",
+      "fullName": "janeesha",
+      "initialsName": "janeesha",
+      "preferredName": "",
+      "dateOfBirth": "2004-07-07",
+      "gender": "Female",
+      "nationality": "janeesha",
+      "identificationNumber": "2004568969",
+      "preferredLanguage": "English",
+      "residentialAddress": "Galapata\nwadumulla",
+      "officialAddress": "",
+      "mailingAddress": "Galapata\nwadumulla",
+      "mobile": "0711144854",
+      "whatsapp": "",
+      "officePhone": "",
+      "personalEmail": "shehanijaneesha507@gmail.com",
+      "officialEmail": "shehanijaneesha506@gmail.com",
+      "linkedIn": "",
+      "qualifications": "janeesha",
+      "professionalMemberships": "janeesha",
+      "employmentDetails": "janeesha",
+      "experience": "janeesha",
+      "expertise": "janeesha",
+      "statement": "janeesha",
+      "fitAndProperAnswers": {
+        "disciplinaryAction": "no",
+        "criminalOffence": "no",
+        "professionalInvestigation": "no",
+        "bankruptcy": "no",
+        "professionalBodyRemoval": "no",
+        "falseInformation": "no",
+        "otherMatter": "no"
+      },
+      "fitAndProperDetails": "",
+      "refereeOneName": "Janeesha Shehani",
+      "refereeOneEmail": "shehanijaneesha506@gmail.com",
+      "refereeOnePhone": "0711144854",
+      "refereeTwoName": "Janeesha Shehani",
+      "refereeTwoEmail": "shehanijaneesha506@gmail.com",
+      "refereeTwoPhone": "0711144854",
+      "documents": {
+        "identity": [
+          {
+            "name": "Assignment - DSCI 32012 (2).pdf",
+            "path": "upload-documents/individual-applications-documents/83735c09-6018-4109-8383-19f81900e107/1794481097009-Assignment---DSCI-32012--2-.pdf"
+          }
+        ]
+      },
+      "declarationInformationAccepted": true,
+      "declarationAgeAccepted": true,
+      "declarationRulesAccepted": true,
+      "declarationDesignationAccepted": true,
+      "declarationRenewalAccepted": true,
+      "declarationChangesAccepted": true,
+      "declarationContributionAccepted": true,
+      "declarationConsentAccepted": true,
+      "declarationName": "janeesha",
+      "declarationDate": "2006-05-02",
+      "declarationPlace": "janeesha",
+      "id": "83735c09-6018-4109-8383-19f81900e107",
+      "submittedAt": "2026-11-12T10:58:18.334Z",
+      "registrationNumber": "FAA2611000001"
+    },
+    {
+      "membershipCategory": "ACTA",
+      "admissionRoute": "exam",
+      "residency": "sri-lanka",
+      "country": "",
+      "practisingIntention": false,
+      "professionalInsurance": false,
+      "title": "Mr",
+      "fullName": "Madusha",
+      "initialsName": "LG madusha",
+      "preferredName": "Kavinda",
+      "dateOfBirth": "2026-11-13",
+      "gender": "Male",
+      "nationality": "Sinhala",
+      "identificationNumber": "200208601717",
+      "preferredLanguage": "English",
+      "residentialAddress": "dd",
+      "officialAddress": "dd",
+      "mailingAddress": "dd",
+      "mobile": "071",
+      "whatsapp": "071",
+      "officePhone": "071",
+      "personalEmail": "madushakv2002@gmail.com",
+      "officialEmail": "",
+      "linkedIn": "071",
+      "qualifications": "dds",
+      "professionalMemberships": "dsds",
+      "employmentDetails": "sdsd",
+      "experience": "ds",
+      "expertise": "sd",
+      "statement": "ds",
+      "fitAndProperAnswers": {
+        "disciplinaryAction": "yes",
+        "criminalOffence": "yes",
+        "professionalInvestigation": "yes",
+        "bankruptcy": "no",
+        "professionalBodyRemoval": "no",
+        "falseInformation": "yes",
+        "otherMatter": "yes"
+      },
+      "fitAndProperDetails": "df",
+      "refereeOneName": "fd",
+      "refereeOneEmail": "df",
+      "refereeOnePhone": "df",
+      "refereeTwoName": "fd",
+      "refereeTwoEmail": "df",
+      "refereeTwoPhone": "df",
+      "documents": {},
+      "declarationInformationAccepted": true,
+      "declarationAgeAccepted": true,
+      "declarationRulesAccepted": true,
+      "declarationDesignationAccepted": true,
+      "declarationRenewalAccepted": true,
+      "declarationChangesAccepted": true,
+      "declarationContributionAccepted": true,
+      "declarationConsentAccepted": true,
+      "declarationName": "df",
+      "declarationDate": "2026-11-25",
+      "declarationPlace": "Colmbo",
+      "id": "1642028a-16aa-489a-a707-8a9103229c44",
+      "submittedAt": "2026-11-12T19:57:08.268Z",
+      "registrationNumber": "ASA2611000001"
+    }
+  ],
+  "corporateApplications": [
+    {
+      "membershipCategory": "Corporate Member",
+      "otherLegalEntity": "",
+      "residency": "sri-lanka",
+      "country": "",
+      "registeredName": "lalitha",
+      "tradingName": "lalitha",
+      "legalForm": "private-limited",
+      "registrationNumber": "CMA2611000001",
+      "registrationDate": "2001-05-05",
+      "registrationCountry": "Sri Lanka",
+      "tinNumber": "5555555",
+      "vatNumber": "11111111",
+      "registeredAddress": "Galapata",
+      "tradingAddress": "wadumulla",
+      "website": "lalitha.lk",
+      "staffCount": "20",
+      "officePhone": "+94711144854",
+      "officialEmail": "shehanijaneesha507@gmail.com",
+      "directors": "lalitha",
+      "shareholders": "lalitha",
+      "parentFirm": "",
+      "services": "lalitha",
+      "yearsInTaxation": "2",
+      "registrations": "lalitha",
+      "clientProfile": "lalitha",
+      "firmProfile": "lalitha",
+      "nominatedRepresentative": "Janeesha Shehani",
+      "nominatedEmail": "shehanijaneesha506@gmail.com",
+      "nominatedPhone": "+94711144854",
+      "alternateRepresentative": "Janeesha Shehani",
+      "alternateEmail": "shehanijaneesha506@gmail.com",
+      "alternatePhone": "+94711144854",
+      "fitAndProperAnswers": {
+        "f1": "yes",
+        "f2": "yes",
+        "f3": "yes",
+        "f4": "yes",
+        "f5": "yes",
+        "f6": "yes"
+      },
+      "fitAndProperDetails": "lalitha",
+      "documents": {
+        "incorporation": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487850-Tax-Manual.png"
+        },
+        "directors": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487856-Tax-Manual.png"
+        },
+        "boardResolution": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487864-Tax-Manual.png"
+        },
+        "companyProfile": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487873-Tax-Manual.png"
+        },
+        "taxationEvidence": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487882-Tax-Manual.png"
+        },
+        "irdRegistration": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487890-Tax-Manual.png"
+        },
+        "professionalInsurance": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487896-Tax-Manual.png"
+        },
+        "representativeMembership": {
+          "name": "WhatsApp Image 2026-11-12 at 3.10.49 PM.jpeg",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487900-WhatsApp-Image-2026-11-12-at-3.10.49-PM.jpeg"
+        },
+        "identityDocuments": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487906-Tax-Manual.png"
+        },
+        "auditedStatements": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487913-Tax-Manual.png"
+        },
+        "paymentProof": {
+          "name": "Tax Manual.png",
+          "path": "upload-documents/corporate-applications-documents/55bd8620-b500-477b-a9a7-8f9b825658f1/1794481487920-Tax-Manual.png"
+        }
+      },
+      "signatoryOne": "lalitha",
+      "signatoryTwo": "lalitha",
+      "resolutionDate": "1999-02-05",
+      "declarationAccepted": true,
+      "totalAmountPaid": "20000",
+      "paymentMethod": "bank-transfer",
+      "paymentReference": "11111111",
+      "paymentDate": "2011-05-04",
+      "id": "55bd8620-b500-477b-a9a7-8f9b825658f1",
+      "submittedAt": "2026-11-12T11:04:48.512Z"
+    }
+  ]
+}

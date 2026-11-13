@@ -39,69 +39,41 @@ const createInitialData = (): ApplicationsData => ({
   corporateApplications: [],
 });
 
-/* Membership category prefixes */
+/* Membership category prefixes keyed on the letters value sent by the form */
 const categoryPrefixes: Record<string, string> = {
-  "associate (standard) (acta)": "ASA",
-  "fellow (standard) (fcta)": "FSA",
-  "associate academic (aacta)": "AAA",
-  "fellow academic (facta)": "FAA",
-  "affiliate (afcta)": "AFA",
+  acta: "ASA",   // Associate (Standard)
+  fcta: "FSA",   // Fellow (Standard)
+  aacta: "AAA",  // Associate Academic
+  facta: "FAA",  // Fellow Academic
+  afcta: "AFA",  // Affiliate
+  // Corporate applications are handled separately (never use this map)
   "corporate member": "CMA",
 };
 
-/* Normalize category text */
+/* Normalize category text — trim, collapse spaces, lowercase */
 function normalizeCategory(category: string): string {
   return category.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-/* Get the registration prefix */
+/* Get the registration prefix for a submitted category value.
+ * The form sends the short `letters` value (e.g. "ACTA", "FCTA").
+ * The map above is keyed on those lowercase letters.
+ * The fallback checks handle any edge-case variants. */
 function getCategoryPrefix(category: string): string | null {
   const normalizedCategory = normalizeCategory(category);
 
-  /* Exact category match */
+  /* Direct match (covers every normal form submission) */
   if (categoryPrefixes[normalizedCategory]) {
     return categoryPrefixes[normalizedCategory];
   }
 
-  /*
-   * Extra fallback checks.
-   * These help if the form value has small wording differences.
-   */
-  if (
-    normalizedCategory.includes("fellow academic") ||
-    normalizedCategory.includes("facta")
-  ) {
-    return "FAA";
-  }
-
-  if (
-    normalizedCategory.includes("associate academic") ||
-    normalizedCategory.includes("aacta")
-  ) {
-    return "AAA";
-  }
-
-  if (
-    normalizedCategory.includes("fellow") &&
-    normalizedCategory.includes("standard")
-  ) {
-    return "FSA";
-  }
-
-  if (
-    normalizedCategory.includes("associate") &&
-    normalizedCategory.includes("standard")
-  ) {
-    return "ASA";
-  }
-
-  if (normalizedCategory.includes("affiliate")) {
-    return "AFA";
-  }
-
-  if (normalizedCategory.includes("corporate")) {
-    return "CMA";
-  }
+  /* Fallback: check for letter codes embedded in longer strings */
+  if (normalizedCategory.includes("facta")) return "FAA";
+  if (normalizedCategory.includes("aacta")) return "AAA";
+  if (normalizedCategory.includes("afcta")) return "AFA";
+  if (normalizedCategory.includes("fcta")) return "FSA";
+  if (normalizedCategory.includes("acta")) return "ASA";
+  if (normalizedCategory.includes("corporate")) return "CMA";
 
   return null;
 }

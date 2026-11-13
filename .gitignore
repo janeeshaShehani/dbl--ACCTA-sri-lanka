@@ -46,5 +46,9 @@ next-env.d.ts
 .env.local
 .env*.local
 
+# Archives and bundles
+*.zip
+release/
+
 # Allow the example file to be committed
 !.env.example

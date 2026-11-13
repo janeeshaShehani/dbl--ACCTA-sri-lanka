@@ -7,11 +7,13 @@ export const runtime = "nodejs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+// Admin recipient for contact-form enquiry emails
+const ADMIN_EMAIL = process.env.CONTACT_ADMIN_EMAIL;
 
+// "From" address on contact-form notification emails
 const FROM_EMAIL =
-  process.env.FROM_EMAIL ||
-  "ACCTA Sri Lanka <onboarding@resend.dev>";
+  process.env.CONTACT_FROM_EMAIL ||
+  "ACCTA Sri Lanka <info@acctasl.com>";
 
 // Contact enquiries JSON file location
 const dataDirectory = path.join(process.cwd(), "src", "data");
