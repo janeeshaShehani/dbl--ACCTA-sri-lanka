@@ -82,7 +82,7 @@ export default function RefereesStep({ data, updateData }: Props) {
         {/* Referee 2 */}
         <div className="rounded-md border border-accta-border bg-white p-5">
           <h3 className="font-heading text-lg font-bold text-accta-navy">
-            Referee 2 (ACCTA Member)
+            Referee 2 (ACCTA Member)c
           </h3>
 
           <div className="mt-4 space-y-4">
