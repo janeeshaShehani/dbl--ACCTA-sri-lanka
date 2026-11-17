@@ -1,6 +1,6 @@
+
 import type { Metadata } from "next";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import SiteLayout from "@/components/layout/SiteLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,12 +16,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-white focus:p-3 focus:text-accta-navy">Skip to content</a>
-        <Header />
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-white focus:p-3 focus:text-accta-navy"
+        >
+          Skip to content
+        </a>
 
-        <main id="main-content" tabIndex={-1} className="min-h-screen">{children}</main>
-
-        <Footer />
+        <SiteLayout>{children}</SiteLayout>
       </body>
     </html>
   );
