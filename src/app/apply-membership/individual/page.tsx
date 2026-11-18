@@ -347,14 +347,13 @@ export default function IndividualApplicationPage() {
 
       // STEP 6: Save the application with document paths.
       const applicationResponse = await fetch(
-        "/api/apply-membership-applications",
+        "/api/apply-individual",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            type: "individual",
             application: applicationData,
           }),
         }

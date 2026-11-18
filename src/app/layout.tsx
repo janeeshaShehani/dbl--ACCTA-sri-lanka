@@ -1,6 +1,7 @@
 
 import type { Metadata } from "next";
 import SiteLayout from "@/components/layout/SiteLayout";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <SiteLayout>{children}</SiteLayout>
+        <SiteLayout>{children}<WhatsAppButton /></SiteLayout>
       </body>
     </html>
   );

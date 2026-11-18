@@ -52,3 +52,4 @@ release/
 
 # Allow the example file to be committed
 !.env.example
+/src/generated/prisma

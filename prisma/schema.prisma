@@ -1,0 +1,331 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+// Application status
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+// Applicant residency
+enum ResidencyType {
+  SRI_LANKA
+  INTERNATIONAL
+}
+
+// Admission route
+enum AdmissionRoute {
+  ACCTA_EXAMINATION
+  RECOGNISED_QUALIFICATION
+  MATURE_ENTRY
+}
+
+// ==========================================
+// 1. MAIN INDIVIDUAL APPLICATION MODEL
+// ==========================================
+
+model IndividualApplication {
+  id                 String  @id @default(uuid()) @db.VarChar(36)
+  registrationNumber String? @unique @db.VarChar(50)
+
+  // SECTION A - Membership Details
+  membershipCategory String?         @db.VarChar(100)
+  residency          ResidencyType?
+  countryOfResidence String?         @db.VarChar(100)
+  admissionRoute     AdmissionRoute?
+
+  // SECTION B - Personal Details
+  title                String?   @db.VarChar(30)
+  fullName             String?   @db.VarChar(255)
+  initialsName         String?   @db.VarChar(255)
+  preferredName        String?   @db.VarChar(150)
+  dateOfBirth          DateTime? @db.Date
+  gender               String?   @db.VarChar(50)
+  nationality          String?   @db.VarChar(100)
+  identificationNumber String?   @db.VarChar(100)
+  preferredLanguage    String?   @db.VarChar(50)
+
+  // SECTION C - Contact Details
+  residentialAddress String? @db.Text
+  officialAddress    String? @db.Text
+  mailingAddress     String? @db.Text
+
+  mobileNumber   String? @db.VarChar(30)
+  whatsappNumber String? @db.VarChar(30)
+  officePhone    String? @db.VarChar(30)
+
+  personalEmail   String? @db.VarChar(255)
+  officialEmail   String? @db.VarChar(255)
+  linkedInProfile String? @db.VarChar(500)
+
+  // SECTION D - Qualifications
+  academicQualifications     String? @db.Text
+  professionalQualifications String? @db.Text
+
+  // SECTION E - Employment and Experience
+  currentEmployment     String? @db.Text
+  relevantExperience    String? @db.Text
+  areasOfExpertise      String? @db.Text
+  professionalStatement String? @db.Text
+
+  // SECTION F - Fit and Proper Declaration
+  disciplinaryAction   Boolean?
+  criminalOffence      Boolean?
+  currentInvestigation Boolean?
+  bankruptOrInsolvent  Boolean?
+  membershipSuspended  Boolean?
+  falseInformation     Boolean?
+  otherRelevantMatter  Boolean?
+
+  fitAndProperDetails String? @db.Text
+
+  // SECTION I - Applicant Declaration
+  informationAccepted  Boolean @default(false)
+  ageAccepted          Boolean @default(false)
+  rulesAccepted        Boolean @default(false)
+  designationAccepted  Boolean @default(false)
+  renewalAccepted      Boolean @default(false)
+  changesAccepted      Boolean @default(false)
+  contributionAccepted Boolean @default(false)
+  consentAccepted      Boolean @default(false)
+
+  declarationName  String?   @db.VarChar(255)
+  declarationDate  DateTime? @db.Date
+  declarationPlace String?   @db.VarChar(150)
+
+  // SECTION J - Fees and Payment
+  applicationFee     Decimal? @db.Decimal(10, 2)
+  annualSubscription Decimal? @db.Decimal(10, 2)
+  feeCurrency        String?  @db.VarChar(10)
+
+  // Application Management
+  status      ApplicationStatus @default(DRAFT)
+  submittedAt DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  referees  IndividualReferee[]
+  documents IndividualDocument[]
+
+  // Database Indexes
+  @@index([status])
+  @@index([membershipCategory])
+  @@index([createdAt])
+  @@index([personalEmail])
+}
+
+// ==========================================
+// 2. INDIVIDUAL REFEREE MODEL
+// ==========================================
+
+model IndividualReferee {
+  id            String @id @default(uuid()) @db.VarChar(36)
+  applicationId String @db.VarChar(36)
+
+  refereeNumber Int
+
+  fullName    String? @db.VarChar(255)
+  email       String? @db.VarChar(255)
+  phoneNumber String? @db.VarChar(30)
+
+  // Relationship with IndividualApplication
+  application IndividualApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  // Each application can have Referee 1 and Referee 2 only
+  @@unique([applicationId, refereeNumber])
+  @@index([applicationId])
+}
+
+// ==========================================
+// 3. INDIVIDUAL DOCUMENT MODEL
+// ==========================================
+
+model IndividualDocument {
+  id            String @id @default(uuid()) @db.VarChar(36)
+  applicationId String @db.VarChar(36)
+
+  // Document ID from the frontend
+  // identity, photo, academic, professional, cv, etc.
+  documentType String @db.VarChar(100)
+
+  // Uploaded file information
+  originalName   String  @db.VarChar(255)
+  storedFileName String  @db.VarChar(255)
+  filePath       String  @db.VarChar(1000)
+  mimeType       String? @db.VarChar(100)
+  fileSize       BigInt?
+
+  uploadedAt DateTime @default(now())
+
+  // Relationship with IndividualApplication
+  application IndividualApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  // Database Indexes
+  @@index([applicationId])
+  @@index([applicationId, documentType])
+}
+
+model MembershipFee {
+  id String @id @default(uuid()) @db.VarChar(36)
+
+  // Membership category information
+  // associate, fellow, affiliate, corporate, etc.
+  categoryId   String  @db.VarChar(100)
+  categoryName String  @db.VarChar(150)
+  letters      String? @db.VarChar(150)
+  eligibility  String? @db.Text
+
+  // Currency information
+  // LKR or USD
+  currency String @db.VarChar(10)
+
+  // Fee information
+  applicationFee     Decimal @default(0) @db.Decimal(10, 2)
+  annualSubscription Decimal @default(0) @db.Decimal(10, 2)
+
+  // Membership management
+  isAddOn   Boolean @default(false)
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Database constraints and indexes
+  @@unique([categoryId, currency])
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model CorporateApplication {
+  id                String  @id @default(uuid()) @db.VarChar(36)
+  applicationNumber String? @unique @db.VarChar(50)
+  corporateNumber   String? @unique @db.VarChar(50)
+
+  // SECTION A - Membership applied for
+  entityType            String?        @db.VarChar(100)
+  otherEntityType       String?        @db.VarChar(150)
+  residency             ResidencyType?
+  countryOfRegistration String?        @db.VarChar(100)
+
+  // SECTION B - Entity details
+  registeredName      String?   @db.VarChar(255)
+  tradingName         String?   @db.VarChar(255)
+  legalForm           String?   @db.VarChar(100)
+  registrationNumber  String?   @db.VarChar(100)
+  registrationDate    DateTime? @db.Date
+  registrationCountry String?   @db.VarChar(100)
+
+  tinNumber         String? @db.VarChar(100)
+  vatNumber         String? @db.VarChar(100)
+  website           String? @db.VarChar(500)
+  numberOfEmployees Int?
+
+  registeredAddress String? @db.Text
+  tradingAddress    String? @db.Text
+
+  officePhone   String? @db.VarChar(30)
+  officialEmail String? @db.VarChar(255)
+
+  // SECTION C - Directors and shareholders
+  directorsAndKeyOfficers  String? @db.Text
+  shareholdersAndOwnership String? @db.Text
+  parentFirmOrGroup        String? @db.Text
+
+  // SECTION D - Services and experience
+  servicesOffered           String? @db.Text
+  yearsOfTaxExperience      Int?
+  professionalRegistrations String? @db.Text
+  typicalClientProfile      String? @db.Text
+  briefFirmProfile          String? @db.Text
+
+  // SECTION E - Company representatives
+  nominatedRepresentativeName  String? @db.VarChar(255)
+  nominatedRepresentativeEmail String? @db.VarChar(255)
+  nominatedRepresentativePhone String? @db.VarChar(30)
+
+  alternateRepresentativeName  String? @db.VarChar(255)
+  alternateRepresentativeEmail String? @db.VarChar(255)
+  alternateRepresentativePhone String? @db.VarChar(30)
+
+  // SECTION F - Fit and proper declaration
+  fitProperF1 Boolean?
+  fitProperF2 Boolean?
+  fitProperF3 Boolean?
+  fitProperF4 Boolean?
+  fitProperF5 Boolean?
+  fitProperF6 Boolean?
+
+  fitProperDetails String? @db.Text
+
+  // SECTION H - Declaration
+  declarationAccepted Boolean @default(false)
+
+  authorisedSignatoryOne String?   @db.VarChar(255)
+  authorisedSignatoryTwo String?   @db.VarChar(255)
+  resolutionDate         DateTime? @db.Date
+
+  // SECTION I - Fees and payment
+  applicationFee     Decimal? @db.Decimal(10, 2)
+  annualSubscription Decimal? @db.Decimal(10, 2)
+  feeCurrency        String?  @db.VarChar(10)
+
+  totalAmountPaid  Decimal?  @db.Decimal(10, 2)
+  paymentMethod    String?   @db.VarChar(50)
+  paymentReference String?   @db.VarChar(255)
+  paymentDate      DateTime? @db.Date
+
+  // Application management
+  status      ApplicationStatus @default(DRAFT)
+  submittedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents CorporateDocument[]
+
+  @@index([status])
+  @@index([registeredName])
+  @@index([registrationNumber])
+  @@index([createdAt])
+}
+
+// CORPORATE DOCUMENTS
+
+model CorporateDocument {
+  id            String @id @default(uuid()) @db.VarChar(36)
+  applicationId String @db.VarChar(36)
+
+  documentType String @db.VarChar(100)
+
+  originalName   String  @db.VarChar(255)
+  storedFileName String  @db.VarChar(255)
+  filePath       String  @db.VarChar(1000)
+  mimeType       String? @db.VarChar(100)
+  fileSize       BigInt?
+
+  uploadedAt DateTime @default(now())
+
+  application CorporateApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([applicationId, documentType])
+}
