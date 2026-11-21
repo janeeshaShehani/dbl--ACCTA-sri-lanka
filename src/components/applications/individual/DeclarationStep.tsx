@@ -1,8 +1,11 @@
+"use client";
+
 import type { IndividualApplication } from "@/types/application";
 
 type Props = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 type DeclarationField =
@@ -20,7 +23,11 @@ type DeclarationItem = {
   text: string;
 };
 
-export default function DeclarationStep({ data, updateData }: Props) {
+export default function DeclarationStep({
+  data,
+  updateData,
+  validationErrors = {},
+}: Props) {
   const declarations: DeclarationItem[] = [
     {
       id: "declarationInformationAccepted",
@@ -65,6 +72,15 @@ export default function DeclarationStep({ data, updateData }: Props) {
     } as Partial<IndividualApplication>);
   };
 
+  const handleFieldChange = (
+    field: "declarationName" | "declarationDate" | "declarationPlace",
+    value: string
+  ) => {
+    updateData({
+      [field]: value,
+    });
+  };
+
   return (
     <div>
       {/* Section heading */}
@@ -85,23 +101,38 @@ export default function DeclarationStep({ data, updateData }: Props) {
 
       {/* Declaration checkboxes */}
       <div className="mt-6 space-y-3">
-        {declarations.map((item) => (
-          <label
-            key={item.id}
-            className="flex cursor-pointer gap-3 rounded-md border border-accta-border bg-white p-4 text-sm text-accta-ink"
-          >
-            <input
-              type="checkbox"
-              checked={data[item.id]}
-              onChange={(e) =>
-                handleDeclarationChange(item.id, e.target.checked)
-              }
-              className="mt-1 h-4 w-4 accent-accta-maroon"
-            />
+        {declarations.map((item) => {
+          const hasError = Boolean(validationErrors[item.id]);
 
-            <span className="leading-6">{item.text}</span>
-          </label>
-        ))}
+          return (
+            <div key={item.id}>
+              <label
+                className={`flex cursor-pointer gap-3 rounded-md border bg-white p-4 text-sm text-accta-ink transition ${
+                  hasError
+                    ? "border-red-500"
+                    : "border-accta-border"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={data[item.id]}
+                  onChange={(e) =>
+                    handleDeclarationChange(item.id, e.target.checked)
+                  }
+                  className="mt-1 h-4 w-4 shrink-0 accent-accta-maroon"
+                />
+
+                <span className="leading-6">{item.text}</span>
+              </label>
+
+              {validationErrors[item.id] && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors[item.id]}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Declaration details */}
@@ -116,55 +147,101 @@ export default function DeclarationStep({ data, updateData }: Props) {
         </p>
 
         <div className="mt-5 grid gap-5 md:grid-cols-3">
+          {/* Full name */}
           <div>
-            <label className="text-sm font-semibold text-accta-ink">
+            <label
+              htmlFor="declarationName"
+              className="text-sm font-semibold text-accta-ink"
+            >
               Full name
             </label>
 
             <input
+              id="declarationName"
               type="text"
               value={data.declarationName}
               onChange={(e) =>
-                updateData({ declarationName: e.target.value })
+                handleFieldChange("declarationName", e.target.value)
               }
               placeholder="Enter your full name"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none transition focus:border-accta-maroon ${
+                validationErrors.declarationName
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             />
+
+            {validationErrors.declarationName && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.declarationName}
+              </p>
+            )}
           </div>
 
+          {/* Date */}
           <div>
-            <label className="text-sm font-semibold text-accta-ink">
+            <label
+              htmlFor="declarationDate"
+              className="text-sm font-semibold text-accta-ink"
+            >
               Date
             </label>
 
             <input
+              id="declarationDate"
               type="date"
               value={data.declarationDate}
               onChange={(e) =>
-                updateData({ declarationDate: e.target.value })
+                handleFieldChange("declarationDate", e.target.value)
               }
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none transition focus:border-accta-maroon ${
+                validationErrors.declarationDate
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             />
+
+            {validationErrors.declarationDate && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.declarationDate}
+              </p>
+            )}
           </div>
 
+          {/* Place */}
           <div>
-            <label className="text-sm font-semibold text-accta-ink">
+            <label
+              htmlFor="declarationPlace"
+              className="text-sm font-semibold text-accta-ink"
+            >
               Place
             </label>
 
             <input
+              id="declarationPlace"
               type="text"
               value={data.declarationPlace}
               onChange={(e) =>
-                updateData({ declarationPlace: e.target.value })
+                handleFieldChange("declarationPlace", e.target.value)
               }
               placeholder="Enter your city or location"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none transition focus:border-accta-maroon ${
+                validationErrors.declarationPlace
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             />
+
+            {validationErrors.declarationPlace && (
+              <p className="mt-1 text-sm text-red-600">
+                {validationErrors.declarationPlace}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
+      {/* Reminder */}
       <p className="mt-6 text-xs text-accta-muted">
         All declarations must be accepted before the application can be
         submitted.

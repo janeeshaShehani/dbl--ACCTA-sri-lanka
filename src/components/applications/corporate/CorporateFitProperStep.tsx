@@ -3,6 +3,7 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 const questions = [
@@ -41,6 +42,7 @@ const questions = [
 export default function CorporateFitProperStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
   const handleAnswerChange = (
     questionId: string,
@@ -53,6 +55,17 @@ export default function CorporateFitProperStep({
       },
     });
   };
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
+  const hasYesAnswer = Object.values(
+    data.fitAndProperAnswers
+  ).some((answer) => answer === "yes");
 
   return (
     <div>
@@ -74,62 +87,104 @@ export default function CorporateFitProperStep({
 
       {/* Questions */}
       <div className="mt-6 space-y-5">
-        {questions.map((item, index) => (
-          <div
-            key={item.id}
-            className="rounded-md border border-accta-border p-5"
-          >
-            <p className="text-sm font-medium leading-6 text-accta-ink">
-              <span className="mr-2 font-bold text-accta-maroon">
-                F{index + 1}.
-              </span>
-              {item.question}
-            </p>
+        {questions.map((item, index) => {
+          const hasError = Boolean(validationErrors[item.id]);
 
-            <div className="mt-4 flex gap-6">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="yes"
-                  checked={data.fitAndProperAnswers[item.id] === "yes"}
-                  onChange={() => handleAnswerChange(item.id, "yes")}
-                  className="h-4 w-4 accent-accta-maroon"
-                />
-                Yes
-              </label>
+          return (
+            <div
+              key={item.id}
+              className={`rounded-md border p-5 ${
+                hasError
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
+            >
+              <p className="text-sm font-medium leading-6 text-accta-ink">
+                <span className="mr-2 font-bold text-accta-maroon">
+                  F{index + 1}.
+                </span>
 
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="no"
-                  checked={data.fitAndProperAnswers[item.id] === "no"}
-                  onChange={() => handleAnswerChange(item.id, "no")}
-                  className="h-4 w-4 accent-accta-maroon"
-                />
-                No
-              </label>
+                {item.question}
+              </p>
+
+              <div className="mt-4 flex gap-6">
+                {/* Yes */}
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
+                  <input
+                    type="radio"
+                    name={item.id}
+                    value="yes"
+                    checked={
+                      data.fitAndProperAnswers[item.id] === "yes"
+                    }
+                    onChange={() =>
+                      handleAnswerChange(item.id, "yes")
+                    }
+                    className="h-4 w-4 accent-accta-maroon"
+                  />
+
+                  Yes
+                </label>
+
+                {/* No */}
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
+                  <input
+                    type="radio"
+                    name={item.id}
+                    value="no"
+                    checked={
+                      data.fitAndProperAnswers[item.id] === "no"
+                    }
+                    onChange={() =>
+                      handleAnswerChange(item.id, "no")
+                    }
+                    className="h-4 w-4 accent-accta-maroon"
+                  />
+
+                  No
+                </label>
+              </div>
+
+              {showError(item.id)}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Details */}
       <div className="mt-6">
         <label className="text-sm font-semibold text-accta-ink">
-          Details of any &quot;Yes&quot; answer
+          Details of any &quot;Yes&quot; answer{" "}
+          <span className="text-red-500">*</span>
         </label>
+
+        <p className="mt-1 text-sm text-accta-muted">
+          {hasYesAnswer
+            ? "Please provide full details of each question answered Yes."
+            : "If all answers are No, enter N/A."}
+        </p>
 
         <textarea
           value={data.fitAndProperDetails}
           onChange={(e) =>
-            updateData({ fitAndProperDetails: e.target.value })
+            updateData({
+              fitAndProperDetails: e.target.value,
+            })
           }
-          placeholder="Provide full details of any question answered Yes. If all answers are No, enter N/A."
+          placeholder={
+            hasYesAnswer
+              ? "Provide full details of the Yes answer(s)"
+              : "Enter N/A if all answers are No"
+          }
           rows={6}
-          className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+          className={`mt-2 w-full rounded-md border ${
+            validationErrors.fitAndProperDetails
+              ? "border-red-500"
+              : "border-accta-border"
+          } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`}
         />
+
+        {showError("fitAndProperDetails")}
       </div>
     </div>
   );

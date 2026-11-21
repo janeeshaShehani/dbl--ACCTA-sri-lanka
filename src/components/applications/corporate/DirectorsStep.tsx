@@ -3,9 +3,28 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
-export default function DirectorsStep({ data, updateData }: Props) {
+export default function DirectorsStep({
+  data,
+  updateData,
+  validationErrors = {},
+}: Props) {
+  const textareaClass = (field: string) =>
+    `mt-2 w-full rounded-md border ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section heading */}
@@ -44,8 +63,10 @@ export default function DirectorsStep({ data, updateData }: Props) {
             }
             placeholder="Example: John Silva – Managing Director"
             rows={5}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={textareaClass("directors")}
           />
+
+          {showError("directors")}
         </div>
 
         {/* Shareholders */}
@@ -68,8 +89,10 @@ export default function DirectorsStep({ data, updateData }: Props) {
             }
             placeholder="Example: Jane Perera – 60% ownership"
             rows={5}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={textareaClass("shareholders")}
           />
+
+          {showError("shareholders")}
         </div>
 
         {/* Parent firm */}
@@ -92,8 +115,10 @@ export default function DirectorsStep({ data, updateData }: Props) {
             }
             placeholder="Enter parent firm or group details, or N/A"
             rows={4}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={textareaClass("parentFirm")}
           />
+
+          {showError("parentFirm")}
         </div>
       </div>
     </div>

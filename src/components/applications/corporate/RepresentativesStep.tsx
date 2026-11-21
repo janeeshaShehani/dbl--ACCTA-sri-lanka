@@ -3,12 +3,28 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function RepresentativesStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section heading */}
@@ -39,9 +55,10 @@ export default function RepresentativesStep({
         </p>
 
         <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {/* Full name */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Full name
+              Full name <span className="text-red-500">*</span>
             </label>
 
             <input
@@ -53,13 +70,16 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="Enter the representative's full name"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("nominatedRepresentative")}
             />
+
+            {showError("nominatedRepresentative")}
           </div>
 
+          {/* Email */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Email address
+              Email address <span className="text-red-500">*</span>
             </label>
 
             <input
@@ -71,13 +91,16 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="representative@example.com"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("nominatedEmail")}
             />
+
+            {showError("nominatedEmail")}
           </div>
 
+          {/* Phone */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Phone number
+              Phone number <span className="text-red-500">*</span>
             </label>
 
             <input
@@ -89,8 +112,10 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="+94 XX XXX XXXX"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("nominatedPhone")}
             />
+
+            {showError("nominatedPhone")}
           </div>
         </div>
       </div>
@@ -107,6 +132,7 @@ export default function RepresentativesStep({
         </p>
 
         <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {/* Full name */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
               Full name
@@ -121,10 +147,13 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="Enter the alternate representative's full name"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("alternateRepresentative")}
             />
+
+            {showError("alternateRepresentative")}
           </div>
 
+          {/* Email */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
               Email address
@@ -139,10 +168,13 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="alternate@example.com"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("alternateEmail")}
             />
+
+            {showError("alternateEmail")}
           </div>
 
+          {/* Phone */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
               Phone number
@@ -157,8 +189,10 @@ export default function RepresentativesStep({
                 })
               }
               placeholder="+94 XX XXX XXXX"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("alternatePhone")}
             />
+
+            {showError("alternatePhone")}
           </div>
         </div>
       </div>

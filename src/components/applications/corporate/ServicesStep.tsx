@@ -3,9 +3,28 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
-export default function ServicesStep({ data, updateData }: Props) {
+export default function ServicesStep({
+  data,
+  updateData,
+  validationErrors = {},
+}: Props) {
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section heading */}
@@ -28,7 +47,8 @@ export default function ServicesStep({ data, updateData }: Props) {
         {/* Services offered */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
-            Tax and professional services offered
+            Tax and professional services offered{" "}
+            <span className="text-red-500">*</span>
           </label>
 
           <p className="mt-1 text-sm text-accta-muted">
@@ -45,8 +65,10 @@ export default function ServicesStep({ data, updateData }: Props) {
             }
             placeholder="Example: Tax advisory, tax compliance, accounting and business consultancy services"
             rows={5}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("services")}
           />
+
+          {showError("services")}
         </div>
 
         {/* Experience */}
@@ -69,8 +91,10 @@ export default function ServicesStep({ data, updateData }: Props) {
               })
             }
             placeholder="Example: 10 years"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("yearsInTaxation")}
           />
+
+          {showError("yearsInTaxation")}
         </div>
 
         {/* Professional registrations */}
@@ -93,8 +117,10 @@ export default function ServicesStep({ data, updateData }: Props) {
             }
             placeholder="Enter registration, licence, or professional membership details"
             rows={4}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registrations")}
           />
+
+          {showError("registrations")}
         </div>
 
         {/* Client profile */}
@@ -117,8 +143,10 @@ export default function ServicesStep({ data, updateData }: Props) {
             }
             placeholder="Example: Small and medium enterprises, individuals and corporate clients"
             rows={4}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("clientProfile")}
           />
+
+          {showError("clientProfile")}
         </div>
 
         {/* Firm profile */}
@@ -141,8 +169,10 @@ export default function ServicesStep({ data, updateData }: Props) {
             }
             placeholder="Provide a brief profile of your organisation"
             rows={5}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("firmProfile")}
           />
+
+          {showError("firmProfile")}
         </div>
       </div>
     </div>

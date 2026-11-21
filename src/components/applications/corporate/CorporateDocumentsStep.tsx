@@ -1,11 +1,12 @@
 "use client";
 
-import type { ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import type { CorporateApplication } from "@/types/application";
 
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 const documents = [
@@ -74,7 +75,10 @@ const ALLOWED_FILE_TYPES = [
 export default function CorporateDocumentsStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
+  const [fileErrors, setFileErrors] = useState<Record<string, string>>({});
+
   const handleFileChange = (
     documentId: string,
     event: ChangeEvent<HTMLInputElement>
@@ -83,28 +87,65 @@ export default function CorporateDocumentsStep({
 
     if (!file) return;
 
+    // Clear previous error
+    setFileErrors((prev) => ({
+      ...prev,
+      [documentId]: "",
+    }));
+
+    // Validate file type
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      alert("Please upload a PDF, JPG, or PNG file.");
+      setFileErrors((prev) => ({
+        ...prev,
+        [documentId]: "Please upload a PDF, JPG, or PNG file.",
+      }));
+
       event.target.value = "";
       return;
     }
 
+    // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      alert("File must be smaller than 10 MB.");
+      setFileErrors((prev) => ({
+        ...prev,
+        [documentId]: "File must be smaller than 10 MB.",
+      }));
+
       event.target.value = "";
       return;
     }
 
+    // Save file
     updateData({
       documents: {
         ...data.documents,
         [documentId]: file,
       },
     });
+
+    event.target.value = "";
+  };
+
+  const handleRemoveFile = (documentId: string) => {
+    const updatedDocuments = {
+      ...data.documents,
+    };
+
+    delete updatedDocuments[documentId];
+
+    updateData({
+      documents: updatedDocuments,
+    });
+
+    setFileErrors((prev) => ({
+      ...prev,
+      [documentId]: "",
+    }));
   };
 
   return (
     <div>
+      {/* Section heading */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION G
@@ -121,62 +162,101 @@ export default function CorporateDocumentsStep({
         </p>
       </div>
 
+      {/* Documents */}
       <div className="mt-6 space-y-4">
         {documents.map((document) => {
           const selectedFile = data.documents[document.id];
 
+          const hasError =
+            Boolean(validationErrors[document.id]) ||
+            Boolean(fileErrors[document.id]);
+
           return (
             <div
               key={document.id}
-              className="flex flex-col gap-3 rounded-md border border-accta-border p-5 sm:flex-row sm:items-center sm:justify-between"
+              className={`rounded-md border p-5 ${
+                hasError
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             >
-              <div className="flex-1">
-                <p className="text-sm font-medium text-accta-ink">
-                  {document.label}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {/* Document information */}
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-accta-ink">
+                    {document.label}
 
-                  {document.optional && (
-                    <span className="ml-2 text-xs font-normal text-accta-muted">
-                      (If applicable)
-                    </span>
-                  )}
-                </p>
+                    {!document.optional && (
+                      <span className="ml-1 text-red-500">*</span>
+                    )}
 
-                {selectedFile && (
-                  <p className="mt-1 text-xs text-green-600">
-                    File selected: {selectedFile.name}
+                    {document.optional && (
+                      <span className="ml-2 text-xs font-normal text-accta-muted">
+                        (If applicable)
+                      </span>
+                    )}
                   </p>
-                )}
-              </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <label
-                  htmlFor={document.id}
-                  className="cursor-pointer rounded-md bg-accta-maroon px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                  Choose file
-                </label>
+                  {selectedFile && (
+                    <p className="mt-2 text-xs text-green-600">
+                      Selected: {selectedFile.name}
+                    </p>
+                  )}
 
-                <input
-                  id={document.id}
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={(event) =>
-                    handleFileChange(document.id, event)
-                  }
-                />
+                  {validationErrors[document.id] && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {validationErrors[document.id]}
+                    </p>
+                  )}
 
-                <span className="max-w-[180px] truncate text-sm text-accta-muted">
-                  {selectedFile ? "Uploaded" : "No file chosen"}
-                </span>
+                  {fileErrors[document.id] && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {fileErrors[document.id]}
+                    </p>
+                  )}
+                </div>
+
+                {/* File controls */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <label
+                    htmlFor={document.id}
+                    className="cursor-pointer rounded-md bg-accta-maroon px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                  >
+                    {selectedFile ? "Replace file" : "Choose file"}
+                  </label>
+
+                  <input
+                    id={document.id}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                    onChange={(event) =>
+                      handleFileChange(document.id, event)
+                    }
+                  />
+
+                  {selectedFile && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleRemoveFile(document.id)
+                      }
+                      className="rounded-md border border-accta-border px-3 py-2 text-sm text-accta-muted transition hover:border-red-500 hover:text-red-600"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
+      {/* Note */}
       <p className="mt-5 text-xs text-accta-muted">
         Please ensure all uploaded copies are clear and readable.
+        Required documents are marked with an asterisk (*).
       </p>
     </div>
   );

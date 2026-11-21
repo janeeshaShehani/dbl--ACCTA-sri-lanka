@@ -3,12 +3,26 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function EntityDetailsStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border ${
+      validationErrors[field] ? "border-red-500" : "border-accta-border"
+    } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section heading */}
@@ -29,6 +43,7 @@ export default function EntityDetailsStep({
 
       {/* Basic entity details */}
       <div className="mt-6 grid gap-5 md:grid-cols-2">
+        {/* Registered name */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Registered name
@@ -41,10 +56,13 @@ export default function EntityDetailsStep({
               updateData({ registeredName: e.target.value })
             }
             placeholder="Enter the registered name"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registeredName")}
           />
+
+          {showError("registeredName")}
         </div>
 
+        {/* Trading name */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Trading name
@@ -57,10 +75,11 @@ export default function EntityDetailsStep({
               updateData({ tradingName: e.target.value })
             }
             placeholder="Enter the trading name, if applicable"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("tradingName")}
           />
         </div>
 
+        {/* Legal form */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Legal form
@@ -71,7 +90,7 @@ export default function EntityDetailsStep({
             onChange={(e) =>
               updateData({ legalForm: e.target.value })
             }
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("legalForm")}
           >
             <option value="">Select legal form</option>
             <option value="partnership">Partnership</option>
@@ -83,8 +102,11 @@ export default function EntityDetailsStep({
             </option>
             <option value="other">Other legal entity</option>
           </select>
+
+          {showError("legalForm")}
         </div>
 
+        {/* Registration number */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Registration number
@@ -97,10 +119,13 @@ export default function EntityDetailsStep({
               updateData({ registrationNumber: e.target.value })
             }
             placeholder="Enter the registration number"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registrationNumber")}
           />
+
+          {showError("registrationNumber")}
         </div>
 
+        {/* Registration date */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Registration date
@@ -112,10 +137,13 @@ export default function EntityDetailsStep({
             onChange={(e) =>
               updateData({ registrationDate: e.target.value })
             }
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registrationDate")}
           />
+
+          {showError("registrationDate")}
         </div>
 
+        {/* Country */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Country of registration
@@ -128,10 +156,13 @@ export default function EntityDetailsStep({
               updateData({ registrationCountry: e.target.value })
             }
             placeholder="Enter the country of registration"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registrationCountry")}
           />
+
+          {showError("registrationCountry")}
         </div>
 
+        {/* TIN */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             TIN number
@@ -144,10 +175,11 @@ export default function EntityDetailsStep({
               updateData({ tinNumber: e.target.value })
             }
             placeholder="Enter the TIN number"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("tinNumber")}
           />
         </div>
 
+        {/* VAT */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             VAT number
@@ -160,10 +192,11 @@ export default function EntityDetailsStep({
               updateData({ vatNumber: e.target.value })
             }
             placeholder="Enter the VAT number, if applicable"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("vatNumber")}
           />
         </div>
 
+        {/* Website */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Website
@@ -172,12 +205,17 @@ export default function EntityDetailsStep({
           <input
             type="url"
             value={data.website}
-            onChange={(e) => updateData({ website: e.target.value })}
+            onChange={(e) =>
+              updateData({ website: e.target.value })
+            }
             placeholder="https://www.example.com"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("website")}
           />
+
+          {showError("website")}
         </div>
 
+        {/* Number of employees */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Number of employees
@@ -187,15 +225,20 @@ export default function EntityDetailsStep({
             type="number"
             min="0"
             value={data.staffCount}
-            onChange={(e) => updateData({ staffCount: e.target.value })}
+            onChange={(e) =>
+              updateData({ staffCount: e.target.value })
+            }
             placeholder="Enter the number of employees"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("staffCount")}
           />
+
+          {showError("staffCount")}
         </div>
       </div>
 
       {/* Addresses */}
       <div className="mt-6 grid gap-5">
+        {/* Registered address */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Registered address
@@ -208,10 +251,13 @@ export default function EntityDetailsStep({
             }
             rows={3}
             placeholder="Enter the registered address"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("registeredAddress")}
           />
+
+          {showError("registeredAddress")}
         </div>
 
+        {/* Trading address */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Trading address
@@ -224,7 +270,7 @@ export default function EntityDetailsStep({
             }
             rows={3}
             placeholder="Enter the trading address, if different"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("tradingAddress")}
           />
         </div>
       </div>
@@ -240,6 +286,7 @@ export default function EntityDetailsStep({
         </p>
 
         <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {/* Office phone */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
               Office phone
@@ -252,10 +299,13 @@ export default function EntityDetailsStep({
                 updateData({ officePhone: e.target.value })
               }
               placeholder="+94 XX XXX XXXX"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("officePhone")}
             />
+
+            {showError("officePhone")}
           </div>
 
+          {/* Official email */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
               Official email
@@ -268,8 +318,10 @@ export default function EntityDetailsStep({
                 updateData({ officialEmail: e.target.value })
               }
               placeholder="organisation@example.com"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("officialEmail")}
             />
+
+            {showError("officialEmail")}
           </div>
         </div>
       </div>

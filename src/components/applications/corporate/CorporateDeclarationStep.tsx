@@ -3,12 +3,28 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function CorporateDeclarationStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-2 text-sm text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section heading */}
@@ -35,22 +51,29 @@ export default function CorporateDeclarationStep({
 
       {/* Signatories */}
       <div className="mt-6 grid gap-5 md:grid-cols-2">
+        {/* Signatory One */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
-            Authorised signatory one
+            Authorised signatory one{" "}
+            <span className="text-red-500">*</span>
           </label>
 
           <input
             type="text"
             value={data.signatoryOne}
             onChange={(e) =>
-              updateData({ signatoryOne: e.target.value })
+              updateData({
+                signatoryOne: e.target.value,
+              })
             }
             placeholder="Enter full name"
-            className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("signatoryOne")}
           />
+
+          {showError("signatoryOne")}
         </div>
 
+        {/* Signatory Two */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Authorised signatory two
@@ -60,45 +83,67 @@ export default function CorporateDeclarationStep({
             type="text"
             value={data.signatoryTwo}
             onChange={(e) =>
-              updateData({ signatoryTwo: e.target.value })
+              updateData({
+                signatoryTwo: e.target.value,
+              })
             }
-            placeholder="Enter full name"
-            className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            placeholder="Enter full name (optional)"
+            className={inputClass("signatoryTwo")}
           />
+
+          {showError("signatoryTwo")}
         </div>
 
+        {/* Resolution Date */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
-            Resolution date
+            Resolution date <span className="text-red-500">*</span>
           </label>
 
           <input
             type="date"
             value={data.resolutionDate}
             onChange={(e) =>
-              updateData({ resolutionDate: e.target.value })
+              updateData({
+                resolutionDate: e.target.value,
+              })
             }
-            className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("resolutionDate")}
           />
+
+          {showError("resolutionDate")}
         </div>
       </div>
 
       {/* Confirmation */}
-      <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-md border border-accta-border p-4">
-        <input
-          type="checkbox"
-          checked={data.declarationAccepted}
-          onChange={(e) =>
-            updateData({ declarationAccepted: e.target.checked })
-          }
-          className="mt-1 h-4 w-4 accent-accta-maroon"
-        />
+      <div className="mt-6">
+        <label
+          className={`flex cursor-pointer items-start gap-3 rounded-md border p-4 ${
+            validationErrors.declarationAccepted
+              ? "border-red-500"
+              : "border-accta-border"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={data.declarationAccepted}
+            onChange={(e) =>
+              updateData({
+                declarationAccepted: e.target.checked,
+              })
+            }
+            className="mt-1 h-4 w-4 accent-accta-maroon"
+          />
 
-        <span className="text-sm leading-6 text-accta-muted">
-          I confirm that I am authorised to submit this application and that
-          all information provided is true and accurate.
-        </span>
-      </label>
+          <span className="text-sm leading-6 text-accta-muted">
+            I confirm that I am authorised to submit this application and that
+            all information provided is true and accurate.
+            <span className="ml-1 text-red-500">*</span>
+          </span>
+        </label>
+
+        {showError("declarationAccepted")}
+      </div>
     </div>
   );
 }

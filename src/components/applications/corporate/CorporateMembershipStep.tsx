@@ -3,11 +3,13 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function CorporateMembershipStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
   return (
     <div>
@@ -38,7 +40,13 @@ export default function CorporateMembershipStep({
 
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           {/* Partnership */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-md border border-accta-border p-4">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-md border p-4 ${
+              validationErrors.membershipCategory
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
+          >
             <input
               type="radio"
               name="membershipCategory"
@@ -58,7 +66,13 @@ export default function CorporateMembershipStep({
           </label>
 
           {/* Company */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-md border border-accta-border p-4">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-md border p-4 ${
+              validationErrors.membershipCategory
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
+          >
             <input
               type="radio"
               name="membershipCategory"
@@ -78,7 +92,13 @@ export default function CorporateMembershipStep({
           </label>
 
           {/* Other legal entity */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-md border border-accta-border p-4">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-md border p-4 ${
+              validationErrors.membershipCategory
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
+          >
             <input
               type="radio"
               name="membershipCategory"
@@ -96,6 +116,12 @@ export default function CorporateMembershipStep({
             </span>
           </label>
         </div>
+
+        {validationErrors.membershipCategory && (
+          <p className="mt-2 text-sm text-red-600">
+            {validationErrors.membershipCategory}
+          </p>
+        )}
       </div>
 
       {/* Other legal entity input */}
@@ -114,12 +140,22 @@ export default function CorporateMembershipStep({
               })
             }
             placeholder="Enter the type of legal entity"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={`mt-2 w-full rounded-md border ${
+              validationErrors.otherLegalEntity
+                ? "border-red-500"
+                : "border-accta-border"
+            } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`}
           />
+
+          {validationErrors.otherLegalEntity && (
+            <p className="mt-2 text-sm text-red-600">
+              {validationErrors.otherLegalEntity}
+            </p>
+          )}
         </div>
       )}
 
-      {/* Residency status */}
+      {/* Registration status */}
       <div className="mt-8 border-t border-accta-border pt-6">
         <label className="text-sm font-semibold text-accta-ink">
           Registration status
@@ -131,7 +167,13 @@ export default function CorporateMembershipStep({
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           {/* Sri Lanka */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-md border border-accta-border p-4">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-md border p-4 ${
+              validationErrors.residency
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
+          >
             <input
               type="radio"
               name="residency"
@@ -151,7 +193,13 @@ export default function CorporateMembershipStep({
           </label>
 
           {/* International */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-md border border-accta-border p-4">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-md border p-4 ${
+              validationErrors.residency
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
+          >
             <input
               type="radio"
               name="residency"
@@ -170,6 +218,12 @@ export default function CorporateMembershipStep({
           </label>
         </div>
 
+        {validationErrors.residency && (
+          <p className="mt-2 text-sm text-red-600">
+            {validationErrors.residency}
+          </p>
+        )}
+
         {/* Country input */}
         {data.residency === "international" && (
           <div className="mt-5">
@@ -186,8 +240,18 @@ export default function CorporateMembershipStep({
                 })
               }
               placeholder="Enter the country of registration"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={`mt-2 w-full rounded-md border ${
+                validationErrors.country
+                  ? "border-red-500"
+                  : "border-accta-border"
+              } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`}
             />
+
+            {validationErrors.country && (
+              <p className="mt-2 text-sm text-red-600">
+                {validationErrors.country}
+              </p>
+            )}
           </div>
         )}
       </div>

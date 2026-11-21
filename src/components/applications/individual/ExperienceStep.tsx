@@ -3,9 +3,14 @@ import type { IndividualApplication } from "@/types/application";
 type Props = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
-export default function ExperienceStep({ data, updateData }: Props) {
+export default function ExperienceStep({
+  data,
+  updateData,
+  validationErrors = {},
+}: Props) {
   return (
     <div>
       {/* Section Header */}
@@ -29,6 +34,7 @@ export default function ExperienceStep({ data, updateData }: Props) {
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Current employment
+            <span className="ml-1 text-accta-maroon">*</span>
           </label>
 
           <p className="mt-1 text-xs text-accta-muted">
@@ -45,14 +51,25 @@ Senior Tax Consultant
 ABC Consultants (Pvt) Ltd
 Responsible for providing tax advisory and compliance services.`}
             rows={6}
-            className="mt-3 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+              validationErrors.employmentDetails
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
           />
+
+          {validationErrors.employmentDetails && (
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.employmentDetails}
+            </p>
+          )}
         </div>
 
         {/* Previous and Relevant Experience */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Relevant professional experience
+            <span className="ml-1 text-accta-maroon">*</span>
           </label>
 
           <p className="mt-1 text-xs text-accta-muted">
@@ -65,14 +82,25 @@ Responsible for providing tax advisory and compliance services.`}
             onChange={(e) => updateData({ experience: e.target.value })}
             placeholder="Describe your relevant professional experience"
             rows={6}
-            className="mt-3 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+              validationErrors.experience
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
           />
+
+          {validationErrors.experience && (
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.experience}
+            </p>
+          )}
         </div>
 
         {/* Areas of Expertise */}
         <div>
           <label className="text-sm font-semibold text-accta-ink">
             Areas of expertise
+            <span className="ml-1 text-accta-maroon">*</span>
           </label>
 
           <p className="mt-1 text-xs text-accta-muted">
@@ -84,8 +112,18 @@ Responsible for providing tax advisory and compliance services.`}
             value={data.expertise}
             onChange={(e) => updateData({ expertise: e.target.value })}
             placeholder="Example: Tax advisory, tax compliance, corporate taxation"
-            className="mt-3 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+              validationErrors.expertise
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
           />
+
+          {validationErrors.expertise && (
+            <p className="mt-1 text-sm text-red-600">
+              {validationErrors.expertise}
+            </p>
+          )}
         </div>
 
         {/* Professional Statement */}

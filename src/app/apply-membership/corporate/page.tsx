@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+
 import ApplicationProgress from "@/components/applications/ApplicationProgress";
 import FormNavigation from "@/components/applications/FormNavigation";
 
@@ -98,90 +99,388 @@ export default function CorporateApplicationPage() {
     }));
   };
 
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+
   const validateCurrentStep = () => {
     switch (currentStep) {
       // Step 1 - Membership Category & Residency
-      case 1:
-        return (
-          formData.membershipCategory.trim() !== "" &&
-          (formData.membershipCategory !== "other" ||
-            formData.otherLegalEntity.trim() !== "") &&
-          (formData.residency === "sri-lanka" ||
-            formData.country.trim() !== "")
-        );
+      case 1: {
+          const step1Errors: Record<string, string> = {};
+
+          if (!formData.membershipCategory) {
+            step1Errors.membershipCategory =
+              "Please select an entity type.";
+          }
+
+          if (
+            formData.membershipCategory === "other" &&
+            !formData.otherLegalEntity.trim()
+          ) {
+            step1Errors.otherLegalEntity =
+              "Please specify the legal entity.";
+          }
+
+          if (!formData.residency) {
+            step1Errors.residency =
+              "Please select the registration status.";
+          }
+
+          if (
+            formData.residency === "international" &&
+            !formData.country.trim()
+          ) {
+            step1Errors.country =
+              "Please enter the country of registration.";
+          }
+
+          setValidationErrors(step1Errors);
+
+          return Object.keys(step1Errors).length === 0;
+        }
 
       // Step 2 - Entity Details
-      case 2:
-        return (
-          formData.registeredName.trim() !== "" &&
-          formData.legalForm.trim() !== "" &&
-          formData.registrationNumber.trim() !== "" &&
-          formData.registeredAddress.trim() !== ""
-        );
+      case 2: {
+          const step2Errors: Record<string, string> = {};
+
+          if (!formData.registeredName.trim()) {
+            step2Errors.registeredName =
+              "Please enter the registered name.";
+          }
+
+          if (!formData.legalForm) {
+            step2Errors.legalForm =
+              "Please select the legal form.";
+          }
+
+          if (!formData.registrationNumber.trim()) {
+            step2Errors.registrationNumber =
+              "Please enter the registration number.";
+          }
+
+          if (!formData.registrationDate) {
+            step2Errors.registrationDate =
+              "Please enter the registration date.";
+          } else if (
+            new Date(formData.registrationDate) > new Date()
+          ) {
+            step2Errors.registrationDate =
+              "Registration date cannot be in the future.";
+          }
+
+          if (!formData.registrationCountry.trim()) {
+            step2Errors.registrationCountry =
+              "Please enter the country of registration.";
+          }
+
+          if (!formData.registeredAddress.trim()) {
+            step2Errors.registeredAddress =
+              "Please enter the registered address.";
+          }
+
+          if (!formData.officePhone.trim()) {
+            step2Errors.officePhone =
+              "Please enter the office phone number.";
+          }
+
+          if (!formData.officialEmail.trim()) {
+            step2Errors.officialEmail =
+              "Please enter the official email address.";
+          } else if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+              formData.officialEmail
+            )
+          ) {
+            step2Errors.officialEmail =
+              "Please enter a valid email address.";
+          }
+
+          if (formData.website.trim()) {
+            const website = formData.website.trim();
+
+            const websiteRegex =
+              /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$/;
+
+            if (!websiteRegex.test(website)) {
+              step2Errors.website =
+                "Please enter a valid website URL (e.g. samurda.com).";
+            }
+          }
+
+          if (
+            formData.staffCount !== "" &&
+            Number(formData.staffCount) < 0
+          ) {
+            step2Errors.staffCount =
+              "Number of employees cannot be negative.";
+          }
+
+          setValidationErrors(step2Errors);
+
+          return Object.keys(step2Errors).length === 0;
+        }
 
       // Step 3 - Directors & Shareholders
-      case 3:
-        return formData.directors.trim() !== "";
+      case 3: {
+          const step3Errors: Record<string, string> = {};
+
+          if (!formData.directors.trim()) {
+            step3Errors.directors =
+              "Please provide the directors and key officers.";
+          }
+
+          if (!formData.shareholders.trim()) {
+            step3Errors.shareholders =
+              "Please provide the shareholders and ownership details.";
+          }
+
+          if (!formData.parentFirm.trim()) {
+            step3Errors.parentFirm =
+              "Please provide the parent firm details or enter N/A.";
+          }
+
+          setValidationErrors(step3Errors);
+
+          return Object.keys(step3Errors).length === 0;
+        }
 
       // Step 4 - Services & Experience
-      case 4:
-        return (
-          formData.services.trim() !== "" &&
-          formData.yearsInTaxation.trim() !== ""
-        );
+      case 4: {
+          const step4Errors: Record<string, string> = {};
+
+          if (!formData.services.trim()) {
+            step4Errors.services =
+              "Please describe the tax and professional services offered.";
+          }
+
+          setValidationErrors(step4Errors);
+
+          return Object.keys(step4Errors).length === 0;
+        }
 
       // Step 5 - Representatives
-      case 5:
-        return (
-          formData.nominatedRepresentative.trim() !== "" &&
-          formData.nominatedEmail.trim() !== ""
-        );
+      case 5: {
+          const step5Errors: Record<string, string> = {};
+
+          // Nominated representative
+          if (!formData.nominatedRepresentative.trim()) {
+            step5Errors.nominatedRepresentative =
+              "Please enter the nominated representative's full name.";
+          }
+
+          if (!formData.nominatedEmail.trim()) {
+            step5Errors.nominatedEmail =
+              "Please enter the nominated representative's email address.";
+          } else if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.nominatedEmail)
+          ) {
+            step5Errors.nominatedEmail =
+              "Please enter a valid email address.";
+          }
+
+          if (!formData.nominatedPhone.trim()) {
+            step5Errors.nominatedPhone =
+              "Please enter the nominated representative's phone number.";
+          }
+
+          // Alternate representative (optional)
+          const hasAlternateDetails =
+            formData.alternateRepresentative.trim() ||
+            formData.alternateEmail.trim() ||
+            formData.alternatePhone.trim();
+
+          if (hasAlternateDetails) {
+            if (!formData.alternateRepresentative.trim()) {
+              step5Errors.alternateRepresentative =
+                "Please enter the alternate representative's full name.";
+            }
+
+            if (!formData.alternateEmail.trim()) {
+              step5Errors.alternateEmail =
+                "Please enter the alternate representative's email address.";
+            } else if (
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.alternateEmail)
+            ) {
+              step5Errors.alternateEmail =
+                "Please enter a valid email address.";
+            }
+
+            if (!formData.alternatePhone.trim()) {
+              step5Errors.alternatePhone =
+                "Please enter the alternate representative's phone number.";
+            }
+          }
+
+          setValidationErrors(step5Errors);
+
+          return Object.keys(step5Errors).length === 0;
+        }
 
       // Step 6 - Fit & Proper
-      case 6: {
-        const answers = Object.values(formData.fitAndProperAnswers);
+        case 6: {
+          const step6Errors: Record<string, string> = {};
 
-        return (
-          answers.length > 0 &&
-          answers.every(
-            (answer) => answer === "yes" || answer === "no"
-          ) &&
-          formData.fitAndProperDetails.trim() !== ""
-        );
-      }
+          // Validate all six questions
+          const questions = ["f1", "f2", "f3", "f4", "f5", "f6"];
+
+          questions.forEach((questionId) => {
+            if (!formData.fitAndProperAnswers[questionId]) {
+              step6Errors[questionId] =
+                "Please select Yes or No.";
+            }
+          });
+
+          // Validate details
+          const hasYesAnswer = Object.values(
+            formData.fitAndProperAnswers
+          ).some((answer) => answer === "yes");
+
+          if (!formData.fitAndProperDetails.trim()) {
+            step6Errors.fitAndProperDetails = hasYesAnswer
+              ? "Please provide details of the Yes answer(s)."
+              : "Please enter N/A if all answers are No.";
+          } else if (
+            !hasYesAnswer &&
+            formData.fitAndProperDetails.trim().toUpperCase() !== "N/A"
+          ) {
+            step6Errors.fitAndProperDetails =
+              "If all answers are No, please enter N/A.";
+          }
+
+          setValidationErrors(step6Errors);
+
+          return Object.keys(step6Errors).length === 0;
+        }
 
       // Step 7 - Supporting Documents
-      case 7:
-        return (
-          formData.documents.incorporation instanceof File &&
-          formData.documents.directors instanceof File &&
-          formData.documents.boardResolution instanceof File &&
-          formData.documents.companyProfile instanceof File &&
-          formData.documents.taxationEvidence instanceof File &&
-          formData.documents.irdRegistration instanceof File &&
-          formData.documents.representativeMembership instanceof File &&
-          formData.documents.identityDocuments instanceof File &&
-          formData.documents.auditedStatements instanceof File &&
-          formData.documents.paymentProof instanceof File
-        );
+      case 7: {
+        const step7Errors: Record<string, string> = {};
+
+        const requiredDocuments = [
+          "incorporation",
+          "directors",
+          "boardResolution",
+          "companyProfile",
+          "taxationEvidence",
+          "irdRegistration",
+          "representativeMembership",
+          "identityDocuments",
+          "auditedStatements",
+          "paymentProof",
+        ];
+
+        requiredDocuments.forEach((documentId) => {
+          if (!formData.documents[documentId]) {
+            step7Errors[documentId] =
+              "Please upload this required document.";
+          }
+        });
+
+        setValidationErrors(step7Errors);
+
+        return Object.keys(step7Errors).length === 0;
+      }
 
       // Step 8 - Declaration
-      case 8:
-        return (
-          formData.signatoryOne.trim() !== "" &&
-          formData.signatoryTwo.trim() !== "" &&
-          formData.resolutionDate !== "" &&
-          formData.declarationAccepted
-        );
+      case 8: {
+        const step8Errors: Record<string, string> = {};
+
+        // Authorised signatory one
+        if (!formData.signatoryOne.trim()) {
+          step8Errors.signatoryOne =
+            "Please enter the name of the authorised signatory.";
+        }
+
+        // Resolution date
+        if (!formData.resolutionDate) {
+          step8Errors.resolutionDate =
+            "Please select the resolution date.";
+        } else {
+          const selectedDate = new Date(
+            `${formData.resolutionDate}T00:00:00`
+          );
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          if (selectedDate > today) {
+            step8Errors.resolutionDate =
+              "Resolution date cannot be in the future.";
+          }
+        }
+
+        // Declaration confirmation
+        if (!formData.declarationAccepted) {
+          step8Errors.declarationAccepted =
+            "You must confirm the declaration before proceeding.";
+        }
+
+        setValidationErrors(step8Errors);
+
+        return Object.keys(step8Errors).length === 0;
+      }
 
       // Step 9 - Fees & Payment
-      case 9:
-        return (
-          formData.totalAmountPaid.trim() !== "" &&
-          formData.paymentMethod.trim() !== "" &&
-          formData.paymentReference.trim() !== "" &&
-          formData.paymentDate !== ""
-        );
+      case 9: {
+        const step9Errors: Record<string, string> = {};
+
+        const expectedAmount = formData.residency === "sri-lanka"
+          ? 20000
+          : 200;
+
+        // Total amount paid
+        if (!formData.totalAmountPaid.trim()) {
+          step9Errors.totalAmountPaid =
+            "Please enter the total amount paid.";
+        } else {
+          const enteredAmount = Number(
+            formData.totalAmountPaid.replace(/[^0-9.]/g, "")
+          );
+
+          if (isNaN(enteredAmount)) {
+            step9Errors.totalAmountPaid =
+              "Please enter a valid payment amount.";
+          } else if (enteredAmount !== expectedAmount) {
+            step9Errors.totalAmountPaid =
+              `The expected total fee is ${formData.residency === "sri-lanka" ? "Rs. 20,000" : "USD 200"}.`;
+          }
+        }
+
+        // Payment method
+        if (!formData.paymentMethod) {
+          step9Errors.paymentMethod =
+            "Please select a payment method.";
+        }
+
+        // Payment reference
+        if (!formData.paymentReference.trim()) {
+          step9Errors.paymentReference =
+            "Please enter the payment reference number.";
+        }
+
+        // Payment date
+        if (!formData.paymentDate) {
+          step9Errors.paymentDate =
+            "Please select the payment date.";
+        } else {
+          const selectedDate = new Date(
+            `${formData.paymentDate}T00:00:00`
+          );
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          if (selectedDate > today) {
+            step9Errors.paymentDate =
+              "Payment date cannot be in the future.";
+          }
+        }
+
+        setValidationErrors(step9Errors);
+
+        return Object.keys(step9Errors).length === 0;
+      }
 
       default:
         return true;
@@ -273,7 +572,7 @@ export default function CorporateApplicationPage() {
     // STEP 4: Save the application
     // --------------------------------------------
     const response = await fetch(
-      "/api/apply-membership-applications",
+       "/api/apply-corporate",
       {
         method: "POST",
         headers: {
@@ -346,6 +645,7 @@ export default function CorporateApplicationPage() {
               <EntityDetailsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -353,6 +653,7 @@ export default function CorporateApplicationPage() {
               <DirectorsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -360,6 +661,7 @@ export default function CorporateApplicationPage() {
               <ServicesStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -367,6 +669,7 @@ export default function CorporateApplicationPage() {
               <RepresentativesStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -374,6 +677,7 @@ export default function CorporateApplicationPage() {
               <CorporateFitProperStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -381,6 +685,7 @@ export default function CorporateApplicationPage() {
               <CorporateDocumentsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -388,6 +693,7 @@ export default function CorporateApplicationPage() {
               <CorporateDeclarationStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -395,6 +701,7 @@ export default function CorporateApplicationPage() {
               <CorporateFeesStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
           </div>

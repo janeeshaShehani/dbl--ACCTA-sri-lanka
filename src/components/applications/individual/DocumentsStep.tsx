@@ -1,11 +1,14 @@
+
 "use client";
 
 import { useState } from "react";
+import type { ChangeEvent } from "react";
 import type { IndividualApplication } from "@/types/application";
 
 type DocumentsStepProps = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 type DocumentItem = {
@@ -34,8 +37,7 @@ const documents: DocumentItem[] = [
   },
   {
     id: "professional",
-    label:
-      "Professional membership certificates and current good-standing letters",
+    label: "Professional membership certificates and current good-standing letters",
     requiredFor: "Where claimed",
     multiple: true,
   },
@@ -46,8 +48,7 @@ const documents: DocumentItem[] = [
   },
   {
     id: "employerLetters",
-    label:
-      "Employer letter(s) confirming position, period and taxation duties",
+    label: "Employer letter(s) confirming position, period and taxation duties",
     requiredFor: "Associate, Fellow, mature entry",
     multiple: true,
   },
@@ -81,45 +82,114 @@ const documents: DocumentItem[] = [
   },
   {
     id: "currentStudies",
-    label:
-      "Evidence of current studies (e.g. AAT, CA, CTA, CITSL, ACCA, CMA, HNDA or undergraduate studies)",
+    label: "Evidence of current studies (e.g. AAT, CA, CTA, CITSL, ACCA, CMA, HNDA or undergraduate studies)",
     requiredFor: "Affiliate",
     multiple: true,
-  },
-  {
-    id: "payment",
-    label: "Proof of payment",
-    requiredFor: "All members",
   },
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_TOTAL_FILES = 30;
+
+const ALLOWED_EXTENSIONS = [".pdf", ".jpg", ".jpeg"];
+
+const getFileExtension = (fileName: string) =>
+  fileName.toLowerCase().slice(fileName.lastIndexOf("."));
+
+const isValidFileType = (file: File) => {
+  const extension = getFileExtension(file.name);
+
+  if (!ALLOWED_EXTENSIONS.includes(extension)) {
+    return false;
+  }
+
+  // Allow an empty MIME type because some browsers do not provide it.
+  if (!file.type) {
+    return true;
+  }
+
+  if (extension === ".pdf") {
+    return file.type === "application/pdf";
+  }
+
+  return file.type === "image/jpeg";
+};
 
 export default function DocumentsStep({
   data,
   updateData,
+  validationErrors = {},
 }: DocumentsStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const totalSelectedFiles = Object.values(data.documents).reduce(
+    (total, files) => total + (files?.length ?? 0),
+    0
+  );
+
   const handleFileChange = (
     documentId: string,
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     multiple: boolean
   ) => {
     const selectedFiles = Array.from(event.target.files ?? []);
 
-    if (selectedFiles.length === 0) {
+    if (selectedFiles.length === 0) return;
+
+    const existingFiles: File[] = data.documents[documentId] ?? [];
+
+    const invalidFile = selectedFiles.find(
+      (file) => !isValidFileType(file)
+    );
+
+    if (invalidFile) {
+      setErrors((previous) => ({
+        ...previous,
+        [documentId]: `"${invalidFile.name}" is not a valid file. Please upload PDF or JPG files only.`,
+      }));
+
+      event.target.value = "";
       return;
     }
 
     const oversizedFile = selectedFiles.find(
-      (file: File) => file.size > MAX_FILE_SIZE
+      (file) => file.size === 0 || file.size > MAX_FILE_SIZE
     );
 
     if (oversizedFile) {
       setErrors((previous) => ({
         ...previous,
-        [documentId]: `"${oversizedFile.name}" is larger than 10 MB.`,
+        [documentId]:
+          oversizedFile.size === 0
+            ? `"${oversizedFile.name}" is empty. Please choose another file.`
+            : `"${oversizedFile.name}" is larger than 10 MB. Please choose a smaller file.`,
+      }));
+
+      event.target.value = "";
+      return;
+    }
+
+    if (!multiple && selectedFiles.length > 1) {
+      setErrors((previous) => ({
+        ...previous,
+        [documentId]: "Only one file can be uploaded in this category.",
+      }));
+
+      event.target.value = "";
+      return;
+    }
+
+    const updatedFiles = multiple
+      ? [...existingFiles, ...selectedFiles]
+      : [selectedFiles[0]];
+
+    const updatedTotal =
+      totalSelectedFiles - existingFiles.length + updatedFiles.length;
+
+    if (updatedTotal > MAX_TOTAL_FILES) {
+      setErrors((previous) => ({
+        ...previous,
+        [documentId]: `You can upload a maximum of ${MAX_TOTAL_FILES} files in total.`,
       }));
 
       event.target.value = "";
@@ -131,12 +201,6 @@ export default function DocumentsStep({
       [documentId]: "",
     }));
 
-    const existingFiles: File[] = data.documents[documentId] ?? [];
-
-    const updatedFiles: File[] = multiple
-      ? [...existingFiles, ...selectedFiles]
-      : [selectedFiles[0]];
-
     updateData({
       documents: {
         ...data.documents,
@@ -144,15 +208,14 @@ export default function DocumentsStep({
       },
     });
 
-    // Allow selecting the same file again if necessary
     event.target.value = "";
   };
 
   const removeFile = (documentId: string, fileIndex: number) => {
     const existingFiles: File[] = data.documents[documentId] ?? [];
 
-    const updatedFiles: File[] = existingFiles.filter(
-      (_file: File, index: number) => index !== fileIndex
+    const updatedFiles = existingFiles.filter(
+      (_, index) => index !== fileIndex
     );
 
     updateData({
@@ -161,11 +224,15 @@ export default function DocumentsStep({
         [documentId]: updatedFiles,
       },
     });
+
+    setErrors((previous) => ({
+      ...previous,
+      [documentId]: "",
+    }));
   };
 
   return (
     <div>
-      {/* Section heading */}
       <div className="border-b border-accta-border pb-5">
         <p className="text-xs font-bold tracking-[0.18em] text-accta-maroon">
           SECTION H
@@ -184,18 +251,32 @@ export default function DocumentsStep({
         <p className="mt-2 text-sm text-accta-muted">
           Upload PDF or JPG files. Maximum file size is 10 MB per file.
         </p>
+
+        <p className="mt-2 text-sm text-accta-muted">
+          You may upload a maximum of 30 files in total.
+        </p>
+
+        <p className="mt-2 text-sm font-medium text-accta-maroon">
+          {totalSelectedFiles} of {MAX_TOTAL_FILES} files selected
+        </p>
       </div>
 
-      {/* Document checklist */}
       <div className="mt-6 space-y-4">
         {documents.map((document) => {
           const selectedFiles: File[] =
             data.documents[document.id] ?? [];
 
+          const documentError =
+            validationErrors[document.id] || errors[document.id];
+
           return (
             <div
               key={document.id}
-              className="rounded-md border border-accta-border bg-white p-5"
+              className={`rounded-md border bg-white p-5 transition ${
+                documentError
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
@@ -225,7 +306,7 @@ export default function DocumentsStep({
                   <input
                     id={document.id}
                     type="file"
-                    accept=".pdf,.jpg,.jpeg"
+                    accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg"
                     multiple={document.multiple === true}
                     className="hidden"
                     onChange={(event) =>
@@ -239,23 +320,26 @@ export default function DocumentsStep({
                 </div>
               </div>
 
-              {/* Selected files */}
               {selectedFiles.length > 0 && (
                 <div className="mt-4 space-y-2 border-t border-accta-border pt-4">
-                  {selectedFiles.map((file: File, index: number) => (
+                  {selectedFiles.map((file, index) => (
                     <div
                       key={`${file.name}-${file.lastModified}-${index}`}
                       className="flex items-center justify-between gap-3 rounded-md bg-accta-surface px-3 py-2"
                     >
-                      <span className="min-w-0 truncate text-sm text-accta-ink">
-                        {file.name}
-                      </span>
+                      <div className="min-w-0">
+                        <span className="block truncate text-sm text-accta-ink">
+                          {file.name}
+                        </span>
+
+                        <span className="text-xs text-accta-muted">
+                          {(file.size / (1024 * 1024)).toFixed(2)} MB
+                        </span>
+                      </div>
 
                       <button
                         type="button"
-                        onClick={() =>
-                          removeFile(document.id, index)
-                        }
+                        onClick={() => removeFile(document.id, index)}
                         className="shrink-0 text-sm font-medium text-red-600 hover:underline"
                       >
                         Remove
@@ -265,9 +349,9 @@ export default function DocumentsStep({
                 </div>
               )}
 
-              {errors[document.id] && (
+              {documentError && (
                 <p className="mt-3 text-sm text-red-600">
-                  {errors[document.id]}
+                  {documentError}
                 </p>
               )}
             </div>

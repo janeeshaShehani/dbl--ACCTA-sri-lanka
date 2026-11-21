@@ -110,11 +110,26 @@ export default function IndividualApplicationPage() {
   const [formData, setFormData] =
     useState<IndividualApplication>(initialFormData);
 
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+
   const updateData = (data: Partial<IndividualApplication>) => {
     setFormData((previous) => ({
       ...previous,
       ...data,
     }));
+
+    // Clear validation errors for fields being updated
+    setValidationErrors((previousErrors) => {
+      const updatedErrors = { ...previousErrors };
+
+      Object.keys(data).forEach((key) => {
+        delete updatedErrors[key];
+      });
+
+      return updatedErrors;
+    });
   };
 
   // Load saved application when the page opens
@@ -174,69 +189,309 @@ export default function IndividualApplicationPage() {
       case 1:
         return (
           formData.membershipCategory.trim() !== "" &&
-          formData.admissionRoute.trim() !== ""
+          formData.admissionRoute.trim() !== "" &&
+          (formData.residency === "sri-lanka" ||
+            formData.country.trim() !== "")
         );
 
-      case 2:
+      case 2: {
+        const today = new Date();
+
+        const todayString = [
+          today.getFullYear(),
+          String(today.getMonth() + 1).padStart(2, "0"),
+          String(today.getDate()).padStart(2, "0"),
+        ].join("-");
+
         return (
+          formData.title.trim() !== "" &&
           formData.fullName.trim() !== "" &&
+          formData.initialsName.trim() !== "" &&
           formData.dateOfBirth !== "" &&
+          formData.dateOfBirth <= todayString &&
+          formData.gender.trim() !== "" &&
           formData.nationality.trim() !== "" &&
-          formData.identificationNumber.trim() !== ""
+          formData.identificationNumber.trim() !== "" &&
+          formData.preferredLanguage.trim() !== ""
         );
+      }
 
-      case 3:
-        return (
-          formData.residentialAddress.trim() !== "" &&
-          formData.mobile.trim() !== "" &&
-          formData.personalEmail.trim() !== ""
-        );
+     case 3: {
+        const errors: Record<string, string> = {};
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+
+        const isValidPhone = (phone: string) => {
+          const digits = phone.replace(/\D/g, "");
+
+          return (
+            phoneRegex.test(phone) &&
+            digits.length >= 7 &&
+            digits.length <= 15
+          );
+        };
+
+        const isValidLinkedIn = (url: string) => {
+          if (!url.trim()) return true;
+
+          try {
+            const parsedUrl = new URL(url);
+
+            return (
+              (parsedUrl.hostname === "linkedin.com" ||
+                parsedUrl.hostname === "www.linkedin.com") &&
+              parsedUrl.pathname.startsWith("/in/")
+            );
+          } catch {
+            return false;
+          }
+        };
+
+        // Residential address
+        if (!formData.residentialAddress.trim()) {
+          errors.residentialAddress = "Residential address is required.";
+        } else if (formData.residentialAddress.length > 500) {
+          errors.residentialAddress =
+            "Residential address cannot exceed 500 characters.";
+        }
+
+        // Mobile number
+        if (!formData.mobile.trim()) {
+          errors.mobile = "Mobile number is required.";
+        } else if (!isValidPhone(formData.mobile)) {
+          errors.mobile = "Please enter a valid mobile number.";
+        }
+
+        // WhatsApp number - optional
+        if (
+          formData.whatsapp.trim() &&
+          !isValidPhone(formData.whatsapp)
+        ) {
+          errors.whatsapp = "Please enter a valid WhatsApp number.";
+        }
+
+        // Office phone - optional
+        if (
+          formData.officePhone.trim() &&
+          !isValidPhone(formData.officePhone)
+        ) {
+          errors.officePhone = "Please enter a valid office phone number.";
+        }
+
+        // Personal email
+        if (!formData.personalEmail.trim()) {
+          errors.personalEmail = "Personal email address is required.";
+        } else if (
+          !emailRegex.test(formData.personalEmail.trim())
+        ) {
+          errors.personalEmail = "Please enter a valid email address.";
+        }
+
+        // Official email - optional
+        if (
+          formData.officialEmail.trim() &&
+          !emailRegex.test(formData.officialEmail.trim())
+        ) {
+          errors.officialEmail = "Please enter a valid email address.";
+        }
+
+        // LinkedIn profile - optional
+        if (!isValidLinkedIn(formData.linkedIn)) {
+          errors.linkedIn =
+            "Please enter a valid LinkedIn profile URL.";
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+}
 
       case 4:
         return formData.qualifications.trim() !== "";
 
       case 5:
-        return formData.employmentDetails.trim() !== "";
+        const step5Errors: Record<string, string> = {};
 
-      case 6: {
-        const answers = Object.values(formData.fitAndProperAnswers);
-
-        if (answers.length < 7 || answers.includes("")) {
-          return false;
+        if (!formData.employmentDetails.trim()) {
+          step5Errors.employmentDetails =
+            "Please enter your current employment details.";
         }
 
-        const hasYesAnswer = answers.includes("yes");
+        if (!formData.experience.trim()) {
+          step5Errors.experience =
+            "Please enter your relevant professional experience.";
+        }
 
-        return hasYesAnswer
-          ? formData.fitAndProperDetails.trim() !== ""
-          : true;
+        if (!formData.expertise.trim()) {
+          step5Errors.expertise =
+            "Please enter your areas of expertise.";
+        }
+
+        setValidationErrors(step5Errors);
+
+        return Object.keys(step5Errors).length === 0;
+
+      case 6: {
+        const step6Errors: Record<string, string> = {};
+
+        const requiredQuestions = [
+          "disciplinaryAction",
+          "criminalOffence",
+          "professionalInvestigation",
+          "bankruptcy",
+          "professionalBodyRemoval",
+          "falseInformation",
+          "otherMatter",
+        ];
+
+        requiredQuestions.forEach((questionId) => {
+          if (!formData.fitAndProperAnswers[questionId]) {
+            step6Errors[questionId] =
+              "Please select Yes or No.";
+          }
+        });
+
+        const hasYesAnswer = Object.values(
+          formData.fitAndProperAnswers
+        ).includes("yes");
+
+        if (hasYesAnswer && !formData.fitAndProperDetails.trim()) {
+          step6Errors.fitAndProperDetails =
+            "Please provide details for your Yes answer(s).";
+        }
+
+        setValidationErrors(step6Errors);
+
+        return Object.keys(step6Errors).length === 0;
       }
 
-      case 7:
-        return (
-          formData.refereeOneName.trim() !== "" &&
-          formData.refereeOneEmail.trim() !== "" &&
-          formData.refereeTwoName.trim() !== "" &&
-          formData.refereeTwoEmail.trim() !== ""
-        );
+      case 7: {
+        const step7Errors: Record<string, string> = {};
 
-      case 8:
-        return true;
+        // Referee 1 - Full name
+        if (!formData.refereeOneName.trim()) {
+          step7Errors.refereeOneName =
+            "Please enter referee 1's full name.";
+        }
 
-      case 9:
-        return (
-          formData.declarationInformationAccepted &&
-          formData.declarationAgeAccepted &&
-          formData.declarationRulesAccepted &&
-          formData.declarationDesignationAccepted &&
-          formData.declarationRenewalAccepted &&
-          formData.declarationChangesAccepted &&
-          formData.declarationContributionAccepted &&
-          formData.declarationConsentAccepted &&
-          formData.declarationName.trim() !== "" &&
-          formData.declarationDate !== "" &&
-          formData.declarationPlace.trim() !== ""
-        );
+        // Referee 1 - Email
+        if (!formData.refereeOneEmail.trim()) {
+          step7Errors.refereeOneEmail =
+            "Please enter referee 1's email address.";
+        } else if (
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            formData.refereeOneEmail.trim()
+          )
+        ) {
+          step7Errors.refereeOneEmail =
+            "Please enter a valid email address.";
+        }
+
+        // Referee 2 - Full name
+        if (!formData.refereeTwoName.trim()) {
+          step7Errors.refereeTwoName =
+            "Please enter referee 2's full name.";
+        }
+
+        // Referee 2 - Email
+        if (!formData.refereeTwoEmail.trim()) {
+          step7Errors.refereeTwoEmail =
+            "Please enter referee 2's email address.";
+        } else if (
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            formData.refereeTwoEmail.trim()
+          )
+        ) {
+          step7Errors.refereeTwoEmail =
+            "Please enter a valid email address.";
+        }
+
+        setValidationErrors(step7Errors);
+
+        return Object.keys(step7Errors).length === 0;
+      }
+
+      case 8: {
+        const step8Errors: Record<string, string> = {};
+
+        const requiredDocuments = [
+          {
+            id: "identity",
+            label: "NIC or passport",
+          },
+          {
+            id: "photo",
+            label: "passport-size photograph",
+          },
+          {
+            id: "academic",
+            label: "academic certificates and transcripts",
+          },
+          {
+            id: "cv",
+            label: "detailed CV",
+          },
+          {
+            id: "payment",
+            label: "proof of payment",
+          },
+        ];
+
+        requiredDocuments.forEach((document) => {
+          const files = formData.documents[document.id] ?? [];
+
+          if (files.length === 0) {
+            step8Errors[document.id] = `Please upload ${document.label}.`;
+          }
+        });
+
+        setValidationErrors(step8Errors);
+
+        return Object.keys(step8Errors).length === 0;
+      }
+
+      case 9: {
+        const step9Errors: Record<string, string> = {};
+
+        // Validate all declaration checkboxes
+        const requiredDeclarations = [
+          "declarationInformationAccepted",
+          "declarationAgeAccepted",
+          "declarationRulesAccepted",
+          "declarationDesignationAccepted",
+          "declarationRenewalAccepted",
+          "declarationChangesAccepted",
+          "declarationContributionAccepted",
+          "declarationConsentAccepted",
+        ];
+
+        requiredDeclarations.forEach((field) => {
+          if (!formData[field as keyof IndividualApplication]) {
+            step9Errors[field] = "You must accept this declaration.";
+          }
+        });
+
+        // Validate full name
+        if (!formData.declarationName.trim()) {
+          step9Errors.declarationName = "Please enter your full name.";
+        }
+
+        // Validate declaration date
+        if (!formData.declarationDate) {
+          step9Errors.declarationDate = "Please select the declaration date.";
+        }
+
+        // Validate place
+        if (!formData.declarationPlace.trim()) {
+          step9Errors.declarationPlace = "Please enter the place.";
+        }
+
+        setValidationErrors(step9Errors);
+
+        return Object.keys(step9Errors).length === 0;
+      }
 
       default:
         return true;
@@ -246,9 +501,17 @@ export default function IndividualApplicationPage() {
   const handleNext = async () => {
     // Validate current step
     if (!validateCurrentStep()) {
-      alert("Please complete all required fields before continuing.");
+      // Step 3 displays field-level errors
+      // instead of a generic alert.
+      if (currentStep !== 3) {
+        alert("Please complete all required fields before continuing.");
+      }
+
       return;
     }
+
+    // Clear validation errors after successful validation
+    setValidationErrors({});
 
     // Move between steps
     if (currentStep < TOTAL_STEPS) {
@@ -429,6 +692,7 @@ export default function IndividualApplicationPage() {
               <ContactDetailsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -457,6 +721,7 @@ export default function IndividualApplicationPage() {
               <RefereesStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -464,6 +729,7 @@ export default function IndividualApplicationPage() {
               <DocumentsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -471,6 +737,7 @@ export default function IndividualApplicationPage() {
               <DeclarationStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 

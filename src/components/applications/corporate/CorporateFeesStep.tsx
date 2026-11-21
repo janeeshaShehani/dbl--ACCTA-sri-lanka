@@ -3,17 +3,34 @@ import type { CorporateApplication } from "@/types/application";
 type Props = {
   data: CorporateApplication;
   updateData: (data: Partial<CorporateApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function CorporateFeesStep({
   data,
   updateData,
+  validationErrors = {},
 }: Props) {
   const isSriLanka = data.residency === "sri-lanka";
 
   const currency = isSriLanka ? "Rs." : "USD";
   const applicationFee = isSriLanka ? "10,000" : "100";
   const annualSubscription = isSriLanka ? "10,000" : "100";
+  const totalFee = isSriLanka ? "20,000" : "200";
+
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    }`;
+
+  const showError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-1 text-xs text-red-600">
+        {validationErrors[field]}
+      </p>
+    ) : null;
 
   return (
     <div>
@@ -61,7 +78,9 @@ export default function CorporateFeesStep({
           </div>
 
           <div>
-            <p className="text-accta-muted">Nominated representative</p>
+            <p className="text-accta-muted">
+              Nominated representative
+            </p>
             <p className="mt-1 font-semibold text-accta-ink">
               {data.nominatedRepresentative || "Not provided"}
             </p>
@@ -77,7 +96,9 @@ export default function CorporateFeesStep({
 
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex items-center justify-between border-b border-accta-border pb-3">
-            <span className="text-accta-muted">Application fee</span>
+            <span className="text-accta-muted">
+              Application fee
+            </span>
             <span className="font-semibold text-accta-ink">
               {currency} {applicationFee}
             </span>
@@ -97,7 +118,7 @@ export default function CorporateFeesStep({
               Total applicable fees
             </span>
             <span className="font-bold text-accta-maroon">
-              {currency} {isSriLanka ? "20,000" : "200"}
+              {currency} {totalFee}
             </span>
           </div>
         </div>
@@ -121,7 +142,7 @@ export default function CorporateFeesStep({
           {/* Total amount paid */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Total amount paid
+              Total amount paid <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -130,15 +151,17 @@ export default function CorporateFeesStep({
               onChange={(e) =>
                 updateData({ totalAmountPaid: e.target.value })
               }
-              placeholder={`${currency} ${isSriLanka ? "20,000" : "200"}`}
-              className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              placeholder={`${currency} ${totalFee}`}
+              className={inputClass("totalAmountPaid")}
             />
+
+            {showError("totalAmountPaid")}
           </div>
 
           {/* Payment method */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Payment method
+              Payment method <span className="text-red-600">*</span>
             </label>
 
             <select
@@ -146,19 +169,22 @@ export default function CorporateFeesStep({
               onChange={(e) =>
                 updateData({ paymentMethod: e.target.value })
               }
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("paymentMethod")}
             >
               <option value="">Select payment method</option>
               <option value="bank-transfer">Bank transfer</option>
               <option value="cheque">Cheque</option>
               <option value="online-payment">Online payment</option>
             </select>
+
+            {showError("paymentMethod")}
           </div>
 
-          {/* Reference number */}
+          {/* Payment reference */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Bank / reference / cheque number
+              Bank / reference / cheque number{" "}
+              <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -168,14 +194,16 @@ export default function CorporateFeesStep({
                 updateData({ paymentReference: e.target.value })
               }
               placeholder="Enter payment reference number"
-              className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("paymentReference")}
             />
+
+            {showError("paymentReference")}
           </div>
 
           {/* Payment date */}
           <div>
             <label className="text-sm font-semibold text-accta-ink">
-              Date of payment
+              Date of payment <span className="text-red-600">*</span>
             </label>
 
             <input
@@ -184,8 +212,10 @@ export default function CorporateFeesStep({
               onChange={(e) =>
                 updateData({ paymentDate: e.target.value })
               }
-              className="mt-2 w-full rounded-md border border-accta-border px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={inputClass("paymentDate")}
             />
+
+            {showError("paymentDate")}
           </div>
         </div>
       </div>
@@ -193,9 +223,9 @@ export default function CorporateFeesStep({
       {/* Submission notice */}
       <div className="mt-6 rounded-md border-l-4 border-accta-maroon bg-accta-surface p-4">
         <p className="text-sm leading-6 text-accta-ink">
-          By submitting this application, you confirm that all information,
-          declarations, supporting documents, and payment details provided are
-          accurate and complete.
+          By submitting this application, you confirm that all
+          information, declarations, supporting documents, and payment
+          details provided are accurate and complete.
         </p>
       </div>
     </div>

@@ -1,0 +1,177 @@
+export const individualFieldGroups = [
+  {
+    title: "Membership Information",
+    fields: [
+      "membershipCategory",
+      "residency",
+      "countryOfResidence",
+      "admissionRoute",
+    ],
+  },
+  {
+    title: "Personal Information",
+    fields: [
+      "title",
+      "fullName",
+      "initialsName",
+      "preferredName",
+      "dateOfBirth",
+      "gender",
+      "nationality",
+      "identificationNumber",
+      "preferredLanguage",
+    ],
+  },
+  {
+    title: "Contact Information",
+    fields: [
+      "residentialAddress",
+      "officialAddress",
+      "mailingAddress",
+      "mobileNumber",
+      "whatsappNumber",
+      "officePhone",
+      "personalEmail",
+      "officialEmail",
+      "linkedInProfile",
+    ],
+  },
+  {
+    title: "Academic & Professional Qualifications",
+    fields: ["academicQualifications", "professionalQualifications"],
+  },
+  {
+    title: "Employment & Professional Experience",
+    fields: [
+      "currentEmployment",
+      "relevantExperience",
+      "areasOfExpertise",
+      "professionalStatement",
+    ],
+  },
+  {
+    title: "Fit and Proper Declaration",
+    fields: [
+      "disciplinaryAction",
+      "criminalOffence",
+      "currentInvestigation",
+      "bankruptOrInsolvent",
+      "membershipSuspended",
+      "falseInformation",
+      "otherRelevantMatter",
+      "fitAndProperDetails",
+    ],
+  },
+  {
+    title: "Applicant Declarations & Fees",
+    fields: [
+      "informationAccepted",
+      "ageAccepted",
+      "rulesAccepted",
+      "designationAccepted",
+      "renewalAccepted",
+      "changesAccepted",
+      "contributionAccepted",
+      "consentAccepted",
+      "declarationName",
+      "declarationDate",
+      "declarationPlace",
+      "applicationFee",
+      "annualSubscription",
+      "feeCurrency",
+    ],
+  },
+];
+
+export const corporateFieldGroups = [
+  {
+    title: "Membership Information",
+    fields: [
+      "entityType",
+      "otherEntityType",
+      "residency",
+      "countryOfRegistration",
+    ],
+  },
+  {
+    title: "Company Information",
+    fields: [
+      "registeredName",
+      "tradingName",
+      "legalForm",
+      "registrationNumber",
+      "registrationDate",
+      "registrationCountry",
+      "tinNumber",
+      "vatNumber",
+      "website",
+      "numberOfEmployees",
+    ],
+  },
+  {
+    title: "Contact Information",
+    fields: [
+      "registeredAddress",
+      "tradingAddress",
+      "officePhone",
+      "officialEmail",
+    ],
+  },
+  {
+    title: "Company Structure",
+    fields: [
+      "directorsAndKeyOfficers",
+      "shareholdersAndOwnership",
+      "parentFirmOrGroup",
+    ],
+  },
+  {
+    title: "Professional Information",
+    fields: [
+      "servicesOffered",
+      "yearsOfTaxExperience",
+      "professionalRegistrations",
+      "typicalClientProfile",
+      "briefFirmProfile",
+    ],
+  },
+  {
+    title: "Nominated Representatives",
+    fields: [
+      "nominatedRepresentativeName",
+      "nominatedRepresentativeEmail",
+      "nominatedRepresentativePhone",
+      "alternateRepresentativeName",
+      "alternateRepresentativeEmail",
+      "alternateRepresentativePhone",
+    ],
+  },
+  {
+    title: "Fit and Proper Declaration",
+    fields: [
+      "fitProperF1",
+      "fitProperF2",
+      "fitProperF3",
+      "fitProperF4",
+      "fitProperF5",
+      "fitProperF6",
+      "fitProperDetails",
+    ],
+  },
+  {
+    title: "Authorised Signatories & Fees",
+    fields: [
+      "declarationAccepted",
+      "authorisedSignatoryOne",
+      "authorisedSignatoryTwo",
+      "resolutionDate",
+      "applicationFee",
+      "annualSubscription",
+      "feeCurrency",
+      "totalAmountPaid",
+      "paymentMethod",
+      "paymentReference",
+      "paymentDate",
+    ],
+  },
+];

@@ -28,6 +28,15 @@ export default function MembershipStep({
       ? selectedMembership?.annualSubscription.lkr
       : selectedMembership?.annualSubscription.usd;
 
+  const handleResidencyChange = (
+    residency: "sri-lanka" | "international"
+  ) => {
+    updateData({
+      residency,
+      country: residency === "sri-lanka" ? "" : data.country,
+    });
+  };
+
   return (
     <div>
       {/* Section Header */}
@@ -49,12 +58,17 @@ export default function MembershipStep({
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         {/* Membership Category */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
-            Membership category
+          <label
+            htmlFor="membershipCategory"
+            className="text-sm font-semibold text-accta-ink"
+          >
+            Membership category <span className="text-red-600">*</span>
           </label>
 
           <select
+            id="membershipCategory"
             value={data.membershipCategory}
+            required
             onChange={(e) =>
               updateData({ membershipCategory: e.target.value })
             }
@@ -81,18 +95,21 @@ export default function MembershipStep({
 
         {/* Residency */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
-            Residency
+          <label
+            htmlFor="residency"
+            className="text-sm font-semibold text-accta-ink"
+          >
+            Residency <span className="text-red-600">*</span>
           </label>
 
           <select
+            id="residency"
             value={data.residency}
+            required
             onChange={(e) =>
-              updateData({
-                residency: e.target.value as
-                  | "sri-lanka"
-                  | "international",
-              })
+              handleResidencyChange(
+                e.target.value as "sri-lanka" | "international"
+              )
             }
             className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
           >
@@ -104,13 +121,18 @@ export default function MembershipStep({
         {/* Country */}
         {data.residency === "international" && (
           <div className="md:col-span-2">
-            <label className="text-sm font-semibold text-accta-ink">
-              Country of residence
+            <label
+              htmlFor="country"
+              className="text-sm font-semibold text-accta-ink"
+            >
+              Country of residence <span className="text-red-600">*</span>
             </label>
 
             <input
+              id="country"
               type="text"
               value={data.country}
+              required
               onChange={(e) =>
                 updateData({ country: e.target.value })
               }
@@ -158,12 +180,17 @@ export default function MembershipStep({
 
       {/* Admission Route */}
       <div className="mt-6">
-        <label className="text-sm font-semibold text-accta-ink">
-          Route of admission
+        <label
+          htmlFor="admissionRoute"
+          className="text-sm font-semibold text-accta-ink"
+        >
+          Route of admission <span className="text-red-600">*</span>
         </label>
 
         <select
+          id="admissionRoute"
           value={data.admissionRoute}
+          required
           onChange={(e) =>
             updateData({ admissionRoute: e.target.value })
           }
