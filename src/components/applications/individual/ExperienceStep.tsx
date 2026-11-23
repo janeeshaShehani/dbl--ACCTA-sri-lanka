@@ -1,3 +1,4 @@
+
 import type { IndividualApplication } from "@/types/application";
 
 type Props = {
@@ -11,6 +12,18 @@ export default function ExperienceStep({
   updateData,
   validationErrors = {},
 }: Props) {
+  const fieldClass = (field: string) =>
+    `mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+      validationErrors[field] ? "border-red-500" : "border-accta-border"
+    }`;
+
+  const renderError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-1.5 text-sm text-red-600" role="alert">
+        {validationErrors[field]}
+      </p>
+    ) : null;
+
   return (
     <div>
       {/* Section Header */}
@@ -32,7 +45,10 @@ export default function ExperienceStep({
       <div className="mt-6 space-y-6">
         {/* Current Employment */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
+          <label
+            htmlFor="employmentDetails"
+            className="text-sm font-semibold text-accta-ink"
+          >
             Current employment
             <span className="ml-1 text-accta-maroon">*</span>
           </label>
@@ -42,6 +58,7 @@ export default function ExperienceStep({
           </p>
 
           <textarea
+            id="employmentDetails"
             value={data.employmentDetails}
             onChange={(e) =>
               updateData({ employmentDetails: e.target.value })
@@ -51,23 +68,19 @@ Senior Tax Consultant
 ABC Consultants (Pvt) Ltd
 Responsible for providing tax advisory and compliance services.`}
             rows={6}
-            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
-              validationErrors.employmentDetails
-                ? "border-red-500"
-                : "border-accta-border"
-            }`}
+            aria-invalid={!!validationErrors.employmentDetails}
+            className={fieldClass("employmentDetails")}
           />
 
-          {validationErrors.employmentDetails && (
-            <p className="mt-1 text-sm text-red-600">
-              {validationErrors.employmentDetails}
-            </p>
-          )}
+          {renderError("employmentDetails")}
         </div>
 
         {/* Previous and Relevant Experience */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
+          <label
+            htmlFor="experience"
+            className="text-sm font-semibold text-accta-ink"
+          >
             Relevant professional experience
             <span className="ml-1 text-accta-maroon">*</span>
           </label>
@@ -78,27 +91,24 @@ Responsible for providing tax advisory and compliance services.`}
           </p>
 
           <textarea
+            id="experience"
             value={data.experience}
             onChange={(e) => updateData({ experience: e.target.value })}
             placeholder="Describe your relevant professional experience"
             rows={6}
-            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
-              validationErrors.experience
-                ? "border-red-500"
-                : "border-accta-border"
-            }`}
+            aria-invalid={!!validationErrors.experience}
+            className={fieldClass("experience")}
           />
 
-          {validationErrors.experience && (
-            <p className="mt-1 text-sm text-red-600">
-              {validationErrors.experience}
-            </p>
-          )}
+          {renderError("experience")}
         </div>
 
         {/* Areas of Expertise */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
+          <label
+            htmlFor="expertise"
+            className="text-sm font-semibold text-accta-ink"
+          >
             Areas of expertise
             <span className="ml-1 text-accta-maroon">*</span>
           </label>
@@ -108,27 +118,24 @@ Responsible for providing tax advisory and compliance services.`}
           </p>
 
           <input
+            id="expertise"
             type="text"
             value={data.expertise}
             onChange={(e) => updateData({ expertise: e.target.value })}
             placeholder="Example: Tax advisory, tax compliance, corporate taxation"
-            className={`mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
-              validationErrors.expertise
-                ? "border-red-500"
-                : "border-accta-border"
-            }`}
+            aria-invalid={!!validationErrors.expertise}
+            className={fieldClass("expertise")}
           />
 
-          {validationErrors.expertise && (
-            <p className="mt-1 text-sm text-red-600">
-              {validationErrors.expertise}
-            </p>
-          )}
+          {renderError("expertise")}
         </div>
 
         {/* Professional Statement */}
         <div>
-          <label className="text-sm font-semibold text-accta-ink">
+          <label
+            htmlFor="statement"
+            className="text-sm font-semibold text-accta-ink"
+          >
             Professional statement
             <span className="ml-1 font-normal text-accta-muted">
               (optional)
@@ -141,6 +148,7 @@ Responsible for providing tax advisory and compliance services.`}
           </p>
 
           <textarea
+            id="statement"
             value={data.statement}
             onChange={(e) => updateData({ statement: e.target.value })}
             placeholder="Tell us briefly about your professional background and membership interest"

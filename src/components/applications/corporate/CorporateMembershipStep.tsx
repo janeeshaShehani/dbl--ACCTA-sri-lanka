@@ -52,6 +52,7 @@ export default function CorporateMembershipStep({
               name="membershipCategory"
               value="partnership"
               checked={data.membershipCategory === "partnership"}
+              aria-invalid={Boolean(validationErrors.membershipCategory)}
               onChange={(e) =>
                 updateData({
                   membershipCategory: e.target.value,
@@ -133,6 +134,7 @@ export default function CorporateMembershipStep({
 
           <input
             type="text"
+            aria-invalid={Boolean(validationErrors.otherLegalEntity)}
             value={data.otherLegalEntity}
             onChange={(e) =>
               updateData({
@@ -176,6 +178,7 @@ export default function CorporateMembershipStep({
           >
             <input
               type="radio"
+              aria-invalid={Boolean(validationErrors.residency)}
               name="residency"
               value="sri-lanka"
               checked={data.residency === "sri-lanka"}
@@ -202,6 +205,7 @@ export default function CorporateMembershipStep({
           >
             <input
               type="radio"
+              aria-invalid={Boolean(validationErrors.residency)}
               name="residency"
               value="international"
               checked={data.residency === "international"}
@@ -233,6 +237,7 @@ export default function CorporateMembershipStep({
 
             <input
               type="text"
+              aria-invalid={Boolean(validationErrors.country)}
               value={data.country}
               onChange={(e) =>
                 updateData({

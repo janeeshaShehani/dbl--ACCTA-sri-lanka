@@ -1,14 +1,17 @@
+
 import { membershipClasses } from "@/data/membershipClasses";
 import type { IndividualApplication } from "@/types/application";
 
 type MembershipStepProps = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function MembershipStep({
   data,
   updateData,
+  validationErrors = {},
 }: MembershipStepProps) {
   const selectedMembership = membershipClasses.find(
     (membership) => membership.letters === data.membershipCategory
@@ -69,10 +72,15 @@ export default function MembershipStep({
             id="membershipCategory"
             value={data.membershipCategory}
             required
+            aria-invalid={!!validationErrors.membershipCategory}
             onChange={(e) =>
               updateData({ membershipCategory: e.target.value })
             }
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+              validationErrors.membershipCategory
+                ? "border-red-500"
+                : "border-accta-border"
+            }`}
           >
             <option value="">Select a category</option>
 
@@ -91,6 +99,12 @@ export default function MembershipStep({
                 </option>
               ))}
           </select>
+
+          {validationErrors.membershipCategory && (
+            <p className="mt-1.5 text-sm text-red-600">
+              {validationErrors.membershipCategory}
+            </p>
+          )}
         </div>
 
         {/* Residency */}
@@ -133,12 +147,23 @@ export default function MembershipStep({
               type="text"
               value={data.country}
               required
+              aria-invalid={!!validationErrors.country}
               onChange={(e) =>
                 updateData({ country: e.target.value })
               }
               placeholder="Enter your country"
-              className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+              className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+                validationErrors.country
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
             />
+
+            {validationErrors.country && (
+              <p className="mt-1.5 text-sm text-red-600">
+                {validationErrors.country}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -191,10 +216,15 @@ export default function MembershipStep({
           id="admissionRoute"
           value={data.admissionRoute}
           required
+          aria-invalid={!!validationErrors.admissionRoute}
           onChange={(e) =>
             updateData({ admissionRoute: e.target.value })
           }
-          className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+          className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+            validationErrors.admissionRoute
+              ? "border-red-500"
+              : "border-accta-border"
+          }`}
         >
           <option value="">Select a route</option>
 
@@ -212,6 +242,12 @@ export default function MembershipStep({
             </option>
           )}
         </select>
+
+        {validationErrors.admissionRoute && (
+          <p className="mt-1.5 text-sm text-red-600">
+            {validationErrors.admissionRoute}
+          </p>
+        )}
       </div>
     </div>
   );

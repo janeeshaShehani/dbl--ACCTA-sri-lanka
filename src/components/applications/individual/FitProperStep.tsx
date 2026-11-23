@@ -1,3 +1,4 @@
+
 import type { IndividualApplication } from "@/types/application";
 
 type Props = {
@@ -63,6 +64,8 @@ export default function FitProperStep({
     data.fitAndProperAnswers
   ).includes("yes");
 
+  const detailsError = validationErrors.fitAndProperDetails;
+
   return (
     <div>
       {/* Section Header */}
@@ -83,67 +86,93 @@ export default function FitProperStep({
 
       {/* Questions */}
       <div className="mt-6 space-y-4">
-        {questions.map((item, index) => (
-          <div
-            key={item.id}
-            className={`rounded-md border bg-white p-5 ${
-              validationErrors[item.id]
-                ? "border-red-500"
-                : "border-accta-border"
-            }`}
-          >
-            <p className="text-sm font-medium leading-6 text-accta-ink">
-              {index + 1}. {item.question}
-              <span className="ml-1 text-accta-maroon">*</span>
-            </p>
+        {questions.map((item, index) => {
+          const questionError = validationErrors[item.id];
 
-            <div className="mt-4 flex gap-6">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="no"
-                  checked={
-                    data.fitAndProperAnswers[item.id] === "no"
-                  }
-                  onChange={() =>
-                    handleAnswerChange(item.id, "no")
-                  }
-                  className="accent-accta-maroon"
-                />
-                No
-              </label>
-
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="yes"
-                  checked={
-                    data.fitAndProperAnswers[item.id] === "yes"
-                  }
-                  onChange={() =>
-                    handleAnswerChange(item.id, "yes")
-                  }
-                  className="accent-accta-maroon"
-                />
-                Yes
-              </label>
-            </div>
-
-            {validationErrors[item.id] && (
-              <p className="mt-2 text-sm text-red-600">
-                {validationErrors[item.id]}
+          return (
+            <div
+              key={item.id}
+              className={`rounded-md border bg-white p-5 ${
+                questionError
+                  ? "border-red-500"
+                  : "border-accta-border"
+              }`}
+            >
+              <p
+                id={`${item.id}-label`}
+                className="text-sm font-medium leading-6 text-accta-ink"
+              >
+                {index + 1}. {item.question}
+                <span className="ml-1 text-accta-maroon">*</span>
               </p>
-            )}
-          </div>
-        ))}
+
+              <div
+                className="mt-4 flex gap-6"
+                role="radiogroup"
+                aria-labelledby={`${item.id}-label`}
+                aria-invalid={!!questionError}
+              >
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
+                  <input
+                    type="radio"
+                    name={item.id}
+                    value="no"
+                    checked={
+                      data.fitAndProperAnswers[item.id] === "no"
+                    }
+                    onChange={() =>
+                      handleAnswerChange(item.id, "no")
+                    }
+                    aria-describedby={
+                      questionError ? `${item.id}-error` : undefined
+                    }
+                    className="accent-accta-maroon"
+                  />
+                  No
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-accta-ink">
+                  <input
+                    type="radio"
+                    name={item.id}
+                    value="yes"
+                    checked={
+                      data.fitAndProperAnswers[item.id] === "yes"
+                    }
+                    onChange={() =>
+                      handleAnswerChange(item.id, "yes")
+                    }
+                    aria-describedby={
+                      questionError ? `${item.id}-error` : undefined
+                    }
+                    className="accent-accta-maroon"
+                  />
+                  Yes
+                </label>
+              </div>
+
+              {questionError && (
+                <p
+                  id={`${item.id}-error`}
+                  className="mt-2 text-sm text-red-600"
+                  role="alert"
+                >
+                  {questionError}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Additional Details */}
       <div className="mt-6">
-        <label className="text-sm font-semibold text-accta-ink">
+        <label
+          htmlFor="fitAndProperDetails"
+          className="text-sm font-semibold text-accta-ink"
+        >
           Details for any Yes answers
+
           {hasYesAnswer ? (
             <span className="ml-1 text-accta-maroon">*</span>
           ) : (
@@ -154,6 +183,7 @@ export default function FitProperStep({
         </label>
 
         <textarea
+          id="fitAndProperDetails"
           value={data.fitAndProperDetails}
           onChange={(e) =>
             updateData({
@@ -163,16 +193,15 @@ export default function FitProperStep({
           placeholder="Provide details for any questions answered Yes, including relevant dates and circumstances."
           rows={6}
           disabled={!hasYesAnswer}
+          aria-invalid={!!detailsError}
           className={`mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon disabled:cursor-not-allowed disabled:bg-accta-surface ${
-            validationErrors.fitAndProperDetails
-              ? "border-red-500"
-              : "border-accta-border"
+            detailsError ? "border-red-500" : "border-accta-border"
           }`}
         />
 
-        {validationErrors.fitAndProperDetails && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.fitAndProperDetails}
+        {detailsError && (
+          <p className="mt-1.5 text-sm text-red-600" role="alert">
+            {detailsError}
           </p>
         )}
       </div>

@@ -1,11 +1,22 @@
+
 import type { IndividualApplication } from "@/types/application";
 
 type Props = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
-export default function QualificationsStep({ data, updateData }: Props) {
+export default function QualificationsStep({
+  data,
+  updateData,
+  validationErrors = {},
+}: Props) {
+  const textareaClass = (field: string) =>
+    `mt-3 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+      validationErrors[field] ? "border-red-500" : "border-accta-border"
+    }`;
+
   return (
     <div>
       {/* Section Header */}
@@ -41,8 +52,15 @@ export default function QualificationsStep({ data, updateData }: Props) {
 Bachelor's Degree in Accounting – University of Colombo – 2022
 Master's Degree in Taxation – University of ... – 2025`}
           rows={7}
-          className="mt-3 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+          aria-invalid={!!validationErrors.qualifications}
+          className={textareaClass("qualifications")}
         />
+
+        {validationErrors.qualifications && (
+          <p className="mt-1.5 text-sm text-red-600" role="alert">
+            {validationErrors.qualifications}
+          </p>
+        )}
       </div>
 
       {/* Professional Qualifications and Memberships */}
@@ -68,8 +86,15 @@ Master's Degree in Taxation – University of ... – 2025`}
 Member – Institute of Chartered Accountants – Membership No. XXXXX
 Professional Qualification – ACCA – Completed 2023`}
           rows={7}
-          className="mt-3 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+          aria-invalid={!!validationErrors.professionalMemberships}
+          className={textareaClass("professionalMemberships")}
         />
+
+        {validationErrors.professionalMemberships && (
+          <p className="mt-1.5 text-sm text-red-600" role="alert">
+            {validationErrors.professionalMemberships}
+          </p>
+        )}
       </div>
 
       {/* Information Notice */}

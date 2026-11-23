@@ -1,13 +1,16 @@
+
 import type { IndividualApplication } from "@/types/application";
 
 type PersonalDetailsStepProps = {
   data: IndividualApplication;
   updateData: (data: Partial<IndividualApplication>) => void;
+  validationErrors?: Record<string, string>;
 };
 
 export default function PersonalDetailsStep({
   data,
   updateData,
+  validationErrors = {},
 }: PersonalDetailsStepProps) {
   // Today's date for the maximum date of birth
   const today = new Date();
@@ -17,6 +20,20 @@ export default function PersonalDetailsStep({
     String(today.getMonth() + 1).padStart(2, "0"),
     String(today.getDate()).padStart(2, "0"),
   ].join("-");
+
+  const inputClass = (field: string) =>
+    `mt-2 w-full rounded-md border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon ${
+      validationErrors[field]
+        ? "border-red-500"
+        : "border-accta-border"
+    }`;
+
+  const renderError = (field: string) =>
+    validationErrors[field] ? (
+      <p className="mt-1.5 text-sm text-red-600" role="alert">
+        {validationErrors[field]}
+      </p>
+    ) : null;
 
   return (
     <div>
@@ -39,10 +56,7 @@ export default function PersonalDetailsStep({
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         {/* Title */}
         <div>
-          <label
-            htmlFor="title"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="title" className="text-sm font-semibold text-accta-ink">
             Title <span className="text-accta-maroon">*</span>
           </label>
 
@@ -51,7 +65,8 @@ export default function PersonalDetailsStep({
             value={data.title}
             onChange={(e) => updateData({ title: e.target.value })}
             required
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.title}
+            className={inputClass("title")}
           >
             <option value="">Select title</option>
             <option value="Mr">Mr</option>
@@ -61,14 +76,12 @@ export default function PersonalDetailsStep({
             <option value="Prof">Prof</option>
             <option value="Other">Other</option>
           </select>
+          {renderError("title")}
         </div>
 
         {/* Full Name */}
         <div>
-          <label
-            htmlFor="fullName"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="fullName" className="text-sm font-semibold text-accta-ink">
             Full name <span className="text-accta-maroon">*</span>
           </label>
 
@@ -81,16 +94,15 @@ export default function PersonalDetailsStep({
             required
             maxLength={150}
             autoComplete="name"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.fullName}
+            className={inputClass("fullName")}
           />
+          {renderError("fullName")}
         </div>
 
         {/* Name with Initials */}
         <div>
-          <label
-            htmlFor="initialsName"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="initialsName" className="text-sm font-semibold text-accta-ink">
             Name with initials <span className="text-accta-maroon">*</span>
           </label>
 
@@ -102,8 +114,11 @@ export default function PersonalDetailsStep({
             placeholder="Example: J. A. Smith"
             required
             maxLength={150}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.initialsName}
+            className={inputClass("initialsName")}
           />
+
+          {renderError("initialsName")}
 
           <p className="mt-1 text-xs text-accta-muted">
             This name may be used on membership records and certificates.
@@ -112,10 +127,7 @@ export default function PersonalDetailsStep({
 
         {/* Preferred Name */}
         <div>
-          <label
-            htmlFor="preferredName"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="preferredName" className="text-sm font-semibold text-accta-ink">
             Preferred name
             <span className="ml-1 font-normal text-accta-muted">
               (optional)
@@ -129,16 +141,13 @@ export default function PersonalDetailsStep({
             onChange={(e) => updateData({ preferredName: e.target.value })}
             placeholder="Enter your preferred name"
             maxLength={100}
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            className={inputClass("preferredName")}
           />
         </div>
 
         {/* Date of Birth */}
         <div>
-          <label
-            htmlFor="dateOfBirth"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="dateOfBirth" className="text-sm font-semibold text-accta-ink">
             Date of birth <span className="text-accta-maroon">*</span>
           </label>
 
@@ -149,8 +158,11 @@ export default function PersonalDetailsStep({
             onChange={(e) => updateData({ dateOfBirth: e.target.value })}
             max={maxDate}
             required
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.dateOfBirth}
+            className={inputClass("dateOfBirth")}
           />
+
+          {renderError("dateOfBirth")}
 
           <p className="mt-1 text-xs text-accta-muted">
             Your date of birth cannot be in the future.
@@ -159,10 +171,7 @@ export default function PersonalDetailsStep({
 
         {/* Gender */}
         <div>
-          <label
-            htmlFor="gender"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="gender" className="text-sm font-semibold text-accta-ink">
             Gender <span className="text-accta-maroon">*</span>
           </label>
 
@@ -171,21 +180,20 @@ export default function PersonalDetailsStep({
             value={data.gender}
             onChange={(e) => updateData({ gender: e.target.value })}
             required
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.gender}
+            className={inputClass("gender")}
           >
             <option value="">Select gender</option>
             <option value="Female">Female</option>
             <option value="Male">Male</option>
             <option value="Prefer not to say">Prefer not to say</option>
           </select>
+          {renderError("gender")}
         </div>
 
         {/* Nationality */}
         <div>
-          <label
-            htmlFor="nationality"
-            className="text-sm font-semibold text-accta-ink"
-          >
+          <label htmlFor="nationality" className="text-sm font-semibold text-accta-ink">
             Nationality <span className="text-accta-maroon">*</span>
           </label>
 
@@ -198,8 +206,10 @@ export default function PersonalDetailsStep({
             required
             maxLength={100}
             autoComplete="country-name"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.nationality}
+            className={inputClass("nationality")}
           />
+          {renderError("nationality")}
         </div>
 
         {/* Identification Number */}
@@ -222,8 +232,10 @@ export default function PersonalDetailsStep({
             required
             maxLength={50}
             autoComplete="off"
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.identificationNumber}
+            className={inputClass("identificationNumber")}
           />
+          {renderError("identificationNumber")}
         </div>
 
         {/* Preferred Language */}
@@ -243,13 +255,15 @@ export default function PersonalDetailsStep({
               updateData({ preferredLanguage: e.target.value })
             }
             required
-            className="mt-2 w-full rounded-md border border-accta-border bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon"
+            aria-invalid={!!validationErrors.preferredLanguage}
+            className={inputClass("preferredLanguage")}
           >
             <option value="">Select a language</option>
             <option value="English">English</option>
             <option value="Sinhala">Sinhala</option>
             <option value="Tamil">Tamil</option>
           </select>
+          {renderError("preferredLanguage")}
         </div>
       </div>
     </div>

@@ -86,6 +86,11 @@ const documents: DocumentItem[] = [
     requiredFor: "Affiliate",
     multiple: true,
   },
+  {
+  id: "payment",
+  label: "Proof of membership application fee payment",
+  requiredFor: "All applicants",
+},
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;

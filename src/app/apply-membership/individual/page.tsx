@@ -114,6 +114,8 @@ export default function IndividualApplicationPage() {
     Record<string, string>
   >({});
 
+  const [showValidationAlert, setShowValidationAlert] = useState(false);
+
   const updateData = (data: Partial<IndividualApplication>) => {
     setFormData((previous) => ({
       ...previous,
@@ -126,11 +128,29 @@ export default function IndividualApplicationPage() {
 
       Object.keys(data).forEach((key) => {
         delete updatedErrors[key];
+
+        if (key === "fitAndProperAnswers" && data.fitAndProperAnswers) {
+          Object.keys(data.fitAndProperAnswers).forEach((questionId) => {
+            delete updatedErrors[questionId];
+          });
+        }
       });
 
       return updatedErrors;
     });
   };
+
+
+  useEffect(() => {
+    if (!showValidationAlert) return;
+
+    const timer = setTimeout(() => {
+      setShowValidationAlert(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [showValidationAlert]);
+
 
   // Load saved application when the page opens
   useEffect(() => {
@@ -186,34 +206,76 @@ export default function IndividualApplicationPage() {
   // Validate each step
   const validateCurrentStep = () => {
     switch (currentStep) {
-      case 1:
-        return (
-          formData.membershipCategory.trim() !== "" &&
-          formData.admissionRoute.trim() !== "" &&
-          (formData.residency === "sri-lanka" ||
-            formData.country.trim() !== "")
-        );
+      case 1: {
+        const errors: Record<string, string> = {};
+
+        if (!formData.membershipCategory.trim()) {
+          errors.membershipCategory = "Please select a membership category.";
+        }
+
+        if (
+          formData.residency === "international" &&
+          !formData.country.trim()
+        ) {
+          errors.country = "Please enter your country of residence.";
+        }
+
+        if (!formData.admissionRoute.trim()) {
+          errors.admissionRoute = "Please select a route of admission.";
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+      }
 
       case 2: {
-        const today = new Date();
+        const errors: Record<string, string> = {};
 
+        const today = new Date();
         const todayString = [
           today.getFullYear(),
           String(today.getMonth() + 1).padStart(2, "0"),
           String(today.getDate()).padStart(2, "0"),
         ].join("-");
 
-        return (
-          formData.title.trim() !== "" &&
-          formData.fullName.trim() !== "" &&
-          formData.initialsName.trim() !== "" &&
-          formData.dateOfBirth !== "" &&
-          formData.dateOfBirth <= todayString &&
-          formData.gender.trim() !== "" &&
-          formData.nationality.trim() !== "" &&
-          formData.identificationNumber.trim() !== "" &&
-          formData.preferredLanguage.trim() !== ""
-        );
+        if (!formData.title.trim()) {
+          errors.title = "Please select your title.";
+        }
+
+        if (!formData.fullName.trim()) {
+          errors.fullName = "Please enter your full name.";
+        }
+
+        if (!formData.initialsName.trim()) {
+          errors.initialsName = "Please enter your name with initials.";
+        }
+
+        if (!formData.dateOfBirth) {
+          errors.dateOfBirth = "Please select your date of birth.";
+        } else if (formData.dateOfBirth > todayString) {
+          errors.dateOfBirth = "Date of birth cannot be in the future.";
+        }
+
+        if (!formData.gender.trim()) {
+          errors.gender = "Please select your gender.";
+        }
+
+        if (!formData.nationality.trim()) {
+          errors.nationality = "Please enter your nationality.";
+        }
+
+        if (!formData.identificationNumber.trim()) {
+          errors.identificationNumber = "Please enter your NIC or passport number.";
+        }
+
+        if (!formData.preferredLanguage.trim()) {
+          errors.preferredLanguage = "Please select your preferred language.";
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
       }
 
      case 3: {
@@ -308,8 +370,18 @@ export default function IndividualApplicationPage() {
         return Object.keys(errors).length === 0;
 }
 
-      case 4:
-        return formData.qualifications.trim() !== "";
+      case 4: {
+        const errors: Record<string, string> = {};
+
+        if (!formData.qualifications.trim()) {
+          errors.qualifications =
+            "Please enter your academic qualifications.";
+        }
+
+        setValidationErrors(errors);
+
+        return Object.keys(errors).length === 0;
+      }
 
       case 5:
         const step5Errors: Record<string, string> = {};
@@ -498,20 +570,42 @@ export default function IndividualApplicationPage() {
     }
   };
 
+
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const firstError = document.querySelector(
+        '[aria-invalid="true"]'
+      ) as HTMLElement | null;
+
+      if (!firstError) return;
+
+      const focusTarget =
+        firstError.matches("input, select, textarea, button")
+          ? firstError
+          : firstError.querySelector(
+              'input, select, textarea, button'
+            ) as HTMLElement | null;
+
+      firstError.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      focusTarget?.focus({ preventScroll: true });
+    });
+  };
+
   const handleNext = async () => {
     // Validate current step
     if (!validateCurrentStep()) {
-      // Step 3 displays field-level errors
-      // instead of a generic alert.
-      if (currentStep !== 3) {
-        alert("Please complete all required fields before continuing.");
-      }
-
-      return;
+       setShowValidationAlert(true);
+       scrollToFirstError();
+       return;
     }
 
     // Clear validation errors after successful validation
     setValidationErrors({});
+    setShowValidationAlert(false);
 
     // Move between steps
     if (currentStep < TOTAL_STEPS) {
@@ -673,11 +767,52 @@ export default function IndividualApplicationPage() {
             totalSteps={TOTAL_STEPS}
           />
 
+         
+          {showValidationAlert && (
+            <div
+              role="alert"
+              className="fixed right-5 top-5 z-50 flex w-[calc(100%-40px)] max-w-sm items-start gap-3 rounded-xl border border-red-100 bg-white p-4 shadow-xl"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-50">
+                <svg
+                  className="h-5 w-5 text-red-600"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 8v4m0 4h.01" />
+                </svg>
+              </div>
+
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-accta-ink">
+                  Please check the form
+                </p>
+                <p className="mt-1 text-xs leading-5 text-accta-muted">
+                  Please complete all required fields before continuing.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowValidationAlert(false)}
+                aria-label="Close notification"
+                className="text-gray-400 transition hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+
           <div className="mt-8">
             {currentStep === 1 && (
               <MembershipStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -685,6 +820,8 @@ export default function IndividualApplicationPage() {
               <PersonalDetailsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
+                
               />
             )}
 
@@ -700,6 +837,7 @@ export default function IndividualApplicationPage() {
               <QualificationsStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -707,6 +845,7 @@ export default function IndividualApplicationPage() {
               <ExperienceStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
@@ -714,6 +853,7 @@ export default function IndividualApplicationPage() {
               <FitProperStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 

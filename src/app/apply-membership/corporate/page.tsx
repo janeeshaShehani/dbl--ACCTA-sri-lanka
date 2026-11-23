@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 import ApplicationProgress from "@/components/applications/ApplicationProgress";
@@ -92,16 +92,80 @@ export default function CorporateApplicationPage() {
   const [formData, setFormData] =
     useState<CorporateApplication>(initialFormData);
 
+  const [showValidationAlert, setShowValidationAlert] = useState(false);
+
+  const [validationAlertMessage, setValidationAlertMessage] = useState(
+    "Please complete all required fields before continuing."
+  );
+
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+
+  useEffect(() => {
+    if (!showValidationAlert) return;
+
+    const timer = setTimeout(() => {
+      setShowValidationAlert(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [showValidationAlert]);
+
   const updateData = (data: Partial<CorporateApplication>) => {
     setFormData((previous) => ({
       ...previous,
       ...data,
     }));
+
+    setValidationErrors((previousErrors) => {
+      const updatedErrors = { ...previousErrors };
+
+      Object.keys(data).forEach((key) => {
+        delete updatedErrors[key];
+
+        if (key === "fitAndProperAnswers" && data.fitAndProperAnswers) {
+          Object.keys(data.fitAndProperAnswers).forEach((questionId) => {
+            delete updatedErrors[questionId];
+          });
+        }
+
+        if (key === "documents" && data.documents) {
+          Object.keys(data.documents).forEach((documentId) => {
+            delete updatedErrors[documentId];
+          });
+        }
+      });
+
+      return updatedErrors;
+    });
   };
 
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const firstError = document.querySelector(
+        '[aria-invalid="true"]'
+      ) as HTMLElement | null;
+
+      if (!firstError) return;
+
+      const focusTarget = firstError.matches(
+        "input, select, textarea, button"
+      )
+        ? firstError
+        : (firstError.querySelector(
+            "input, select, textarea, button"
+          ) as HTMLElement | null);
+
+      firstError.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      focusTarget?.focus({ preventScroll: true });
+    });
+  };
 
   const validateCurrentStep = () => {
     switch (currentStep) {
@@ -488,10 +552,18 @@ export default function CorporateApplicationPage() {
   };
 
   const handleNext = async () => {
-  if (!validateCurrentStep()) {
-    alert("Please complete all required fields before continuing.");
+    if (!validateCurrentStep()) {
+    setValidationAlertMessage(
+      "Please complete all required fields before continuing."
+    );
+
+    setShowValidationAlert(true);
+    scrollToFirstError();
     return;
   }
+
+  setValidationErrors({});
+  setShowValidationAlert(false);
 
   // Move to the next step
   if (currentStep < TOTAL_STEPS) {
@@ -632,12 +704,51 @@ export default function CorporateApplicationPage() {
             currentStep={currentStep}
             totalSteps={TOTAL_STEPS}
           />
+        
+        {showValidationAlert && (
+          <div
+            role="alert"
+            className="fixed right-5 top-5 z-50 flex w-[calc(100%-40px)] max-w-sm items-start gap-3 rounded-xl border border-red-100 bg-white p-4 shadow-xl"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-50">
+              <svg
+                className="h-5 w-5 text-red-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4m0 4h.01" />
+              </svg>
+            </div>
 
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-accta-ink">
+                Please check the form
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-accta-muted">
+                {validationAlertMessage}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowValidationAlert(false)}
+              aria-label="Close notification"
+              className="text-gray-400 transition hover:text-gray-700"
+            >
+              ✕
+            </button>
+          </div>
+        )}
           <div className="mt-8">
             {currentStep === 1 && (
               <CorporateMembershipStep
                 data={formData}
                 updateData={updateData}
+                validationErrors={validationErrors}
               />
             )}
 
