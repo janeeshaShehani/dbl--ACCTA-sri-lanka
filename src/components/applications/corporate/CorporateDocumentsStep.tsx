@@ -108,7 +108,7 @@ export default function CorporateDocumentsStep({
     if (file.size > MAX_FILE_SIZE) {
       setFileErrors((prev) => ({
         ...prev,
-        [documentId]: "File must be smaller than 10 MB.",
+        [documentId]: "File size must not exceed 10 MB.",
       }));
 
       event.target.value = "";
@@ -228,7 +228,13 @@ export default function CorporateDocumentsStep({
                   <input
                     id={document.id}
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    aria-invalid={Boolean(
+                      validationErrors[document.id] || fileErrors[document.id]
+                    )}
+                    aria-describedby={
+                      hasError ? `${document.id}-error` : undefined
+                    }
                     className="hidden"
                     onChange={(event) =>
                       handleFileChange(document.id, event)

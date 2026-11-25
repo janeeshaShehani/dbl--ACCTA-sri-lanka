@@ -1,5 +1,6 @@
 
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import SiteLayout from "@/components/layout/SiteLayout";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import "./globals.css";
@@ -24,7 +25,14 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <SiteLayout>{children}<WhatsAppButton /></SiteLayout>
+        <SiteLayout>
+          {children}
+          <WhatsAppButton />
+        </SiteLayout>
+
+        <GoogleAnalytics
+          gaId={process.env.NEXT_PUBLIC_GA_ID || ""}
+        />
       </body>
     </html>
   );

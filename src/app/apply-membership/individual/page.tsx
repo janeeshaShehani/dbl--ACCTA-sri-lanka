@@ -107,6 +107,13 @@ export default function IndividualApplicationPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [submissionStatus, setSubmissionStatus] = useState<
+    "success" | "error" | null
+  >(null);
+
+  const [submissionMessage, setSubmissionMessage] = useState("");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   const [formData, setFormData] =
     useState<IndividualApplication>(initialFormData);
 
@@ -146,10 +153,13 @@ export default function IndividualApplicationPage() {
 
     const timer = setTimeout(() => {
       setShowValidationAlert(false);
-    }, 4000);
+    }, 7000);
 
     return () => clearTimeout(timer);
   }, [showValidationAlert]);
+
+
+
 
 
   // Load saved application when the page opens
@@ -198,8 +208,14 @@ export default function IndividualApplicationPage() {
       alert(
         "Your application has been saved successfully. Please note that uploaded files will need to be selected again when you resume."
       );
-    } catch {
-      alert("Unable to save your application. Please try again.");
+    } catch (error) {
+      setSubmissionStatus("error");
+
+      setSubmissionMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while submitting the application."
+      );
     }
   };
 
@@ -613,6 +629,11 @@ export default function IndividualApplicationPage() {
       return;
     }
 
+    if (hasSubmitted) return;
+
+    setSubmissionStatus(null);
+    setSubmissionMessage("");
+
     // Submit application on Step 10
     try {
       setIsSubmitting(true);
@@ -733,20 +754,24 @@ export default function IndividualApplicationPage() {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STEP_STORAGE_KEY);
 
-      alert(
+      setHasSubmitted(true);
+
+      setSubmissionStatus("success");
+      setSubmissionMessage(
         "Your application has been submitted successfully. A confirmation email will be sent to you."
       );
 
-      setFormData(initialFormData);
-      setCurrentStep(1);
     } catch (error) {
       console.error("Application submission error:", error);
 
-      alert(
+      setSubmissionStatus("error");
+
+      setSubmissionMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong while submitting your application."
+          : "Something went wrong while submitting the application."
       );
+      
     } finally {
       setIsSubmitting(false);
     }
@@ -897,6 +922,79 @@ export default function IndividualApplicationPage() {
               Save and Resume Later
             </button>
           </div>
+
+
+          {currentStep === TOTAL_STEPS && submissionStatus && (
+            <div
+              role={submissionStatus === "error" ? "alert" : "status"}
+              className={`mb-5 flex items-start gap-3 rounded-lg border p-4 ${
+                submissionStatus === "success"
+                  ? "border-green-200 bg-green-50"
+                  : "border-red-200 bg-red-50"
+              }`}
+            >
+              <div className="mt-0.5">
+                {submissionStatus === "success" ? (
+                  <svg
+                    className="h-5 w-5 text-green-600"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="m5 12 4 4L19 6" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5 text-red-600"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4m0 4h.01" />
+                  </svg>
+                )}
+              </div>
+
+              <div className="flex-1">
+                <p
+                  className={`text-sm font-semibold ${
+                    submissionStatus === "success"
+                      ? "text-green-800"
+                      : "text-red-800"
+                  }`}
+                >
+                  {submissionStatus === "success"
+                    ? "Application submitted successfully!"
+                    : "Application submission failed"}
+                </p>
+
+                <p
+                  className={`mt-1 text-sm ${
+                    submissionStatus === "success"
+                      ? "text-green-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {submissionMessage}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSubmissionStatus(null);
+                  setSubmissionMessage("");
+                }}
+                aria-label="Close notification"
+                className="text-gray-500 hover:text-gray-800"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           <FormNavigation
             currentStep={currentStep}

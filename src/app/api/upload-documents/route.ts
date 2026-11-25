@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       allowedMimeTypes: [
         "application/pdf",
         "image/jpeg",
+        "image/png",
       ],
       maxFiles: 30,
     });

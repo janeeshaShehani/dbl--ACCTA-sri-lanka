@@ -13,7 +13,9 @@ export default function EntityDetailsStep({
 }: Props) {
   const inputClass = (field: string) =>
     `mt-2 w-full rounded-md border ${
-      validationErrors[field] ? "border-red-500" : "border-accta-border"
+      validationErrors[field]
+        ? "border-red-500 bg-red-50"
+        : "border-accta-border"
     } bg-white px-4 py-3 text-sm outline-none focus:border-accta-maroon`;
 
   const showError = (field: string) =>
@@ -57,6 +59,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the registered name"
             className={inputClass("registeredName")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("registeredName")}
@@ -76,6 +79,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the trading name, if applicable"
             className={inputClass("tradingName")}
+            aria-invalid={!!validationErrors.registeredName}
           />
         </div>
 
@@ -120,6 +124,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the registration number"
             className={inputClass("registrationNumber")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("registrationNumber")}
@@ -138,6 +143,7 @@ export default function EntityDetailsStep({
               updateData({ registrationDate: e.target.value })
             }
             className={inputClass("registrationDate")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("registrationDate")}
@@ -157,6 +163,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the country of registration"
             className={inputClass("registrationCountry")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("registrationCountry")}
@@ -176,6 +183,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the TIN number"
             className={inputClass("tinNumber")}
+            aria-invalid={!!validationErrors.registeredName}
           />
         </div>
 
@@ -193,6 +201,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the VAT number, if applicable"
             className={inputClass("vatNumber")}
+            aria-invalid={!!validationErrors.registeredName}
           />
         </div>
 
@@ -210,6 +219,7 @@ export default function EntityDetailsStep({
             }
             placeholder="https://www.example.com"
             className={inputClass("website")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("website")}
@@ -230,6 +240,7 @@ export default function EntityDetailsStep({
             }
             placeholder="Enter the number of employees"
             className={inputClass("staffCount")}
+            aria-invalid={!!validationErrors.registeredName}
           />
 
           {showError("staffCount")}
@@ -300,6 +311,7 @@ export default function EntityDetailsStep({
               }
               placeholder="+94 XX XXX XXXX"
               className={inputClass("officePhone")}
+              aria-invalid={!!validationErrors.registeredName}
             />
 
             {showError("officePhone")}
@@ -319,6 +331,7 @@ export default function EntityDetailsStep({
               }
               placeholder="organisation@example.com"
               className={inputClass("officialEmail")}
+              aria-invalid={!!validationErrors.registeredName}
             />
 
             {showError("officialEmail")}

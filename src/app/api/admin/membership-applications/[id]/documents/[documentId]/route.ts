@@ -11,6 +11,12 @@ type RouteContext = {
   }>;
 };
 
+const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+];
+
 export async function GET(
   request: NextRequest,
   { params }: RouteContext
@@ -25,7 +31,7 @@ export async function GET(
       (type !== "individual" && type !== "corporate")
     ) {
       return NextResponse.json(
-        { success: false, message: "Invalid download request." },
+        { success: false, message: "Invalid document request." },
         { status: 400 }
       );
     }
@@ -35,6 +41,15 @@ export async function GET(
       documentId,
       type
     );
+
+    const mimeType = document.mimeType?.toLowerCase();
+
+    if (!mimeType || !ALLOWED_MIME_TYPES.includes(mimeType)) {
+      return NextResponse.json(
+        { success: false, message: "Unsupported document format." },
+        { status: 415 }
+      );
+    }
 
     const safeFileName = document.fileName.replace(
       /[\r\n"]/g,
@@ -46,8 +61,8 @@ export async function GET(
       {
         status: 200,
         headers: {
-          "Content-Type": document.mimeType,
-          "Content-Disposition": `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(document.fileName)}`,
+          "Content-Type": mimeType,
+          "Content-Disposition": `inline; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(document.fileName)}`,
           "Content-Length": String(document.buffer.length),
           "Cache-Control": "private, no-store",
           "X-Content-Type-Options": "nosniff",
@@ -78,7 +93,7 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { success: false, message: "Unable to download document." },
+      { success: false, message: "Unable to retrieve document." },
       { status: 500 }
     );
   }
