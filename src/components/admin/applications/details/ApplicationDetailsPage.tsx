@@ -215,12 +215,16 @@ export default function ApplicationDetailsPage() {
       {/* Back Button */}
       <button
         onClick={() =>
-          router.push("/admin/membership-applications")
+          router.push(
+            isIndividual
+              ? "/admin/individual-members"
+              : "/admin/corporate-members"
+          )
         }
         className="inline-flex items-center gap-2 text-sm font-semibold text-[#4a5263] hover:text-[#7b2329]"
       >
         <ArrowLeft size={17} />
-        Back to applications
+        Back to {isIndividual ? "Individual Members" : "Corporate Members"}
       </button>
 
       {/* Page Heading */}

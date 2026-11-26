@@ -2,13 +2,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
 import {
   Download,
   Eye,
   FileText,
   Loader2,
   X,
+  Printer,
 } from "lucide-react";
+
+const PdfDocumentViewer = dynamic(
+  () => import("./PdfDocumentViewer"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-1 items-center justify-center gap-3 bg-[#e2e6ed] text-[#4a5263]">
+        <Loader2 size={24} className="animate-spin" />
+        Loading document viewer...
+      </div>
+    ),
+  }
+);
 
 type DocumentItem = {
   id: string;
@@ -22,6 +38,7 @@ type PreviewItem = {
   url: string;
   name: string;
   type: string;
+  documentId: string;
 };
 
 type Props = {
@@ -40,6 +57,7 @@ export default function ApplicationDocuments({
   const [preview, setPreview] = useState<PreviewItem | null>(null);
   const [error, setError] = useState("");
 
+  // Clean up the previous preview URL when the preview changes or closes.
   useEffect(() => {
     return () => {
       if (preview?.url) {
@@ -60,8 +78,9 @@ export default function ApplicationDocuments({
     const contentType = blob.type.toLowerCase();
     const extension = fileName.split(".").pop()?.toLowerCase();
 
-    if (contentType.includes("pdf") || extension === "pdf")
+    if (contentType.includes("pdf") || extension === "pdf") {
       return "application/pdf";
+    }
 
     if (
       contentType.includes("jpeg") ||
@@ -72,8 +91,9 @@ export default function ApplicationDocuments({
       return "image/jpeg";
     }
 
-    if (contentType.includes("png") || extension === "png")
+    if (contentType.includes("png") || extension === "png") {
       return "image/png";
+    }
 
     return contentType;
   }
@@ -97,7 +117,9 @@ export default function ApplicationDocuments({
         fileType !== "image/jpeg" &&
         fileType !== "image/png"
       ) {
-        throw new Error("Preview is not supported for this file type.");
+        throw new Error(
+          "Preview is not supported for this file type."
+        );
       }
 
       const url = URL.createObjectURL(blob);
@@ -106,10 +128,13 @@ export default function ApplicationDocuments({
         url,
         name: document.originalName,
         type: fileType,
+        documentId: document.id,
       });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Unable to preview document."
+        err instanceof Error
+          ? err.message
+          : "Unable to preview document."
       );
     } finally {
       setViewing(null);
@@ -136,13 +161,14 @@ export default function ApplicationDocuments({
       const disposition = response.headers.get("Content-Disposition");
       const fileNameMatch = disposition?.match(/filename="([^"]+)"/);
 
-      link.download = fileNameMatch?.[1] ?? "application-document";
+      link.download =
+        fileNameMatch?.[1] ?? "application-document";
 
       document.body.appendChild(link);
       link.click();
       link.remove();
 
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Download failed."
@@ -156,8 +182,24 @@ export default function ApplicationDocuments({
     setPreview(null);
   }
 
+  function handlePrint() {
+    if (!preview) return;
+
+    const printWindow = window.open(preview.url, "_blank");
+
+    if (!printWindow) {
+      setError("Please allow pop-ups to print this document.");
+      return;
+    }
+
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  }
+
   return (
     <>
+      {/* Uploaded Documents Section */}
       <section className="rounded-xl border border-[#dde1e8] bg-white p-6">
         <h2 className="mb-5 flex items-center gap-3 text-lg font-bold text-[#1f2e4d]">
           <FileText size={20} />
@@ -188,6 +230,7 @@ export default function ApplicationDocuments({
                     <p className="break-all font-semibold text-[#1f2e4d]">
                       {document.originalName}
                     </p>
+
                     <p className="mt-1 text-xs capitalize text-[#4a5263]">
                       {document.documentType.replaceAll("_", " ")}
                     </p>
@@ -229,70 +272,93 @@ export default function ApplicationDocuments({
         )}
       </section>
 
-      {/* Document Preview Modal */}
+      {/* Full-Screen Document Viewer */}
       {preview && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3 sm:p-6"
-          onClick={closePreview}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Preview: ${preview.name}`}
-            className="flex max-h-[95vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between gap-4 border-b border-[#dde1e8] px-5 py-4">
+        <div className="fixed inset-0 z-[200] flex flex-col bg-[#e9edf3]">
+
+          {/* Viewer Header */}
+          <header className="flex min-h-[72px] shrink-0 items-center justify-between gap-3 bg-[#15203a] px-4 py-3 text-white sm:px-6">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="hidden rounded-lg bg-white/10 p-2 sm:block">
+                <FileText size={23} />
+              </div>
+
               <div className="min-w-0">
-                <h3 className="font-bold text-[#1f2e4d]">
-                  Document Preview
-                </h3>
-                <p className="mt-1 truncate text-xs text-[#4a5263]">
+                <h2 className="font-bold tracking-wide">
+                  ACCTA | Document Viewer
+                </h2>
+
+                <p className="truncate text-xs text-slate-300">
                   {preview.name}
                 </p>
               </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={handlePrint}
+                title="Print document"
+                className="rounded-lg p-2.5 hover:bg-white/10"
+              >
+                <Printer size={19} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  downloadDocument(preview.documentId)
+                }
+                disabled={downloading !== null}
+                title="Download document"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-[#15203a] hover:bg-slate-200 disabled:opacity-50"
+              >
+                {downloading === preview.documentId ? (
+                  <Loader2 size={17} className="animate-spin" />
+                ) : (
+                  <Download size={17} />
+                )}
+                <span className="hidden sm:inline">Download</span>
+              </button>
 
               <button
                 type="button"
                 onClick={closePreview}
-                aria-label="Close document preview"
-                className="shrink-0 rounded-lg p-2 text-[#4a5263] hover:bg-[#f4f6f9] hover:text-[#7b2329]"
+                title="Close viewer"
+                className="ml-1 rounded-lg p-2.5 hover:bg-[#7b2329]"
               >
                 <X size={22} />
               </button>
             </div>
+          </header>
 
-            {/* Document Content */}
-            <div className="min-h-[300px] flex-1 overflow-auto bg-[#f4f6f9] p-3 sm:p-5">
-              {preview.type === "application/pdf" ? (
-                <iframe
+          {/* Main Viewer Content */}
+          {preview.type === "application/pdf" ? (
+            <PdfDocumentViewer fileUrl={preview.url} />
+          ) : (
+            <main className="min-w-0 flex-1 overflow-auto bg-[#e2e6ed] p-4 sm:p-8">
+              <div className="flex min-h-full items-center justify-center">
+                <img
                   src={preview.url}
-                  title={preview.name}
-                  className="h-[70vh] w-full rounded-lg border border-[#dde1e8] bg-white"
+                  alt={preview.name}
+                  className="max-h-full max-w-full rounded-sm bg-white object-contain shadow-xl"
                 />
-              ) : (
-                <div className="flex min-h-[300px] items-center justify-center">
-                  <img
-                    src={preview.url}
-                    alt={preview.name}
-                    className="max-h-[70vh] max-w-full rounded-lg object-contain"
-                  />
-                </div>
-              )}
-            </div>
+              </div>
+            </main>
+          )}
 
-            {/* Modal Footer */}
-            <div className="flex justify-end border-t border-[#dde1e8] px-5 py-3">
-              <button
-                type="button"
-                onClick={closePreview}
-                className="rounded-lg bg-[#1f2e4d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#15203a]"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+          {/* Viewer Footer */}
+          <footer className="flex min-h-[42px] shrink-0 items-center justify-between border-t border-[#d8dee8] bg-white px-4 py-2 sm:px-6">
+            <p className="truncate text-xs text-[#4a5263]">
+              ACCTA Sri Lanka | Membership Administration
+            </p>
+
+            <p className="shrink-0 text-xs font-medium text-[#4a5263]">
+              {preview.type === "application/pdf"
+                ? "PDF Document"
+                : "Image Document"}
+            </p>
+          </footer>
         </div>
       )}
     </>
